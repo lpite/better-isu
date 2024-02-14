@@ -41,7 +41,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
   }
 
-  const newSessionId = crypto.randomUUID()
 
 
   let user = await db.selectFrom("user").selectAll().where("login", "=", req.body.login).executeTakeFirst();
@@ -54,18 +53,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
       .returningAll()
       .executeTakeFirstOrThrow()
-  } else {
-
   }
-  
-  const session = await db.insertInto("session")
-    .values({
-      isu_cookie: response.headers.getSetCookie().toString().split("=")[1].split(";")[0],
-      user_id: user?.id,
-      session_id: newSessionId
-    })
-    .returningAll()
-    .executeTakeFirstOrThrow()
+
+  let session = await db.selectFrom("session")
+    .selectAll()
+    .where("user_id", "=", user.id)
+    .executeTakeFirst()
+
+  if (!session) {
+    const newSessionId = crypto.randomUUID()
+
+    session = await db.insertInto("session")
+      .values({
+        isu_cookie: response.headers.getSetCookie().toString().split("=")[1].split(";")[0],
+        user_id: user?.id,
+        session_id: newSessionId
+      })
+      .returningAll()
+      .executeTakeFirstOrThrow() 
+  }
+
 
   const newSubjectsList = await getSubjectsPage(session)
 
@@ -93,7 +100,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
  
   
-  res.setHeader("Set-Cookie", `session=${newSessionId};Max-Age=2592000000`);
+  res.setHeader("Set-Cookie", `session=${session.session_id};Max-Age=2592000000`);
   res.send({
     data: {},
     error: null

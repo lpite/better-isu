@@ -48,7 +48,7 @@ export default function Home() {
       <h1 className='text-2xl font-bold mb-10'>Привіт {user?.name2}</h1>
 
       <h1 className='text-xl text-slate-400'>Поточний семестр</h1>
-      <div className='flex flex-wrap gap-2'>
+      <div className='flex flex-wrap gap-2 mb-14'>
         {!isLoadingSubjects && isArray(subjects) && subjects?.map((el, i) => (
           <Card className='w-full shrink-0' key={i}>
             <CardHeader>

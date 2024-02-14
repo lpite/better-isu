@@ -1,8 +1,5 @@
-import { table } from "console";
-import { subtle } from "crypto";
-import { writeFile } from "fs/promises";
 import { parse } from "node-html-parser";
-import { Session } from "types/db";
+import { Session } from "types/session";
 
 type GetPage = {
 	type: Pages,
@@ -120,7 +117,7 @@ export async function getSubjectsPage(session: Session) {
 
 
 	const thirdPageHtml = parse(thirdPage)
-	const subjects = [...Array.from(thirdPageHtml.querySelectorAll("#MainTab")[2].querySelectorAll("#TabCell")), ...Array.from(thirdPageHtml.querySelectorAll("#MainTab")[2].querySelectorAll("#TabCell2"))].filter((el, i) => {
+	const subjects = Array.from(thirdPageHtml.querySelectorAll("#MainTab")[2].querySelectorAll("#TabCell, #TabCell2")).filter((el, i) => {
 		if (i % 2 == 0) {
 			return true
 		}
@@ -136,7 +133,9 @@ export async function getSubjectsPage(session: Session) {
 		return { name: el.textContent, link: link }
 	})
 
+	
 
-	console.log(subjectsList)
+
+	// console.log(subjectsList)
 	return subjectsList
 }

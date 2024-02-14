@@ -13,6 +13,7 @@ import { useRouter } from 'next/router'
 import React from 'react'
 
 import { trpc } from 'trpc/trpc-client'
+import { isArray } from 'util'
 
 export default function Home() {
   const router = useRouter()
@@ -48,7 +49,7 @@ export default function Home() {
 
       <h1 className='text-xl text-slate-400'>Поточний семестр</h1>
       <div className='flex flex-wrap gap-2'>
-        {!isLoadingSubjects && subjects?.map((el, i) => (
+        {!isLoadingSubjects && isArray(subjects) && subjects?.map((el, i) => (
           <Card className='w-full shrink-0' key={i}>
             <CardHeader>
               <CardContent className="p-0"><a href={"/api/journal?key=" + el.link} target='_blank'>{el.name}</a></CardContent>

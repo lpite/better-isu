@@ -1,4 +1,6 @@
+import { sql } from "kysely";
 import { procedure, router } from "trpc/trpc";
+import { db } from "utils/db";
 import { getProfilePage, getSubjectsPage } from "utils/getPage";
 
 export const userRouter = router({
@@ -7,11 +9,14 @@ export const userRouter = router({
 
 		return getProfilePage(ctx.session)
 	}),
-	subjects: procedure.query(({ ctx }) => {
-
-		ctx.res.setHeader("Cache-Control", "public,max-age=30000, stale-while-revalidate=86400")
-		//@ts-ignore
-
-		return getSubjectsPage(ctx.session)
+	subjects: procedure.query(async ({ ctx }) => {
+		const subjects = await db.selectFrom("subjects_list")
+			.select([sql<string>`data`.as("data")])
+			.where("user_id", "=", ctx.session.user_id)
+			.executeTakeFirst()
+		if (!subjects) {
+			return [] as { name: string, link: string }[]
+		}
+		return JSON.parse(subjects?.data) as { name: string, link: string }[]
 	})
 })

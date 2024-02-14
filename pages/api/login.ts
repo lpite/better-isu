@@ -4,6 +4,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "../../utils/db";
 import { encryptText } from "../../utils/encryption";
 import getSession from "../../utils/getSession";
+import { getSubjectsPage } from "utils/getPage";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
@@ -56,15 +57,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } else {
 
   }
-
-  await db.insertInto("session")
+  
+  const session = await db.insertInto("session")
     .values({
       isu_cookie: response.headers.getSetCookie().toString().split("=")[1].split(";")[0],
       user_id: user?.id,
       session_id: newSessionId
     })
-    .executeTakeFirst()
+    .returningAll()
+    .executeTakeFirstOrThrow()
 
+  const newSubjectsList = await getSubjectsPage(session)
+
+  const subjectsList = await db.selectFrom("subjects_list")
+    .select((eb) => eb.fn.count<string>("id").as("count"))
+    .where("user_id", "=", session.user_id)
+    .executeTakeFirstOrThrow()
+
+  const isExistsSubjectList = subjectsList.count === "1";
+
+  if (!isExistsSubjectList) {
+    await db.insertInto("subjects_list")
+      .values({
+        "user_id": user.id,
+        data: JSON.stringify(newSubjectsList)
+      })
+      .executeTakeFirst()
+  } else {
+    await db.updateTable("subjects_list")
+      .set({
+        "user_id": user.id,
+        data: JSON.stringify(newSubjectsList)
+      })
+      .executeTakeFirst() 
+  }
+ 
+  
   res.setHeader("Set-Cookie", `session=${newSessionId};Max-Age=2592000000`);
   res.send({
     data: {},

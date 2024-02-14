@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import useSession from 'hooks/useSession'
 import { useRouter } from 'next/router'
 import React from 'react'
 
@@ -15,6 +16,12 @@ import { trpc } from 'trpc/trpc-client'
 
 export default function Home() {
   const router = useRouter()
+  const {
+    isLoading,
+    data,
+    error
+  } = useSession()
+
   const {
     data: user,
     isLoading: isLoadingUser
@@ -25,12 +32,14 @@ export default function Home() {
     isLoading: isLoadingSubjects
   } = trpc.user.subjects.useQuery()
 
-
   React.useEffect(() => {
     if (!user && !isLoadingUser) {
       router.push("/login")
     }
-  }, [user, router, isLoadingUser])
+    if (!isLoading && !data) {
+      router.push("/login")
+    }
+  }, [user, router, isLoadingUser, isLoading, data, error])
 
 
   return (

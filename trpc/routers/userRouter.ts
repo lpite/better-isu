@@ -9,7 +9,7 @@ export const userRouter = router({
 	}),
 	subjects: procedure.query(({ ctx }) => {
 
-		ctx.res.setHeader("Cache-Control", "public,max-age=172800000")
+		ctx.res.setHeader("Cache-Control", "public,max-age=30000, stale-while-revalidate=86400")
 		//@ts-ignore
 
 		return getSubjectsPage(ctx.session)

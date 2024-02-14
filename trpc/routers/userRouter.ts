@@ -8,9 +8,10 @@ export const userRouter = router({
 		return getProfilePage(ctx.session)
 	}),
 	subjects: procedure.query(({ ctx }) => {
+
+		ctx.res.setHeader("Cache-Control", "public,max-age=172800000")
 		//@ts-ignore
 
 		return getSubjectsPage(ctx.session)
-		// return getPage({ session: ctx.session, type: "subjects" })
 	})
 })

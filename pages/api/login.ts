@@ -57,9 +57,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   }
 
-
-  
-
   await db.insertInto("session")
     .values({
       isu_cookie: response.headers.getSetCookie().toString().split("=")[1].split(";")[0],
@@ -68,7 +65,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
     .executeTakeFirst()
 
-  res.setHeader("Set-Cookie", `session=${newSessionId}`);
+  res.setHeader("Set-Cookie", `session=${newSessionId};Max-Age=2592000000`);
   res.send({
     data: {},
     error: null

@@ -6,7 +6,10 @@ module.exports = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
+    '@/**/*.{ts,tsx}',
+
   ],
+  safelist: ['dark'],
   prefix: "",
   theme: {
     container: {

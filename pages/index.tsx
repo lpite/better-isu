@@ -1,12 +1,8 @@
-import { LoginPage } from '@/components/login-page'
 import MobileNavigation from '@/components/mobile-navigation'
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import useSession from 'hooks/useSession'
 import { useRouter } from 'next/router'
@@ -25,12 +21,13 @@ export default function Home() {
 
   const {
     data: user,
-    isLoading: isLoadingUser
+    isLoading: isLoadingUser,
   } = trpc.user.profile.useQuery()
 
   const {
     data: subjects,
-    isLoading: isLoadingSubjects
+    isLoading: isLoadingSubjects,
+    isRefetching: isRefetchingSubjects
   } = trpc.user.subjects.useQuery()
 
   React.useEffect(() => {
@@ -49,7 +46,9 @@ export default function Home() {
 
       <h1 className='text-xl text-slate-400'>Поточний семестр</h1>
       <div className='flex flex-wrap gap-2 mb-14'>
-        {!isLoadingSubjects && isArray(subjects) && subjects?.map((el, i) => (
+        {isLoadingSubjects || isRefetchingSubjects ? "Зачекайте" : null}
+
+        {!isLoadingSubjects && !isRefetchingSubjects && isArray(subjects) && subjects?.map((el, i) => (
           <Card className='w-full shrink-0' key={i}>
             <CardHeader>
               <CardContent className="p-0"><a href={"/api/journal?key=" + el.link} target='_blank'>{el.name}</a></CardContent>

@@ -104,8 +104,5 @@ async function refreshSubjectsList(session: Session) {
 		})
 		.where("user_id", "=", session.user_id)
 		.execute()
-
-
-
 }
 

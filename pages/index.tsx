@@ -14,7 +14,7 @@ import { isArray } from 'util'
 export default function Home() {
   const router = useRouter()
   const {
-    isLoading,
+    isLoading: isLoadingSession,
     data,
     error
   } = useSession()
@@ -27,28 +27,29 @@ export default function Home() {
   const {
     data: subjects,
     isLoading: isLoadingSubjects,
-    isRefetching: isRefetchingSubjects
+    isRefetching: isRefetchingSubjects,
+    isFetching: isFetchingSubjects
   } = trpc.user.subjects.useQuery()
 
   React.useEffect(() => {
     if (!user && !isLoadingUser) {
       router.push("/login")
     }
-    if (!isLoading && !data) {
+    if (!isLoadingSession && !data) {
       router.push("/login")
     }
-  }, [user, router, isLoadingUser, isLoading, data, error])
+  }, [user, router, isLoadingUser, isLoadingSession, data, error])
 
-
+  const isLoading = isFetchingSubjects || isRefetchingSubjects || isLoadingSubjects;
   return (
     <main className='py-4 px-2'>
       <h1 className='text-2xl font-bold mb-10'>Привіт {user?.name2}</h1>
 
       <h1 className='text-xl text-slate-400'>Поточний семестр</h1>
       <div className='flex flex-wrap gap-2 mb-14'>
-        {isLoadingSubjects || isRefetchingSubjects ? "Зачекайте" : null}
+        {isLoading ? "Зачекайте" : null}
 
-        {!isLoadingSubjects && !isRefetchingSubjects && isArray(subjects) && subjects?.map((el, i) => (
+        {!isLoading && isArray(subjects) && subjects?.map((el, i) => (
           <Card className='w-full shrink-0' key={i}>
             <CardHeader>
               <CardContent className="p-0"><a href={"/api/journal?key=" + el.link} target='_blank'>{el.name}</a></CardContent>

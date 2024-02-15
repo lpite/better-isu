@@ -55,6 +55,7 @@ export default async function getSession(req: NextApiRequest): Promise<{
 
 
 async function refreshSession(session: Session) {
+	console.log("refreshing session")
 
 	const user = await db.selectFrom("user")
 		.selectAll()
@@ -98,6 +99,7 @@ async function refreshSession(session: Session) {
 
 async function refreshSubjectsList(session: Session) {
 	const subjects = await getSubjectsPage(session);
+	console.log("refreshing subjects")
 	await db.updateTable("subjects_list")
 		.set({
 			data: JSON.stringify(subjects)

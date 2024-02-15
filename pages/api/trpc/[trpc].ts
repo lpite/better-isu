@@ -6,8 +6,5 @@ import { createContext } from 'trpc/trpc';
 // @link https://trpc.io/docs/v11/server/adapters
 export default trpcNext.createNextApiHandler({
   router: appRouter,
-  createContext,
-  batching: {
-    enabled: false
-  }
+  createContext
 });

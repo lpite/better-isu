@@ -1,4 +1,4 @@
-# better-isu
+# better-isu V2
 це як https://isu1.khmnu.edu.ua/isu/ тільки "краще" або просто гарніше)
 
 

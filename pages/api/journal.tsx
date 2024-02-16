@@ -1,11 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { parse } from "node-html-parser";
 import getSession from "utils/getSession";
 
 export default async function JournalRoute(req: NextApiRequest, res: NextApiResponse) {
 
 	const session = await getSession(req);
-	// console.log(session)
 	res.setHeader("Content-Type", "text/html");
 
 	if (session.error) {
@@ -16,7 +14,6 @@ export default async function JournalRoute(req: NextApiRequest, res: NextApiResp
 		return res.send("<h1>я не знаю 2</h1>")
 	}
 
-	const decoder = new TextDecoder('windows-1251');
 
 	const queryString = Object.entries(req.query).map(([k, v],i) => {
 		return `${i!==0 ?"&":""}${k}=${v}`
@@ -29,17 +26,12 @@ export default async function JournalRoute(req: NextApiRequest, res: NextApiResp
 			"Content-Type": "application/x-www-form-urlencoded"
 		}
 	})
-		// .then(res => res.arrayBuffer())
-		// .then(res => decoder.decode(res))
 		.then(res => res.text())
-	// 	console.log(journalPage)
+
+	//TODO: якщо не вдалося взяти журнал то оновити в базі ключі
 
 
-	// // const journal
-	// const journalPageHtml = parse(journalPage);
-	// const journalData = journalPageHtml.querySelectorAll("script")[3].textContent?.split("Ext.create('jrn.GradeGrid',")[1].split(');')[0].replace(/\n|\t| /g, "") 
-	
-	// res.send(journalData);
+
 	res.send(journalPage
 		.replaceAll("../../js/extjs4/locale/ext-lang-ukr.js","https://isu1.khmnu.edu.ua/isu/js/extjs4/locale/ext-lang-ukr.js")
 		.replaceAll("journals.js","https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.js")

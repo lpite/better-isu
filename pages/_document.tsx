@@ -1,10 +1,12 @@
-import { ThemeProvider } from 'next-themes'
-import { Html, Head, Main, NextScript } from 'next/document'
- 
+import { ThemeProvider } from 'next-themes';
+import { Html, Head, Main, NextScript } from 'next/document';
+
 export default function Document() {
   return (
     <Html lang="en" className='h-full'>
-      <Head />
+      <Head>
+        <title>Capybara ❤</title>
+      </Head>
       <body className='h-full'>
         <ThemeProvider
           attribute='class'
@@ -17,5 +19,5 @@ export default function Document() {
         <NextScript />
       </body>
     </Html>
-  )
+  );
 }

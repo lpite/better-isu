@@ -47,13 +47,17 @@ export default function Home() {
 
       <h1 className='text-xl text-slate-400'>Поточний семестр</h1>
       <div className='flex flex-wrap gap-2 mb-14'>
-        {isLoading ? "Зачекайте" : null}
+        {isLoading ? <>{
+          Array(5).fill("").map((_, i) => (
+            <Card className='w-full shrink-0 animate-pulse bg-slate-700' style={{ height: 73 }} key={i}>
+              <CardContent className="p-8"></CardContent>
+            </Card>
+          ))
+        }</> : null}
 
         {!isLoading && isArray(subjects) && subjects?.map((el, i) => (
           <Card className='w-full shrink-0' key={i}>
-            <CardHeader>
-              <CardContent className="p-0"><a href={"/api/journal?key=" + el.link} target='_blank'>{el.name}</a></CardContent>
-            </CardHeader>
+            <CardContent className="py-6"><a href={"/api/journal?key=" + el.link} target='_blank'>{el.name}</a></CardContent>
           </Card>
         ))}
   

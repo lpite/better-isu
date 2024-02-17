@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form"
 import React from "react"
 import { useRouter } from "next/router"
 import { Input } from "@/components/ui/input"
+import useSession from "hooks/useSession"
 
 const formSchema = z.object({
   login: z.string().min(2).max(50),
@@ -24,16 +25,16 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const router = useRouter()
+  const {
+    data: session,
+    isLoading: isLoadingSession
+  } = useSession()
+
   React.useEffect(() => {
-    fetch("/api/session", {
-      credentials: "include"
-    }).then(res => res.json())
-      .then((res) => {
-        if (res.data) {
-          router.push("/profile/")
-        }
-      })
-  }, [router])
+    if (!isLoadingSession && session) {
+      router.push("/")
+    }
+  }, [router, isLoadingSession, session])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,10 +52,9 @@ export default function LoginPage() {
     }).then(res => res.json())
 
     if (res.data || res.error === "already") {
-      router.push("/profile/")
+      router.push("/")
     }
 
-    console.log(values)
   }
   return (
     <main className="flex justify-center items-center h-full">
@@ -65,7 +65,7 @@ export default function LoginPage() {
             name="login"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Login</FormLabel>
+                <FormLabel>Логін</FormLabel>
                 <FormControl>
                   <Input placeholder="shadcn" type="text" {...field} />
                 </FormControl>
@@ -78,7 +78,7 @@ export default function LoginPage() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>Пароль</FormLabel>
                 <FormControl>
                   <Input placeholder="**********" type="password" {...field} />
                 </FormControl>
@@ -86,7 +86,7 @@ export default function LoginPage() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">Submit</Button>
+          <Button type="submit" className="w-full">Увійти</Button>
         </form>
       </Form>
    

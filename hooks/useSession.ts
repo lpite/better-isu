@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { ClientSession } from "types/session";
 
 export default function useSession() {
-	const [session, setSession] = useState<{ error: string | null, data: any | null }>({ error: null, data: null });
+	const [session, setSession] = useState<{ error: string | null, data: ClientSession | null }>({ error: null, data: null });
 	const [isLoading, setIsLoading] = useState(true);
 	useEffect(() => {
 		setIsLoading(true)

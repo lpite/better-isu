@@ -20,7 +20,6 @@ export default async function JournalRoute(req: NextApiRequest, res: NextApiResp
 	}).join("")
 
 	let journalPage = await fetch(`https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.php?${queryString}`, {
-		// body: `jrnId=76943&page=1&start=0&limit=25`,
 		headers: {
 			"Cookie": `PHPSESSID=${session.data.isu_cookie}`,
 			"Content-Type": "application/x-www-form-urlencoded"
@@ -30,8 +29,6 @@ export default async function JournalRoute(req: NextApiRequest, res: NextApiResp
 
 	//TODO: якщо не вдалося взяти журнал то оновити в базі ключі
 
-
-
 	res.send(journalPage
 		.replaceAll("../../js/extjs4/locale/ext-lang-ukr.js","https://isu1.khmnu.edu.ua/isu/js/extjs4/locale/ext-lang-ukr.js")
 		.replaceAll("journals.js","https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.js")
@@ -40,6 +37,4 @@ export default async function JournalRoute(req: NextApiRequest, res: NextApiResp
 		.replaceAll("jrn/css/journals.css","https://isu1.khmnu.edu.ua/isu/dbsupport/students/jrn/css/journals.css")
 		
 		)
-
-
 }

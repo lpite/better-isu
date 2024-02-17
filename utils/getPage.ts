@@ -1,16 +1,6 @@
 import { parse } from "node-html-parser";
 import { Session } from "types/session";
 
-type GetPage = {
-	type: Pages,
-	session: Session
-}
-
-type Pages = "profile" | "subjects"
-
-type Return = {
-	"profile": ReturnType<typeof getProfilePage>
-}
 
 export async function getProfilePage(session: Session) {
 	const page = await fetch("https://isu1.khmnu.edu.ua/isu/dbsupport/students/personnel.php", {
@@ -73,17 +63,59 @@ export async function getSubjectsPage(session: Session) {
 	let keyStr = secondPageHtml.querySelector("[name=KeyStr]")?.getAttribute("value") || "";
 	let paramStr = secondPageHtml.querySelector("[name=ParamStr]")?.getAttribute("value") || "";
 	let tableKey = ""
-	secondPageHtml.querySelectorAll("#TabLeftBorderLink").forEach((el) => {
-		const href = el.getAttribute("href") || "";
-		const title = el.getAttribute("title") || "";
+
+
+	// Масив всіх елементів в табличці
+	// довжина стрічки 6 елементів
+	const tableElements = Array.from(secondPageHtml.querySelectorAll("#MainTab")[1].querySelectorAll("#TabLeftBorderLink,#TabCell,#TabCell2"))
+
+	const currentSemester = secondPageHtml.querySelector("[color=blue]")?.textContent
+	let tabNo = 0;
+
+	let elementInRow = 0;
+	let currentRow: Record<string, string> = {};
+
+
+	tableElements.forEach((el, i) => {
 		
-		if (href.includes("2023|2") && title.includes("журнали")) {
-			tableKey = href.split("'")[1];
+		if (elementInRow === 6) {
+			const date = new Date()
+			let currentYearString = `${date.getFullYear()}-${date.getFullYear() + 1}`
+
+			if (currentSemester === "2") {
+				currentYearString = `${date.getFullYear() - 1}-${date.getFullYear()}`
+			}
+
+			if (currentSemester === currentRow.semseter && currentYearString === currentRow.years) {
+				tabNo = (i + 1) / 5 + 1;
+				tableKey = currentRow.journalLink
+			}
+
+			elementInRow = 0;
 		}
-	});
+
+		const isJournalLink = elementInRow === 3;
+		const isYears = elementInRow === 4;
+		const isSemester = elementInRow === 5;
+
+		if (isSemester) {
+			currentRow.semseter = el.textContent;
+		}
+		if (isJournalLink) {
+			currentRow.journalLink = el.getAttribute("href")?.split("'")[1] || "";
+		}
+
+		if (isYears) {
+			currentRow.years = el.textContent.trim() || currentRow.years;
+		}
+
+		elementInRow++;
+
+	})
+
 	paramStr = paramStr.replaceAll("&", "%26").replaceAll("КІ", "%CA%B2");
-	// TODO: TabNo=6 має бути не 6, а для поточного семестру
-	let thirdPageBody = `mode=SubTable&key=${tableKey}&ref=&sort=&FieldChoice=&TabNo=6&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=20&RecsDeleted=0&RecsCount=4&KeyStr=${keyStr}&TabStr=0%7C%7E%7C2&PgNoStr=1%7C%7E%7C&PgSzStr=200%7C%7E%7C&FilterStr=%7C%7E%7C&FieldChoiceStr=%7C%7E%7C&SortStr=%7C%7E%7C&ModeStr=%7C%7E%7CSubTable&FieldStr=&ChildStr=&ParamStr=${paramStr}`
+
+	let thirdPageBody = `mode=SubTable&key=${tableKey}&ref=&sort=&FieldChoice=&TabNo=${tabNo}&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=20&RecsDeleted=0&RecsCount=4&KeyStr=${keyStr}&TabStr=0%7C%7E%7C2&PgNoStr=1%7C%7E%7C&PgSzStr=200%7C%7E%7C&FilterStr=%7C%7E%7C&FieldChoiceStr=%7C%7E%7C&SortStr=%7C%7E%7C&ModeStr=%7C%7E%7CSubTable&FieldStr=&ChildStr=&ParamStr=${paramStr}`
 	thirdPageBody = thirdPageBody.replaceAll("^", "%5E");
 	thirdPageBody = thirdPageBody.replaceAll("|", "%7C");
 	thirdPageBody = thirdPageBody.replaceAll("@", "%40");

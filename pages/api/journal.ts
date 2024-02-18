@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import getSession from "utils/getSession";
+import getSession, { refreshSubjectsList } from "utils/getSession";
 
 export default async function JournalRoute(req: NextApiRequest, res: NextApiResponse) {
 
@@ -15,8 +15,8 @@ export default async function JournalRoute(req: NextApiRequest, res: NextApiResp
 	}
 
 
-	const queryString = Object.entries(req.query).map(([k, v],i) => {
-		return `${i!==0 ?"&":""}${k}=${v}`
+	const queryString = Object.entries(req.query).map(([k, v], i) => {
+		return `${i !== 0 ? "&" : ""}${k}=${v}`
 	}).join("")
 
 	let journalPage = await fetch(`https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.php?${queryString}`, {
@@ -27,14 +27,18 @@ export default async function JournalRoute(req: NextApiRequest, res: NextApiResp
 	})
 		.then(res => res.text())
 
+	if (journalPage.includes("Key violation")) {
+		await refreshSubjectsList(session.data);
+	}
+
 	//TODO: якщо не вдалося взяти журнал то оновити в базі ключі
 
 	res.send(journalPage
-		.replaceAll("../../js/extjs4/locale/ext-lang-ukr.js","https://isu1.khmnu.edu.ua/isu/js/extjs4/locale/ext-lang-ukr.js")
-		.replaceAll("journals.js","https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.js")
-		.replaceAll("../../js/extjs4/ext.js","https://isu1.khmnu.edu.ua/isu/js/extjs4/ext.js")
-		.replaceAll("../../js/extjs4/resources/css/ext-all.css","https://isu1.khmnu.edu.ua/isu/js/extjs4/resources/css/ext-all.css")
-		.replaceAll("jrn/css/journals.css","https://isu1.khmnu.edu.ua/isu/dbsupport/students/jrn/css/journals.css")
+		.replaceAll("../../js/extjs4/locale/ext-lang-ukr.js", "https://isu1.khmnu.edu.ua/isu/js/extjs4/locale/ext-lang-ukr.js")
+		.replaceAll("journals.js", "https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.js")
+		.replaceAll("../../js/extjs4/ext.js", "https://isu1.khmnu.edu.ua/isu/js/extjs4/ext.js")
+		.replaceAll("../../js/extjs4/resources/css/ext-all.css", "https://isu1.khmnu.edu.ua/isu/js/extjs4/resources/css/ext-all.css")
+		.replaceAll("jrn/css/journals.css", "https://isu1.khmnu.edu.ua/isu/dbsupport/students/jrn/css/journals.css")
 		
-		)
+	)
 }

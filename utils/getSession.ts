@@ -97,7 +97,7 @@ async function refreshSession(session: Session) {
 }
 
 
-async function refreshSubjectsList(session: Session) {
+export async function refreshSubjectsList(session: Session) {
 	const subjects = await getSubjectsPage(session);
 	console.log("refreshing subjects")
 	await db.updateTable("subjects_list")

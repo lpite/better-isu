@@ -17,6 +17,7 @@
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/themes": "^2.0.3",
+    "@sentry/nextjs": "^7.101.1",
     "@tanstack/react-query": "^5.18.1",
     "@trpc-swr/client": "^2.0.1",
     "@trpc/client": "^11.0.0-next-beta.274",

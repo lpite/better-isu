@@ -19,12 +19,17 @@
     "jsx": "preserve",
     "baseUrl": "./",
     "paths": {
-      "@/components/*": ["@/components/*"],
-      "@/lib/*": ["@/lib/*"]
-
-    }
+      "@/components/*": [
+        "@/components/*"
+      ],
+      "@/lib/*": [
+        "@/lib/*"
+      ]
+    },
+    "target": "es5",
+    "forceConsistentCasingInFileNames": true
   },
-   "ts-node": {
+  "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"
     }
@@ -36,5 +41,5 @@
   ],
   "exclude": [
     "node_modules"
-  ],
+  ]
 }

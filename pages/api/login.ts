@@ -71,6 +71,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
       .returningAll()
       .executeTakeFirstOrThrow() 
+  }else{
+     session = await db.updateTable("session")
+      .set({
+        isu_cookie: response.headers.getSetCookie().toString().split("=")[1].split(";")[0],
+      })
+      .where("user_id","=",user.id)
+      .returningAll()
+      .executeTakeFirstOrThrow()
   }
 
 

@@ -56,7 +56,7 @@ export default function Home() {
         }</> : null}
 
         {!isLoading && isArray(subjects) && subjects?.map((el, i) => (
-          <Card className='w-full shrink-0' key={i}>
+          <Card className='w-full shrink-0 border_animation' key={i}>
             <CardContent className="py-6"><a href={"/api/journal?key=" + el.link} target='_blank'>{el.name}</a></CardContent>
           </Card>
         ))}

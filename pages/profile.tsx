@@ -1,6 +1,6 @@
 import MobileNavigation from "@/components/mobile-navigation"
 import { useRouter } from "next/router"
-import React, { use } from "react"
+import React from "react"
 import { trpc } from "trpc/trpc-client"
 
 export default function ProfilePage() {

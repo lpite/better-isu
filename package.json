@@ -29,7 +29,7 @@
     "iconv-lite": "^0.6.3",
     "kysely": "^0.27.2",
     "kysely-postgres-js": "^2.0.0",
-    "next": "14.1.0",
+    "next": "12.3.4",
     "next-themes": "^0.2.1",
     "node-html-parser": "^6.1.12",
     "postgres": "^3.4.3",

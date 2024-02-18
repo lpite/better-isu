@@ -31,8 +31,6 @@ export default async function JournalRoute(req: NextApiRequest, res: NextApiResp
 		await refreshSubjectsList(session.data);
 	}
 
-	//TODO: якщо не вдалося взяти журнал то оновити в базі ключі
-
 	res.send(journalPage
 		.replaceAll("../../js/extjs4/locale/ext-lang-ukr.js", "https://isu1.khmnu.edu.ua/isu/js/extjs4/locale/ext-lang-ukr.js")
 		.replaceAll("journals.js", "https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.js")

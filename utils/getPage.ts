@@ -179,7 +179,7 @@ export async function getSubjectsPage(session: Session) {
       thirdPageHtml.querySelectorAll("#TabLeftBorderLink")
     )
       .slice(0, -1)
-      [i]?.getAttribute("href")
+    [i]?.getAttribute("href")
       ?.split("'")[3];
     return { name: el.textContent, link: link };
   });

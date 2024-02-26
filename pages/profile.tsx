@@ -20,8 +20,8 @@ export default function ProfilePage() {
   
 	return (
 		<main className="flex items-center flex-col justify-center h-full">
-			<h1 >Hi {user?.name2}!</h1>
-			<h1 >Номер заліковки {user?.recordNumber}!</h1>
+			<span className="text-3xl">{user?.name2}</span>
+			<span>Номер заліковки {user?.recordNumber}</span>
 
 			<MobileNavigation />
 		</main>

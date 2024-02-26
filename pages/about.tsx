@@ -1,4 +1,6 @@
 import MobileNavigation from "@/components/mobile-navigation";
+import Link from "next/link";
+
 
 export default function AboutPage() {
 	return (

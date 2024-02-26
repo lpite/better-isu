@@ -21,6 +21,7 @@ export default function ProfilePage() {
 	return (
 		<main className="flex items-center justify-center h-full">
 			<h1 >Hi {user?.name2}!</h1>
+			<br />
 			<h1 >Номер заліковки {user?.recordNumber}!</h1>
 
 			<MobileNavigation />

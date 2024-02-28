@@ -24,7 +24,8 @@ const formSchema = z.object({
 })
 
 export default function LoginPage() {
-  const router = useRouter()
+  const router = useRouter();
+  const [isLoading, setIsLoading] = React.useState(false)
   const {
     data: session,
     isLoading: isLoadingSession
@@ -43,6 +44,8 @@ export default function LoginPage() {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true)
+
     const res = await fetch("/api/login", {
       method: "POST",
       body: JSON.stringify(values),
@@ -50,6 +53,9 @@ export default function LoginPage() {
         "Content-Type": "application/json"
       }
     }).then(res => res.json())
+      .finally(() => {
+        setIsLoading(false)
+      })
 
     if (res.data || res.error === "already") {
       router.push("/")
@@ -86,10 +92,10 @@ export default function LoginPage() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">Увійти</Button>
+          <Button type="submit" className="w-full" disabled={isLoading}>Увійти</Button>
         </form>
       </Form>
-   
+
     </main>
   )
 }

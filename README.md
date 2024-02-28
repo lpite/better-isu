@@ -1,4 +1,6 @@
 # better-isu V2
+
+![alt text](cover.png)
 це як https://isu1.khmnu.edu.ua/isu/ тільки "краще" або просто гарніше)
 
 

@@ -1,12 +1,10 @@
 import { sql } from "kysely";
 import { procedure, router } from "trpc/trpc";
 import { db } from "utils/db";
-import { getProfilePage, getSubjectsPage } from "utils/getPage";
+import { getProfilePage } from "utils/getPage";
 
 export const userRouter = router({
 	profile: procedure.query(({ ctx }) => {
-		// @ts-ignore
-
 		return getProfilePage(ctx.session)
 	}),
 	subjects: procedure.query(async ({ ctx }) => {

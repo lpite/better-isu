@@ -100,11 +100,22 @@ async function refreshSession(session: Session) {
 export async function refreshSubjectsList(session: Session) {
 	const subjects = await getSubjectsPage(session);
 	console.log("refreshing subjects")
-	await db.updateTable("subjects_list")
+	const subjectsList = await db.updateTable("subjects_list")
 		.set({
 			data: JSON.stringify(subjects)
 		})
 		.where("user_id", "=", session.user_id)
-		.execute()
+		.returningAll()
+		.executeTakeFirst()
+
+	if (!subjectsList) {
+		await db.insertInto("subjects_list")
+			.values({
+				data: JSON.stringify(subjects),
+				user_id: session.user_id
+			})
+			.executeTakeFirstOrThrow()
+
+	}
 }
 

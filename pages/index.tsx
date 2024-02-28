@@ -27,8 +27,6 @@ export default function Home() {
   const {
     data: subjects,
     isLoading: isLoadingSubjects,
-    isRefetching: isRefetchingSubjects,
-    isFetching: isFetchingSubjects
   } = trpc.user.subjects.useQuery()
 
   React.useEffect(() => {
@@ -40,7 +38,8 @@ export default function Home() {
     }
   }, [user, router, isLoadingUser, isLoadingSession, data, error])
 
-  const isLoading = isFetchingSubjects || isRefetchingSubjects || isLoadingSubjects;
+  const isLoading = isLoadingSubjects;
+
   return (
     <main className='py-4 px-2'>
       <h1 className='text-2xl font-bold mb-10'>Привіт {user?.name2}</h1>
@@ -55,9 +54,9 @@ export default function Home() {
           ))
         }</> : null}
 
-        {!isLoading && isArray(subjects) && subjects?.map((el, i) => (
+        {!isLoading && subjects?.map((el, i) => (
           <Card className='w-full shrink-0 border_animation' key={i}>
-            <CardContent className="py-6"><a href={"/api/journal?key=" + el.link} target='_blank'>{el.name}</a></CardContent>
+            <CardContent className="py-6"><a href={"/api/journal?index=" + i} target='_blank'>{el.name}</a></CardContent>
           </Card>
         ))}
   

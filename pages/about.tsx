@@ -15,7 +15,7 @@ export default function AboutPage() {
 				<span className="text-lg">Вебфреймворк оснований на react</span>
 			</div>
 			<div className="bg-slate-900 w-full py-6 px-4 rounded-xl flex flex-col mb-4">
-				<span className="text-2xl mb-2">nextjs</span>
+				<span className="text-2xl mb-2">tailwindcss</span>
 				<span className="text-lg">CSS фреймворк для простої стилізації</span>
 			</div>
 			<div className="bg-slate-900 w-full py-6 px-4 rounded-xl flex flex-col mb-4">

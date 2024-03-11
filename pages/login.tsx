@@ -26,6 +26,8 @@ const formSchema = z.object({
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false)
+  const [error, setError] = React.useState("")
+
   const {
     data: session,
     isLoading: isLoadingSession
@@ -56,6 +58,10 @@ export default function LoginPage() {
       .finally(() => {
         setIsLoading(false)
       })
+
+    if (res.error) {
+      setError(res.error);
+    }
 
     if (res.data || res.error === "already") {
       router.push("/")
@@ -92,6 +98,8 @@ export default function LoginPage() {
               </FormItem>
             )}
           />
+          <span className="text-red-400">{error}</span>
+          
           <Button type="submit" className="w-full" disabled={isLoading}>Увійти</Button>
         </form>
       </Form>

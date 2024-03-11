@@ -34,9 +34,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const decoder = new TextDecoder('windows-1251');
   const text = decoder.decode(page);
+  console.log(text)
+
+  if (text.includes("Аутентифікація не пройшла")) {
+    return res.send({
+      error: "Неправильний пароль або логін",
+      data: null
+    })
+  }
+
   if (!text.includes("Вхід користувача")) {
     return res.send({
-      error: "wrong login or password",
+      error: "Неправильний пароль або логін",
       data: null
     })
   }
@@ -71,12 +80,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
       .returningAll()
       .executeTakeFirstOrThrow() 
-  }else{
-     session = await db.updateTable("session")
+  } else {
+    session = await db.updateTable("session")
       .set({
         isu_cookie: response.headers.getSetCookie().toString().split("=")[1].split(";")[0],
       })
-      .where("user_id","=",user.id)
+      .where("user_id", "=", user.id)
       .returningAll()
       .executeTakeFirstOrThrow()
   }

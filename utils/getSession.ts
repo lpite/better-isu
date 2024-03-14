@@ -32,7 +32,7 @@ export default async function getSession(req: NextApiRequest): Promise<{
 
 	const now = new Date().getTime() - (new Date().getTimezoneOffset() * 60);
 	
-	if (now - session.created_at.getTime() > 28 * 60 * 1000) {
+	if (now - session.created_at.getTime() > 55 * 60 * 1000) {
 		const newSession = await refreshSession(session);
 		if (!newSession) {
 			return {

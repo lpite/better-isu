@@ -14,6 +14,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
         <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#5bbad5" />
+        <link rel="manifest" href="/manifest.json" />
       </Head>  
       <Component {...pageProps} />
     </>)

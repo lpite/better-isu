@@ -69,7 +69,7 @@ export default function ScheduleCarousel() {
 						<SheetTitle>Предмети які показувати в розкладі</SheetTitle>
 					</SheetHeader>
 					{generateSubjectsList(schedule).map((el) => (
-						<label className="flex items-center gap-3 my-1 px-2 py-3 border rounded-lg">
+						<label key={el} className="flex items-center gap-3 my-1 px-2 py-3 border rounded-lg">
 							<Checkbox />
 							<span>{el}</span>
 						</label>

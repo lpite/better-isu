@@ -4,7 +4,14 @@ const nextConfig = {
   swcMinify: true,
 }
 
-module.exports = nextConfig
+const prod = process.env.NODE_ENV === 'production'
+
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  disable: prod ? false : true,
+})
+
+module.exports = withPWA(nextConfig)
 
 
 // Injected content via Sentry wizard below

@@ -2,14 +2,12 @@ import MobileNavigation from '@/components/mobile-navigation'
 import {
   Card,
   CardContent,
-  CardHeader,
 } from "@/components/ui/card"
 import useSession from 'hooks/useSession'
 import { useRouter } from 'next/router'
 import React from 'react'
 
 import { trpc } from 'trpc/trpc-client'
-import { isArray } from 'util'
 
 export default function Home() {
   const router = useRouter()
@@ -42,7 +40,7 @@ export default function Home() {
 
   return (
     <main className='py-4 px-2'>
-      <h1 className='text-2xl font-bold mb-10'>Привіт {user?.name2}</h1>
+      <h1 className='text-2xl font-bold mb-10'>Привіт {user?.name}</h1>
 
       <h1 className='text-xl text-slate-400'>Поточний семестр</h1>
       <div className='flex flex-wrap gap-2 mb-14'>

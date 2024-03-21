@@ -20,7 +20,7 @@ export default function ProfilePage() {
   
 	return (
 		<main className="flex items-center flex-col justify-center h-full">
-			<span className="text-3xl">{user?.name2}</span>
+			<span className="text-3xl">{user?.name}</span>
 			<span>Номер заліковки {user?.recordNumber}</span>
 
 			<MobileNavigation />

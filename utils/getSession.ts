@@ -3,7 +3,8 @@ import { db } from "./db";
 import { Session } from "../types/session";
 import { decryptText } from "./encryption";
 import { sql } from "kysely";
-import { getSubjectsPage } from "./getPage";
+import { getProfilePage, getSchedulePage, getSubjectsPage } from "./getPage";
+import { parseScheduleTable } from "./parseScheduleTable";
 
 export default async function getSession(req: NextApiRequest): Promise<{
 	error?: "unauthorized" | "no session",
@@ -21,7 +22,6 @@ export default async function getSession(req: NextApiRequest): Promise<{
 		.where("session_id", "=", sessionCookie)
 		.executeTakeFirst()
 
-
 	if (!session) {
 		return {
 			error: "no session",
@@ -29,6 +29,7 @@ export default async function getSession(req: NextApiRequest): Promise<{
 		}
 	}
 
+	// refreshSchedule(session)
 
 	const now = new Date().getTime() - (new Date().getTimezoneOffset() * 60);
 	
@@ -41,6 +42,8 @@ export default async function getSession(req: NextApiRequest): Promise<{
 			}
 		}
 		await refreshSubjectsList(newSession);
+		await refreshUserInfo(newSession)
+		// await Promise.all([refreshSubjectsList(newSession), refreshUserInfo(newSession)])
 
 		return {
 			data: newSession
@@ -117,5 +120,54 @@ export async function refreshSubjectsList(session: Session) {
 			.executeTakeFirstOrThrow()
 
 	}
+}
+
+
+export async function refreshUserInfo(session: Session) {
+	const { name, surname, faculty, group, recordNumber, course } = await getProfilePage(session);
+
+	await db.updateTable("user")
+		.set({
+			name,
+			surname,
+			faculty,
+			group,
+			record_number: recordNumber,
+			course
+		})
+		.where("user.id", "=", session.user_id)
+		.execute()
+};
+
+export async function refreshSchedule(session: Session) {
+	console.log("REFRESHING SCHEDULE LIST");
+	
+	const user = await db.selectFrom("user")
+		.select("group")
+		.where("user.id", "=", session.user_id)
+		.executeTakeFirstOrThrow()
+
+	const schedule = await db.selectFrom("schedule")
+		.select("id")
+		.where("group", "=", user.group)
+		.executeTakeFirst()
+
+	if (!schedule?.id) {
+
+		if (!user.group) {
+			throw "no user group"
+		}
+
+		const schedulePage = await getSchedulePage(session);
+		const jsonSchedule = parseScheduleTable(schedulePage);
+		await db.insertInto("schedule")
+			.values({
+				group: user.group,
+				data: JSON.stringify(jsonSchedule)
+			})
+			.executeTakeFirstOrThrow()
+	}
+
+
 }
 

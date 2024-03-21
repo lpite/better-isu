@@ -1,4 +1,5 @@
 import MobileNavigation from '@/components/mobile-navigation'
+import ScheduleCarousel from '@/components/schedule-carousel'
 import {
   Card,
   CardContent,
@@ -27,6 +28,7 @@ export default function Home() {
     isLoading: isLoadingSubjects,
   } = trpc.user.subjects.useQuery()
 
+
   React.useEffect(() => {
     if (!user && !isLoadingUser) {
       router.push("/login")
@@ -42,7 +44,7 @@ export default function Home() {
     <main className='py-4 px-2'>
       <h1 className='text-2xl font-bold mb-10'>Привіт {user?.name}</h1>
 
-      <h1 className='text-xl text-slate-400'>Поточний семестр</h1>
+      <h2 className='text-xl text-slate-400'>Поточний семестр</h2>
       <div className='flex flex-wrap gap-2 mb-14'>
         {isLoading ? <>{
           Array(5).fill("").map((_, i) => (
@@ -52,12 +54,17 @@ export default function Home() {
           ))
         }</> : null}
 
-        {!isLoading && subjects?.map((el, i) => (
+        {!isLoading && subjects && subjects?.map((el, i) => (
           <Card className='w-full shrink-0 border_animation' key={i}>
             <CardContent className="py-6"><a href={"/api/journal?index=" + i} target='_blank'>{el.name}</a></CardContent>
           </Card>
         ))}
-  
+        <ScheduleCarousel/>
+        {/*{!isLoadingSchedule && schedule?.map((el) => (
+          <Card className='w-full shrink-0' style={{ height: 73 }} key={el.day + el.number + el.type + el.name}>
+            <CardContent className="p-6">{el.name}</CardContent>
+          </Card>
+        ))}*/}
       </div>
       <MobileNavigation />
     </main>

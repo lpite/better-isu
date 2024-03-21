@@ -1,21 +1,13 @@
 import { parse } from "node-html-parser";
 import { Session } from "types/session";
+import { db } from "./db";
+import encodeParamString from "./encodeParamString";
+import { parseScheduleTable } from "./parseScheduleTable";
 
 export async function getProfilePage(session: Session) {
   const decoder = new TextDecoder("windows-1251");
-  const profilePage = await fetch(
-    "https://isu1.khmnu.edu.ua/isu/dbsupport/students/personnel.php",
-    {
-      method: "POST",
-      headers: {
-        Cookie: `PHPSESSID=${session.isu_cookie}`,
-      },
-    }
-  ).then((res) => res.arrayBuffer());
 
-  const profilePageText = decoder.decode(profilePage);
-
-  const idkPage = await fetch(
+  const eduplansPage = await fetch(
     "https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php",
     {
       headers: {
@@ -24,21 +16,22 @@ export async function getProfilePage(session: Session) {
     }
   )
     .then((res) => res.arrayBuffer())
-    .then((res) => decoder.decode(res));
+    .then((res) => decoder.decode(res))
+    .catch((res) => {
+      return ""
+    })
 
-  const recordNumber =
-    parse(idkPage).querySelectorAll("#TabCell")[9]?.textContent || "";
-
-  const profilePageHtml = parse(profilePageText);
-
-  const data = profilePageHtml.querySelectorAll("#TabCell");
-
+  const tableCells = parse(eduplansPage).querySelectorAll("#TabCell");
+  
   const profile = {
-    name: data[0].textContent,
-    name2: data[1].textContent,
-    name3: data[2].textContent,
-    birthDate: data[3].textContent,
-    recordNumber: recordNumber,
+    name: tableCells[2].textContent,
+    surname: tableCells[1].textContent,
+    fathersName: tableCells[3].textContent,
+    recordNumber: tableCells[9].textContent,
+    faculty: tableCells[4].textContent,
+    speciality: tableCells[5].textContent,
+    group: tableCells[7].textContent,
+    course: tableCells[10].textContent,
   };
 
   return profile;
@@ -77,7 +70,6 @@ export async function getSubjectsPage(session: Session) {
   )
     .then((res) => res.arrayBuffer())
     .then((res) => decoder.decode(res));
-
   const secondPageHtml = parse(secondPage);
 
   let keyStr =
@@ -184,6 +176,156 @@ export async function getSubjectsPage(session: Session) {
     return { name: el.textContent, link: link };
   });
 
-  // console.log(subjectsList)
   return subjectsList;
+}
+
+
+export async function getSchedulePage(session: Session) {
+
+  const user = await db.selectFrom("user")
+    .selectAll()
+    .where("user.id", "=", session.user_id)
+    .executeTakeFirstOrThrow()
+
+  const decoder = new TextDecoder("windows-1251");
+
+
+  const firstPage = await fetch("https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedule.php", {
+    headers: {
+      Cookie: `PHPSESSID=${session.isu_cookie}`,
+
+    }
+  })
+    .then((res) => res.arrayBuffer())
+    .then((res) => decoder.decode(res));
+
+
+  const firstPageHtml = parse(firstPage);
+
+  const firstKey = firstPageHtml?.querySelector("#TabLeftBorder")?.querySelector("a")?.getAttribute("href")?.split("'")[1]
+  const secondPage = await fetch("https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedule.php", {
+    method: "POST",
+    body: `mode=SubTable&key=${firstKey}&ref=&sort=&FieldChoice=&TabNo=1&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=100&RecsDeleted=&RecsCount=12&KeyStr=&TabStr=0&PgNoStr=&PgSzStr=&FilterStr=&FieldChoiceStr=&SortStr=&ModeStr=&FieldStr=&ChildStr=&ParamStr=`,
+    headers: {
+      Cookie: `PHPSESSID=${session.isu_cookie}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    }
+  })
+    .then((res) => res.arrayBuffer())
+    .then((res) => decoder.decode(res));
+
+
+
+  const secondPageHtml = parse(secondPage);
+
+
+  const secondPageTable = secondPageHtml?.querySelectorAll("#MainTab")[1];
+
+  if (!secondPageTable) {
+    // console.log(secondPageTable)
+    throw "no second schedule table"
+  }
+  const secondPageCells = secondPageTable?.querySelectorAll("#TabCell,#TabCell2,#TabLeftBorder");
+
+  const userFacultyCellIndex = secondPageCells?.findIndex((el) => el.textContent === user.faculty) 
+
+  const link = secondPageCells[userFacultyCellIndex - 1]?.querySelector("a")?.getAttribute("href")?.split("'")[1];
+  let paramStr = secondPageHtml.querySelector("input[name=ParamStr]")?.getAttribute("value");
+  let keyStr = secondPageHtml.querySelector("input[name=KeyStr]")?.getAttribute("value");
+
+  paramStr = paramStr?.replaceAll("&", "%26").replaceAll("КІ", "%CA%B2");
+  // TODO :
+  // це не буде працювати з іншими групами
+
+  let bodyStr = `mode=SubTable&key=${link}&ref=&sort=&FieldChoice=&TabNo=3&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=50&RecsDeleted=0&RecsCount=11&KeyStr=${keyStr}&TabStr=0%7C%7E%7C1&PgNoStr=1%7C%7E%7C&PgSzStr=100%7C%7E%7C&FilterStr=%7C%7E%7C&FieldChoiceStr=%7C%7E%7C&SortStr=%7C%7E%7C&ModeStr=%7C%7E%7CSubTable&FieldStr=&ChildStr=&ParamStr=${paramStr}`;
+  bodyStr = bodyStr.replaceAll("^", "%5E");
+  bodyStr = bodyStr.replaceAll("|", "%7C");
+  bodyStr = bodyStr.replaceAll("@", "%40");
+  bodyStr = bodyStr.replaceAll("~", "%7E"); 
+
+  const courseSelectionPage = await fetch("https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedule.php", {
+    method: "POST",
+    body: bodyStr,
+    headers: {
+      Cookie: `PHPSESSID=${session.isu_cookie}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    }
+  })
+    .then((res) => res.arrayBuffer())
+    .then((res) => decoder.decode(res));
+
+  const courseSelectionPageHtml = parse(courseSelectionPage);
+
+  const courseCells = courseSelectionPageHtml.querySelectorAll("#MainTab")[2].querySelectorAll("#TabCell,#TabCell2,#TabLeftBorder");
+
+
+  const courseCellIndex = courseCells.findIndex((el) => el.textContent === user.course);
+
+  const courseKey = courseCells[courseCellIndex - 1].querySelector("a")?.getAttribute("href")?.split("'")[1];
+  const courseParamStr = encodeParamString(courseSelectionPageHtml.querySelector("input[name=ParamStr]")?.getAttribute("value") || "");
+  const courseKeyStr = courseSelectionPageHtml.querySelector("input[name=KeyStr]")?.getAttribute("value");
+
+  // courseParamStr.
+
+  let courseBody = `mode=SubTable&key=${courseKey}&ref=&sort=&FieldChoice=&TabNo=4&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=200&RecsDeleted=0&RecsCount=7&KeyStr=${courseKeyStr}&TabStr=0%7C%7E%7C1%7C%7E%7C3&PgNoStr=1%7C%7E%7C1%7C%7E%7C&PgSzStr=100%7C%7E%7C50%7C%7E%7C&FilterStr=%7C%7E%7C%7C%7E%7C&FieldChoiceStr=%7C%7E%7C%7C%7E%7C&SortStr=%7C%7E%7C%7C%7E%7C&ModeStr=%7C%7E%7CSubTable%7C%7E%7CSubTable&FieldStr=&ChildStr=&ParamStr=${courseParamStr}`;
+
+  courseBody = courseBody.replaceAll("^", "%5E");
+  courseBody = courseBody.replaceAll("|", "%7C");
+  courseBody = courseBody.replaceAll("@", "%40");
+  courseBody = courseBody.replaceAll("~", "%7E"); 
+
+  const groupSelectionPage = await fetch("https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedule.php", {
+    method: "POST",
+    body: courseBody,
+    headers: {
+      Cookie: `PHPSESSID=${session.isu_cookie}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    }
+  })
+    .then((res) => res.arrayBuffer())
+    .then((res) => decoder.decode(res));
+
+  const groupSelectionPageHtml = parse(groupSelectionPage);
+
+  const groupSelectionTable = groupSelectionPageHtml.querySelectorAll("#MainTab")[3];
+  const groupSelectionCells = groupSelectionTable.querySelectorAll("#TabCell");
+
+
+
+  const groupArray = user.group.split("-");
+
+  if (groupArray.length === 3) {
+
+    // console.log(user.group.split("-"))
+  } 
+  let chkOp = ""
+  const userInfo = user.group.split("-")
+  groupSelectionCells.forEach((cell, i) => {
+    if (cell.textContent === userInfo[0] && groupSelectionCells[i + 1].textContent === `20${userInfo[1]}` && groupSelectionCells[i + 2].textContent === userInfo[2]) {
+      chkOp = groupSelectionCells[i - 1].querySelector("input")?.getAttribute("value") || ""
+      // console.log(groupSelectionCells[i - 1].querySelector("input")?.getAttribute("value"))
+    }
+  })
+
+  const scheduleKeyStr = groupSelectionPageHtml.querySelector("input[name=KeyStr]")?.getAttribute("value");
+  const scheduleParamStr = encodeParamString(groupSelectionPageHtml.querySelector("input[name=ParamStr]")?.getAttribute("value") || "");
+
+
+  const scheduleBody = `chkOp%5B%5D=${chkOp}&mode=RunOperation&key=&ref=0&sort=&FieldChoice=&TabNo=&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=200&RecsDeleted=0&RecsCount=36&KeyStr=${scheduleKeyStr}&TabStr=0%7C%7E%7C1%7C%7E%7C3%7C%7E%7C4&PgNoStr=1%7C%7E%7C1%7C%7E%7C1%7C%7E%7C&PgSzStr=100%7C%7E%7C50%7C%7E%7C200%7C%7E%7C&FilterStr=%7C%7E%7C%7C%7E%7C%7C%7E%7C&FieldChoiceStr=%7C%7E%7C%7C%7E%7C%7C%7E%7C&SortStr=%7C%7E%7C%7C%7E%7C%7C%7E%7C&ModeStr=%7C%7E%7CSubTable%7C%7E%7CSubTable%7C%7E%7CSubTable&FieldStr=&ChildStr=&ParamStr=${scheduleParamStr}&opWarning=&opGotoPage=groupsSchedulePage.php%3Ftype%3Dgroup&opWarning=&opGotoPage=groupsSchedulePage.php%3Ftype%3Dgroup%26showMode%3DforPrint`
+
+
+  const schedulePage = await fetch("https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedulePage.php?type=group", {
+    method: "POST",
+    body: scheduleBody,
+    headers: {
+      Cookie: `PHPSESSID=${session.isu_cookie}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    }
+  })
+    .then((res) => res.arrayBuffer())
+    .then((res) => decoder.decode(res));
+
+
+  return schedulePage;
+
 }

@@ -24,12 +24,23 @@ export default async function JournalRoute(req: NextApiRequest, res: NextApiResp
 		return res.send("<h1>я не знаю 2</h1>")
 	}
 
-	const { data } = await db.selectFrom("subjects_list")
+	const subjects = await db.selectFrom("subjects_list")
 		.select(["data"])
 		.where("user_id", "=", session.data?.user_id)
 		.executeTakeFirstOrThrow()
 
-	const { link: journal_link } = JSON.parse(data?.toString() || "")[query.index];
+	const data = subjects.data as any;
+
+	if(!data){
+		throw "no subjects list in db;";
+	}
+
+	if(!data[query.index]){
+		throw "no subjects list in db;";
+
+	}
+
+	const { link: journal_link } = data[query.index];
 
 	let journalPage = await fetch(`https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.php?key=${journal_link}`, {
 		headers: {

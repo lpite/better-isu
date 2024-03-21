@@ -332,6 +332,12 @@ export interface PgsodiumValidKey {
   status: PgsodiumKeyStatus | null;
 }
 
+export interface Schedule {
+  data: Json;
+  group: string;
+  id: Generated<number>;
+}
+
 export interface Session {
   created_at: Generated<Timestamp>;
   id: Generated<number>;
@@ -375,15 +381,22 @@ export interface StorageObjects {
 }
 
 export interface SubjectsList {
+  created_at: Generated<Timestamp>;
   data: Json;
   id: Generated<number>;
   user_id: number;
 }
 
 export interface User {
+  course: Generated<string>;
   credentials: Generated<string>;
+  faculty: Generated<string>;
+  group: Generated<string>;
   id: Generated<number>;
   login: string;
+  name: Generated<string>;
+  record_number: Generated<string>;
+  surname: Generated<string>;
 }
 
 export interface VaultDecryptedSecrets {
@@ -432,6 +445,7 @@ export interface DB {
   "pgsodium.mask_columns": PgsodiumMaskColumns;
   "pgsodium.masking_rule": PgsodiumMaskingRule;
   "pgsodium.valid_key": PgsodiumValidKey;
+  schedule: Schedule;
   session: Session;
   "storage.buckets": StorageBuckets;
   "storage.migrations": StorageMigrations;

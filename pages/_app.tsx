@@ -4,6 +4,7 @@ import '../styles/globals.css'
 import { trpc } from "../trpc/trpc-client"
 
 import type { AppProps } from 'next/app'
+import ServiceWorkerUpdater from '@/components/service-worker-updater'
  
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -18,6 +19,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="theme-color" content="#020817" />
 
       </Head>  
+      <ServiceWorkerUpdater />
       <Component {...pageProps} />
     </>)
 }

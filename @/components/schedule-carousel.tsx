@@ -9,7 +9,6 @@ import {
 import {
 	Sheet,
 	SheetContent,
-	SheetDescription,
 	SheetHeader,
 	SheetTitle,
 	SheetTrigger,
@@ -17,10 +16,11 @@ import {
 
 import { Checkbox } from "@/components/ui/checkbox"
 
-import React from "react";
+import React, { useEffect } from "react";
 import { RouterOutput } from "trpc/router";
 
 import { trpc } from "trpc/trpc-client";
+
 
 
 function generateSubjectsList(schedule?: RouterOutput["user"]["schedule"]) {
@@ -41,7 +41,24 @@ function generateSubjectsList(schedule?: RouterOutput["user"]["schedule"]) {
 
 }
 
+
+const currentWeekType = "up"
+
+const scheduleTimes: Record<string, string> = {
+	"1": "8:00 - 9:20",
+	"2": "9:35 - 10:55",
+	'3': "11:10 - 12:30",
+	'4': "13:00 - 14:20",
+	'5': "14:35 - 15:55",
+	'6': "16:10 - 17:30",
+	'7': "17:45 - 19:05",
+	'8': "19:20 - 20:40",
+} 
+
+
 export default function ScheduleCarousel() {
+
+	const [enabledSubjects, setEnabledSubjects] = React.useState<string[]>([])
 
 	const {
 		data: schedule,
@@ -49,11 +66,47 @@ export default function ScheduleCarousel() {
 	} = trpc.user.schedule.useQuery()
 
 	React.useEffect(() => {
-		if (schedule) {
+		const storedEnabledSubjects = (JSON.parse(localStorage.getItem("enabledSubjects") || "[]") || []) as string[]
+		setEnabledSubjects(storedEnabledSubjects)
 
-			generateSubjectsList(schedule)
-		}
 	}, [])
+
+	function toggleSubject(state: boolean | string, subjectName: string) {
+
+		if (state) {
+			if (enabledSubjects?.indexOf(subjectName) === -1) {
+				setEnabledSubjects((state) => [...state, subjectName])
+			}			
+		} else {
+			if (enabledSubjects?.indexOf(subjectName) !== -1) {
+				const indexOfSubject = enabledSubjects?.indexOf(subjectName);
+				setEnabledSubjects((state) => [...state.slice(0, indexOfSubject), ...state.slice(indexOfSubject + 1)])
+			}
+		}
+
+
+
+	}
+
+	useEffect(() => {
+		if (enabledSubjects.length) {
+
+			localStorage.setItem("enabledSubjects", JSON.stringify(enabledSubjects))
+		}
+
+	}, [enabledSubjects])
+
+
+	function isEnabled(subjName: string) {
+		if (enabledSubjects.findIndex((el) => subjName.includes(el)) !== -1) {
+			return true
+		}	
+
+		return false
+
+	}
+
+
 	return (
 		<div className="flex flex-col align-center justify-center grow w-full relative">
 			<h2 className='text-xl font-bold mb-2 mt-4'>Розклад</h2>
@@ -68,30 +121,61 @@ export default function ScheduleCarousel() {
 					<SheetHeader className="mb-4">
 						<SheetTitle>Предмети які показувати в розкладі</SheetTitle>
 					</SheetHeader>
-					{generateSubjectsList(schedule).map((el) => (
-						<label key={el} className="flex items-center gap-3 my-1 px-2 py-3 border rounded-lg">
-							<Checkbox />
-							<span>{el}</span>
+					{generateSubjectsList(schedule).map((subject) => (
+						<label key={subject} className="flex items-center gap-3 my-1 px-2 py-3 border rounded-lg">
+							<Checkbox checked={Boolean(enabledSubjects?.find(el => el === subject))} onCheckedChange={(state) => toggleSubject(state, subject)} />
+							<span>{subject}</span>
 						</label>
 					))}
 				</SheetContent>
 			</Sheet>
 
 
-			<Carousel className="mx-12">
-				<CarouselContent>
-					{["Пн", "Вт", "Ср", "Чт", "Пт"].map((day) => (
-						<CarouselItem className="flex flex-col" key={day}>
+			<Carousel className="relative">
+				<CarouselContent className="mt-8">
+					{["Пн", "Вт", "Ср", "Чт", "Пт"].map((day) => {
+
+						if (!enabledSubjects.length) {
+							return (
+								<CarouselItem className="flex flex-col" key={day}>
+									<span>{day}</span>
+									<div className="flex w-full h-36 items-center justify-center">
+										Потрібно обрати предмети які показувати в розкладі
+									</div>
+								</CarouselItem>
+							)
+						}
+
+
+						const scheduleForDay = schedule?.filter(el => el.day === day).filter((subj) => isEnabled(subj.name)).filter(({ type }) => (type === "full" || type === currentWeekType)) || []
+						console.log(schedule?.filter(el => el.day === day).filter((subj) => isEnabled(subj.name)))
+						if (!scheduleForDay.length) {
+							return (
+								<CarouselItem className="flex flex-col" key={day}>
+									<span>{day}</span>
+									<div className="flex w-full h-full items-center justify-center">
+										Вільний день :)
+									</div>
+								</CarouselItem>
+							)
+						}
+
+						return (<CarouselItem className="flex flex-col" key={day}>
 							<span>{day}</span>
-							{schedule?.filter(el => el.day === day).map((row, i) => (
-								<div key={day + i} className="rounded-lg box-border border py-3 px-2 my-1">{row.name}</div>
+							{scheduleForDay?.map((row, i) => (
+								<div key={day + i} className="rounded-lg box-border border pb-3 pt-1 px-2 my-1">
+									<span className="text-slate-500">#{row.number} {scheduleTimes[row.number]}</span>
+									<br />
+									{row.name}
+								</div>
 							))}
 						</CarouselItem>
 
-					))}
+						)
+					})}
 				</CarouselContent>
-				<CarouselPrevious />
-				<CarouselNext />		
+				<CarouselPrevious className="absolute top-3 left-0" />
+				<CarouselNext className="absolute top-3 left-10" />	
 			</Carousel>
 		</div>
 	);

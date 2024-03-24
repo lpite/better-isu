@@ -29,7 +29,6 @@ export const userRouter = router({
 
 		}
 
-		// console.log(JSON.parse(subjects.data.toString()))
 		return subjects?.data as { name: string, link: string }[]
 	}),
 	schedule: procedure.query(async ({ ctx }) => {
@@ -43,7 +42,7 @@ export const userRouter = router({
 			.where("group", "=", user.group)
 			.executeTakeFirstOrThrow();
 
-		return schedule.data as { name: string, day: string, number: string, type: "full" | "top" | "bottom" }[]
+		return schedule.data as { name: string, day: string, number: string, type: "full" | "up" | "bottom" }[]
 	})
 
 })

@@ -19,10 +19,11 @@ export const userRouter = router({
 			.select([sql<{ name: string, link: string }[] | string>`data`.as("data")])
 			.where("user_id", "=", ctx.session.user_id)
 			.executeTakeFirst()
-		if (!subjects) {
+		if (!subjects || !subjects?.data?.length) {
 			await refreshSubjectsList(ctx.session)
 			return [] as { name: string, link: string }[]
 		}
+
 		if (typeof subjects.data === "string") {
 			return JSON.parse(subjects.data.toString()) as { name: string, link: string }[]
 

@@ -102,6 +102,11 @@ async function refreshSession(session: Session) {
 
 export async function refreshSubjectsList(session: Session) {
 	const subjects = await getSubjectsPage(session);
+
+	if (!subjects.length) {
+		return
+	}
+
 	console.log("refreshing subjects")
 	const subjectsList = await db.updateTable("subjects_list")
 		.set({

@@ -79,7 +79,7 @@ export default function LoginPage() {
               <FormItem>
                 <FormLabel>Логін</FormLabel>
                 <FormControl>
-                  <Input placeholder="shadcn" type="text" {...field} />
+                        <Input placeholder="shadcn" type="text" {...field} className="text-base"/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -92,7 +92,7 @@ export default function LoginPage() {
               <FormItem>
                 <FormLabel>Пароль</FormLabel>
                 <FormControl>
-                  <Input placeholder="**********" type="password" {...field} />
+                  <Input placeholder="**********" type="password" {...field} className="text-base" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

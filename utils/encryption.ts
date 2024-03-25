@@ -1,4 +1,4 @@
-import crypto, { createCipheriv, createDecipheriv, scryptSync } from 'crypto';
+import crypto, { createCipheriv, createDecipheriv, scryptSync } from 'node:crypto';
 
 export function encryptText(text: string, password: string) {
   const key = scryptSync(password, 'salt', 32);

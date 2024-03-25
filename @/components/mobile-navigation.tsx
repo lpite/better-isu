@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 export default function MobileNavigation() {
 	const router = useRouter();
 	return (
-		<nav className="fixed bottom-0 left-0 w-full h-14 bg-slate-900 flex items-center justify-evenly">
+		<nav className="fixed bottom-0 left-0 w-full h-14 bg-slate-900 flex items-center justify-evenly pb-2">
 			<Link href="/" className={"flex" + router.pathname === "/" ? " text-slate-200" : ""}>
 				<svg 
 					xmlns="http://www.w3.org/2000/svg" 

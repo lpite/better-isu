@@ -250,7 +250,7 @@ export async function getSubjectsPage(session: Session) {
     )
       .then((res) => res.arrayBuffer())
       .then((res) => decoder.decode(res));
-    writeFileSync("./test.html", thirdPage);
+    
     const thirdPageHtml = parse(thirdPage);
     const subjects = Array.from(
       thirdPageHtml

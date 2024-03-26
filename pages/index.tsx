@@ -55,7 +55,7 @@ export default function Home() {
         }</> : null}
 
         {!isLoading && subjects && subjects?.map((el, i) => (
-          <a href={"/api/journal?index=" + i} target='_blank' className='flex w-full border rounded-lg py-5 px-3'>{el.name}</a>
+          <a href={"/api/journal?index=" + i} key={el.name + i} target='_blank' className='flex w-full border rounded-lg py-5 px-3'>{el.name}</a>
         ))}
 
         <ScheduleCarousel />

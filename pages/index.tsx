@@ -55,16 +55,10 @@ export default function Home() {
         }</> : null}
 
         {!isLoading && subjects && subjects?.map((el, i) => (
-          <Card className='w-full shrink-0 border_animation' key={i}>
-            <CardContent className="py-6"><a href={"/api/journal?index=" + i} target='_blank'>{el.name}</a></CardContent>
-          </Card>
+          <a href={"/api/journal?index=" + i} target='_blank' className='flex w-full border rounded-lg py-5 px-3'>{el.name}</a>
         ))}
-        <ScheduleCarousel/>
-        {/*{!isLoadingSchedule && schedule?.map((el) => (
-          <Card className='w-full shrink-0' style={{ height: 73 }} key={el.day + el.number + el.type + el.name}>
-            <CardContent className="p-6">{el.name}</CardContent>
-          </Card>
-        ))}*/}
+
+        <ScheduleCarousel />
       </div>
       <MobileNavigation />
     </main>

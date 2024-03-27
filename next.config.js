@@ -1,3 +1,6 @@
+const million = require("million/compiler");
+const { withSentryConfig } = require("@sentry/nextjs");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -12,11 +15,9 @@ const withPWA = require('next-pwa')({
 })
 
 module.exports = withPWA(nextConfig)
+module.exports = million.next(nextConfig, { auto: true })
 
 
-// Injected content via Sentry wizard below
-
-const { withSentryConfig } = require("@sentry/nextjs");
 
 module.exports = withSentryConfig(
   module.exports,

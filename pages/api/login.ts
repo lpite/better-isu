@@ -5,7 +5,12 @@ import { encryptText } from "../../utils/encryption";
 import getSession from "../../utils/getSession";
 import { getSubjectsPage } from "utils/getPage";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export type LoginResponse = {
+  error: string | null,
+  data: {} | null
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse<LoginResponse>) {
   try {
     const s = await getSession(req)
 

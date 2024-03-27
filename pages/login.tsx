@@ -16,6 +16,7 @@ import React from "react"
 import { useRouter } from "next/router"
 import { Input } from "@/components/ui/input"
 import useSession from "hooks/useSession"
+import { LoginResponse } from "./api/login"
 
 const formSchema = z.object({
   login: z.string().min(2).max(50),
@@ -48,7 +49,7 @@ export default function LoginPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
 
-    const res = await fetch("/api/login", {
+    const res: LoginResponse | undefined = await fetch("/api/login", {
       method: "POST",
       body: JSON.stringify(values),
       headers: {
@@ -59,11 +60,11 @@ export default function LoginPage() {
         setIsLoading(false)
       })
 
-    if (res.error) {
+    if (res?.error) {
       setError(res.error);
     }
 
-    if (res.data || res.error === "already") {
+    if (res?.data || res?.error === "already") {
       router.push("/")
     }
 
@@ -79,7 +80,7 @@ export default function LoginPage() {
               <FormItem>
                 <FormLabel>Логін</FormLabel>
                 <FormControl>
-                        <Input placeholder="shadcn" type="text" {...field} className="text-base"/>
+                  <Input placeholder="shadcn" type="text" {...field} className="text-base" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

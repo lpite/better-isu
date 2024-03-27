@@ -29,7 +29,6 @@ export default async function getSession(req: NextApiRequest): Promise<{
 		}
 	}
 
-	// refreshSchedule(session)
 
 	const now = new Date().getTime() - (new Date().getTimezoneOffset() * 60);
 	

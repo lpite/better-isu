@@ -6,6 +6,8 @@ import {
 	CarouselPrevious,
 } from "@/components/ui/carousel"
 
+import { type CarouselApi } from "@/components/ui/carousel"
+
 import {
 	Sheet,
 	SheetContent,
@@ -59,6 +61,7 @@ const scheduleTimes: Record<string, string> = {
 export default function ScheduleCarousel() {
 
 	const [enabledSubjects, setEnabledSubjects] = React.useState<string[]>([])
+	const [carouselApi, setCarouselApi] = React.useState<CarouselApi>();
 
 	const {
 		data: schedule,
@@ -67,9 +70,24 @@ export default function ScheduleCarousel() {
 
 	React.useEffect(() => {
 		const storedEnabledSubjects = (JSON.parse(localStorage.getItem("enabledSubjects") || "[]") || []) as string[]
-		setEnabledSubjects(storedEnabledSubjects)
+		setEnabledSubjects(storedEnabledSubjects);
 
+
+		
+	
 	}, [])
+
+	React.useEffect(() => {
+		if (!carouselApi) {
+			return
+		};
+		if (!carouselApi) {
+			return
+		};
+		const currentWeekDay = (new Date()).getDay() - 1;
+		
+		carouselApi.scrollTo(currentWeekDay);
+	}, [carouselApi])
 
 	function toggleSubject(state: boolean | string, subjectName: string) {
 
@@ -83,8 +101,6 @@ export default function ScheduleCarousel() {
 				setEnabledSubjects((state) => [...state.slice(0, indexOfSubject), ...state.slice(indexOfSubject + 1)])
 			}
 		}
-
-
 
 	}
 
@@ -131,7 +147,7 @@ export default function ScheduleCarousel() {
 			</Sheet>
 
 
-			<Carousel className="relative">
+			<Carousel className="relative" setApi={setCarouselApi}>
 				<CarouselContent className="mt-8">
 					{["Пн", "Вт", "Ср", "Чт", "Пт"].map((day) => {
 
@@ -148,7 +164,6 @@ export default function ScheduleCarousel() {
 
 
 						const scheduleForDay = schedule?.filter(el => el.day === day).filter((subj) => isEnabled(subj.name)).filter(({ type }) => (type === "full" || type === currentWeekType)) || []
-						console.log(schedule?.filter(el => el.day === day).filter((subj) => isEnabled(subj.name)))
 						if (!scheduleForDay.length) {
 							return (
 								<CarouselItem className="flex flex-col" key={day}>

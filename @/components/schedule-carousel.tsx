@@ -44,8 +44,6 @@ function generateSubjectsList(schedule?: RouterOutput["user"]["schedule"]) {
 }
 
 
-const currentWeekType = "up"
-
 const scheduleTimes: Record<string, string> = {
 	"1": "8:00 - 9:20",
 	"2": "9:35 - 10:55",
@@ -68,13 +66,13 @@ export default function ScheduleCarousel() {
 		isLoading: isLoadingSchedule,
 	} = trpc.user.schedule.useQuery()
 
+	const {
+		data: currentWeekType
+	} = trpc.general.typeOfWeek.useQuery()
+
 	React.useEffect(() => {
 		const storedEnabledSubjects = (JSON.parse(localStorage.getItem("enabledSubjects") || "[]") || []) as string[]
 		setEnabledSubjects(storedEnabledSubjects);
-
-
-		
-	
 	}, [])
 
 	React.useEffect(() => {
@@ -101,7 +99,6 @@ export default function ScheduleCarousel() {
 				setEnabledSubjects((state) => [...state.slice(0, indexOfSubject), ...state.slice(indexOfSubject + 1)])
 			}
 		}
-
 	}
 
 	useEffect(() => {
@@ -119,7 +116,6 @@ export default function ScheduleCarousel() {
 		}	
 
 		return false
-
 	}
 
 

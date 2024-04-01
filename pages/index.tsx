@@ -28,7 +28,6 @@ export default function Home() {
     isLoading: isLoadingSubjects,
   } = trpc.user.subjects.useQuery()
 
-
   React.useEffect(() => {
     if (!user && !isLoadingUser) {
       router.push("/login")

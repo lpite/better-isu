@@ -31,11 +31,11 @@ export default async function JournalRoute(req: NextApiRequest, res: NextApiResp
 
 	const data = subjects.data as any;
 
-	if(!data){
+	if (!data) {
 		throw "no subjects list in db;";
 	}
 
-	if(!data[query.index]){
+	if (!data[query.index]) {
 		throw "no subjects list in db;";
 
 	}
@@ -55,6 +55,7 @@ export default async function JournalRoute(req: NextApiRequest, res: NextApiResp
 		return res.redirect(`/api/journal/?index=${query.index}`)
 	}
 
+	journalPage = journalPage.slice(0, 105) + `<meta name="theme-color" content="#020817" />` + journalPage.slice(105)
 	res.send(journalPage
 		.replaceAll("../../js/extjs4/locale/ext-lang-ukr.js", "https://isu1.khmnu.edu.ua/isu/js/extjs4/locale/ext-lang-ukr.js")
 		.replaceAll("journals.js", "https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.js")
@@ -62,4 +63,5 @@ export default async function JournalRoute(req: NextApiRequest, res: NextApiResp
 		.replaceAll("../../js/extjs4/resources/css/ext-all.css", "https://isu1.khmnu.edu.ua/isu/js/extjs4/resources/css/ext-all.css")
 		.replaceAll("jrn/css/journals.css", "https://isu1.khmnu.edu.ua/isu/dbsupport/students/jrn/css/journals.css")
 	)
+
 }

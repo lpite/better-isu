@@ -43,25 +43,20 @@ export default function Home() {
     <main className='py-4 px-2'>
       <h1 className='text-2xl font-bold mb-10'>Привіт {user?.name}</h1>
 
+      <h2 className='text-xl text-slate-400'>Поточний семестр</h2>
+      <div className='flex flex-wrap gap-2 mb-14'>
+        {isLoading ? <>{
+          Array(5).fill("").map((_, i) => (
+            <Card className='w-full shrink-0 animate-pulse bg-slate-700' style={{ height: 73 }} key={i}>
+              <CardContent className="p-8"></CardContent>
+            </Card>
+          ))
+        }</> : null}
 
-      <div className='flex flex-wrap gap-2 mb-14 flex-col-reverse'>
-        <div>
-          <h2 className='text-xl text-slate-400'>Поточний семестр</h2>
-        
-          {isLoading ? <>{
-            Array(5).fill("").map((_, i) => (
-              <Card className='w-full shrink-0 animate-pulse bg-slate-700' style={{ height: 73 }} key={i}>
-                <CardContent className="p-8"></CardContent>
-              </Card>
-            ))
-          }</> : null}
+        {!isLoading && subjects && subjects?.map((el, i) => (
+          <a href={"/api/journal?index=" + i} key={el.name + i} target='_blank' className='flex w-full border rounded-lg py-5 px-3'>{el.name}</a>
+        ))}
 
-          {!isLoading && subjects && subjects?.map((el, i) => (
-            <a href={"/api/journal?index=" + i} key={el.name + i} target='_blank' className='flex w-full border rounded-lg py-5 px-3'>{el.name}</a>
-          ))}
-
-        </div>
-     
         <ScheduleCarousel />
       </div>
       <MobileNavigation />

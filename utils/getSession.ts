@@ -5,6 +5,7 @@ import { decryptText } from "./encryption";
 import { sql } from "kysely";
 import { getProfilePage, getSchedulePage, getSubjectsPage } from "./getPage";
 import { parseScheduleTable } from "./parseScheduleTable";
+import getScheduleByApi from "./getScheduleByApi";
 
 export default async function getSession(req: NextApiRequest): Promise<{
 	error?: "unauthorized" | "no session",
@@ -41,7 +42,8 @@ export default async function getSession(req: NextApiRequest): Promise<{
 			}
 		}
 		await refreshSubjectsList(newSession);
-		await refreshUserInfo(newSession)
+		await refreshUserInfo(newSession);
+		await refreshSchedule(newSession);
 		// await Promise.all([refreshSubjectsList(newSession), refreshUserInfo(newSession)])
 
 		return {
@@ -145,14 +147,15 @@ export async function refreshUserInfo(session: Session) {
 
 export async function refreshSchedule(session: Session) {
 	console.log("REFRESHING SCHEDULE LIST");
-	
+		
+
 	const user = await db.selectFrom("user")
 		.select("group")
 		.where("user.id", "=", session.user_id)
 		.executeTakeFirstOrThrow()
 
 	const schedule = await db.selectFrom("schedule")
-		.select("id")
+		.selectAll()
 		.where("group", "=", user.group)
 		.executeTakeFirst()
 
@@ -161,14 +164,28 @@ export async function refreshSchedule(session: Session) {
 		if (!user.group) {
 			throw "no user group"
 		}
+		const scheduleFromApi = await getScheduleByApi(session.user_id)
 
-		const schedulePage = await getSchedulePage(session);
-		const jsonSchedule = parseScheduleTable(schedulePage);
+		// const schedulePage = await getSchedulePage(session);
+		// const jsonSchedule = parseScheduleTable(schedulePage);
 		await db.insertInto("schedule")
 			.values({
 				group: user.group,
-				data: JSON.stringify(jsonSchedule)
+				data: JSON.stringify(scheduleFromApi)
 			})
+			.executeTakeFirstOrThrow()
+	}
+
+	if (!Object.keys(schedule?.data as any).length) {
+		// const schedulePage = await getSchedulePage(session);
+		// const jsonSchedule = parseScheduleTable(schedulePage);
+		const scheduleFromApi = await getScheduleByApi(session.user_id)
+	
+		await db.updateTable("schedule")
+			.set({
+				data: JSON.stringify(scheduleFromApi)
+			})
+			.where("group", "=", user.group)
 			.executeTakeFirstOrThrow()
 	}
 

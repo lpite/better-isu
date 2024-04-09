@@ -2,7 +2,6 @@ import { parse } from "node-html-parser";
 import { Session } from "types/session";
 import { db } from "./db";
 import encodeParamString from "./encodeParamString";
-import { writeFileSync } from "fs";
 
 export async function getProfilePage(session: Session) {
   const decoder = new TextDecoder("windows-1251");
@@ -219,10 +218,6 @@ export async function getSubjectsPage(session: Session) {
 
     paramStr = paramStr
       .replaceAll("&", "%26")
-    // .replaceAll("КІ", "%CA%B2")
-    // .replaceAll("Й", "%D6")
-    // .replaceAll("Ц", "%D3")
-    // .replaceAll("ДМ", "%C4%CC")
 
     for (let i = 0; i < paramStr.length; i++) {
       const character = paramStr[i];
@@ -341,6 +336,7 @@ export async function getSchedulePage(session: Session) {
   paramStr = paramStr?.replaceAll("&", "%26").replaceAll("КІ", "%CA%B2");
   // TODO :
   // це не буде працювати з іншими групами
+  // вже і не треба бо розклад береться по апішці
 
   let bodyStr = `mode=SubTable&key=${link}&ref=&sort=&FieldChoice=&TabNo=3&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=50&RecsDeleted=0&RecsCount=11&KeyStr=${keyStr}&TabStr=0%7C%7E%7C1&PgNoStr=1%7C%7E%7C&PgSzStr=100%7C%7E%7C&FilterStr=%7C%7E%7C&FieldChoiceStr=%7C%7E%7C&SortStr=%7C%7E%7C&ModeStr=%7C%7E%7CSubTable&FieldStr=&ChildStr=&ParamStr=${paramStr}`;
   bodyStr = bodyStr.replaceAll("^", "%5E");

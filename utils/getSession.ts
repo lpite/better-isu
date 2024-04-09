@@ -44,7 +44,6 @@ export default async function getSession(req: NextApiRequest): Promise<{
 		await refreshSubjectsList(newSession);
 		await refreshUserInfo(newSession);
 		await refreshSchedule(newSession);
-		// await Promise.all([refreshSubjectsList(newSession), refreshUserInfo(newSession)])
 
 		return {
 			data: newSession
@@ -166,8 +165,6 @@ export async function refreshSchedule(session: Session) {
 		}
 		const scheduleFromApi = await getScheduleByApi(session.user_id)
 
-		// const schedulePage = await getSchedulePage(session);
-		// const jsonSchedule = parseScheduleTable(schedulePage);
 		await db.insertInto("schedule")
 			.values({
 				group: user.group,
@@ -177,8 +174,6 @@ export async function refreshSchedule(session: Session) {
 	}
 
 	if (!Object.keys(schedule?.data as any).length) {
-		// const schedulePage = await getSchedulePage(session);
-		// const jsonSchedule = parseScheduleTable(schedulePage);
 		const scheduleFromApi = await getScheduleByApi(session.user_id)
 	
 		await db.updateTable("schedule")

@@ -110,7 +110,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     } else {
       await db.updateTable("subjects_list")
         .set({
-          "user_id": user.id,
           data: JSON.stringify(newSubjectsList)
         })
         .executeTakeFirst() 

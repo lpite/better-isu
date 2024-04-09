@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "../../utils/db";
 import { encryptText } from "../../utils/encryption";
 import getSession from "../../utils/getSession";
-import { getSubjectsPage } from "utils/getPage";
+import { getProfilePage, getSubjectsPage } from "utils/getPage";
 
 export type LoginResponse = {
   error: string | null,
@@ -63,6 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         })
         .returningAll()
         .executeTakeFirstOrThrow()
+
     }
 
     let session = await db.selectFrom("session")
@@ -81,6 +82,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         })
         .returningAll()
         .executeTakeFirstOrThrow() 
+
+      const {
+        name,
+        surname,
+        recordNumber,
+        group,
+        course,
+        faculty,
+      } = await getProfilePage(session);
+
+      await db.updateTable("user")
+        .set({
+          name,
+          surname,
+          record_number: recordNumber,
+          group: group,
+          course: course,
+          faculty: faculty
+        })
+        .returningAll()
+        .where("id", "=", session.user_id)
+        .executeTakeFirst()
+
     } else {
       session = await db.updateTable("session")
         .set({

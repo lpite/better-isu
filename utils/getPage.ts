@@ -251,7 +251,7 @@ export async function getSubjectsPage(session: Session) {
       thirdPageHtml
         ?.querySelectorAll("#MainTab")[2]
         ?.querySelectorAll("#TabCell, #TabCell2") || []
-    ).filter((el, i) => {
+    ).filter((_, i) => {
       if (i % 2 == 0) {
         return true;
       }
@@ -280,7 +280,9 @@ export async function getSubjectsPage(session: Session) {
   }
 }
 
-
+/**
+ * @deprecated для цього є функція getScheduleByApi
+ */
 export async function getSchedulePage(session: Session) {
 
   const user = await db.selectFrom("user")

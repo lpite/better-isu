@@ -1,6 +1,10 @@
+/**
+ * @deprecated не буде працювати з іншмим факультетами
+ */
 export default function encodeParamString(paramStr: string) {
+	// Не буде працювати з іншими факультетами
+	// потрібна тільки для запитів розкладу
 
-	console.log("4e59986b3ff059d05d6cced4df86a2b1%7C%40%7CSTUDYEAR%7C%26%7C2023%7C%7E%7CSEMESTER%7C%26%7C2%7C%7E%7CFACULTY%7C%26%7C%C3%CF%D4")
 	return paramStr
 		.replaceAll("КІ", "%CA%B2")
 		.replaceAll("&", "%26")

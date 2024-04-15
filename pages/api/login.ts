@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 import { db } from "../../utils/db";
 import { encryptText } from "../../utils/encryption";
-import getSession from "../../utils/getSession";
+import getSession, { refreshSchedule, refreshSubjectsList, refreshUserInfo } from "../../utils/getSession";
 import { getProfilePage, getSubjectsPage } from "utils/getPage";
 
 export type LoginResponse = {
@@ -83,28 +83,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         .returningAll()
         .executeTakeFirstOrThrow() 
 
-      const {
-        name,
-        surname,
-        recordNumber,
-        group,
-        course,
-        faculty,
-      } = await getProfilePage(session);
-
-      await db.updateTable("user")
-        .set({
-          name,
-          surname,
-          record_number: recordNumber,
-          group: group,
-          course: course,
-          faculty: faculty
-        })
-        .returningAll()
-        .where("id", "=", session.user_id)
-        .executeTakeFirst()
-
     } else {
       session = await db.updateTable("session")
         .set({
@@ -115,29 +93,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         .executeTakeFirstOrThrow()
     }
 
-    const newSubjectsList = await getSubjectsPage(session)
-
-    const subjectsList = await db.selectFrom("subjects_list")
-      .select((eb) => eb.fn.count<string>("id").as("count"))
-      .where("user_id", "=", session.user_id)
-      .executeTakeFirstOrThrow()
-
-    const isExistsSubjectList = subjectsList.count === "1";
-
-    if (!isExistsSubjectList) {
-      await db.insertInto("subjects_list")
-        .values({
-          "user_id": user.id,
-          data: JSON.stringify(newSubjectsList)
-        })
-        .executeTakeFirst()
-    } else {
-      await db.updateTable("subjects_list")
-        .set({
-          data: JSON.stringify(newSubjectsList)
-        })
-        .executeTakeFirst() 
-    }
+    refreshUserInfo(session);
+    refreshSubjectsList(session);
+    refreshSchedule(session);
  
   
     res.setHeader("Set-Cookie", `session=${session.session_id};Max-Age=2592000000`);

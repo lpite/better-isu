@@ -100,7 +100,7 @@ async function getUserInfo(user: { group: string, faculty: string, course: strin
 
 	const facultyId = facultets.find(el => el.facultyName === user.faculty)?.facultyId;
 
-	if (!facultyId) {
+	if (typeof facultyId === "undefined") {
 		throw "can't find facultyId";
 	}
 

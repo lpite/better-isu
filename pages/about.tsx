@@ -28,7 +28,7 @@ export default function AboutPage() {
 			</div>
 			<div className="border-2 w-full py-6 px-4 rounded-xl flex flex-col mb-3 wiggle_bg">
 				<Link href="https://github.com/lpite/better-isu">
-					<a className="text-xl">GitHub репозиторій</a>
+					<a className="text-xl" target="_blank">GitHub репозиторій</a>
 				</Link>
 			</div>
 			<MobileNavigation />

@@ -60,7 +60,6 @@ export default async function getSession(req: NextApiRequest): Promise<{
 async function refreshSession(session: Session) {
 	try {
 		console.log("refreshing session")
-
 		const user = await db.selectFrom("user")
 			.selectAll()
 			.where("id", "=", session.user_id)
@@ -146,7 +145,7 @@ export async function refreshSubjectsList(session: Session) {
 
 
 export async function refreshUserInfo(session: Session) {
-	const { name, surname, faculty, group, recordNumber, course } = await getProfilePage(session);
+	const { name, surname, faculty, group, recordNumber, course, birthDate } = await getProfilePage(session);
 
 	await db.updateTable("user")
 		.set({
@@ -155,7 +154,8 @@ export async function refreshUserInfo(session: Session) {
 			faculty,
 			group,
 			record_number: recordNumber,
-			course
+			course,
+			birth_date: birthDate
 		})
 		.where("user.id", "=", session.user_id)
 		.execute()

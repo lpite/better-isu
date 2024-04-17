@@ -44,6 +44,7 @@ export interface AuthAuditLogEntries {
 
 export interface AuthFlowState {
   auth_code: string;
+  auth_code_issued_at: Timestamp | null;
   authentication_method: string;
   code_challenge: string;
   code_challenge_method: AuthCodeChallengeMethod;
@@ -122,6 +123,7 @@ export interface AuthSamlProviders {
   id: string;
   metadata_url: string | null;
   metadata_xml: string;
+  name_id_format: string | null;
   sso_provider_id: string;
   updated_at: Timestamp | null;
 }
@@ -130,7 +132,6 @@ export interface AuthSamlRelayStates {
   created_at: Timestamp | null;
   flow_state_id: string | null;
   for_email: string | null;
-  from_ip_address: string | null;
   id: string;
   redirect_to: string | null;
   request_id: string;
@@ -190,6 +191,7 @@ export interface AuthUsers {
   id: string;
   instance_id: string | null;
   invited_at: Timestamp | null;
+  is_anonymous: Generated<boolean>;
   is_sso_user: Generated<boolean>;
   is_super_admin: boolean | null;
   last_sign_in_at: Timestamp | null;
@@ -332,6 +334,45 @@ export interface PgsodiumValidKey {
   status: PgsodiumKeyStatus | null;
 }
 
+export interface RealtimeBroadcasts {
+  channel_id: Int8;
+  check: Generated<boolean>;
+  id: Generated<Int8>;
+  inserted_at: Timestamp;
+  updated_at: Timestamp;
+}
+
+export interface RealtimeChannels {
+  check: Generated<boolean | null>;
+  id: Generated<Int8>;
+  inserted_at: Timestamp;
+  name: string;
+  updated_at: Timestamp;
+}
+
+export interface RealtimePresences {
+  channel_id: Int8;
+  check: Generated<boolean>;
+  id: Generated<Int8>;
+  inserted_at: Timestamp;
+  updated_at: Timestamp;
+}
+
+export interface RealtimeSchemaMigrations {
+  inserted_at: Timestamp | null;
+  version: Int8;
+}
+
+export interface RealtimeSubscription {
+  claims: Json;
+  claims_role: Generated<string>;
+  created_at: Generated<Timestamp>;
+  entity: string;
+  filters: Generated<string[]>;
+  id: Generated<Int8>;
+  subscription_id: string;
+}
+
 export interface Schedule {
   data: Json;
   group: string;
@@ -380,6 +421,30 @@ export interface StorageObjects {
   version: string | null;
 }
 
+export interface StorageS3MultipartUploads {
+  bucket_id: string;
+  created_at: Generated<Timestamp>;
+  id: string;
+  in_progress_size: Generated<Int8>;
+  key: string;
+  owner_id: string | null;
+  upload_signature: string;
+  version: string;
+}
+
+export interface StorageS3MultipartUploadsParts {
+  bucket_id: string;
+  created_at: Generated<Timestamp>;
+  etag: string;
+  id: Generated<string>;
+  key: string;
+  owner_id: string | null;
+  part_number: number;
+  size: Generated<Int8>;
+  upload_id: string;
+  version: string;
+}
+
 export interface SubjectsList {
   created_at: Generated<Timestamp>;
   data: Json;
@@ -388,6 +453,7 @@ export interface SubjectsList {
 }
 
 export interface User {
+  birth_date: Generated<string>;
   course: Generated<string>;
   credentials: Generated<string>;
   faculty: Generated<string>;
@@ -445,11 +511,18 @@ export interface DB {
   "pgsodium.mask_columns": PgsodiumMaskColumns;
   "pgsodium.masking_rule": PgsodiumMaskingRule;
   "pgsodium.valid_key": PgsodiumValidKey;
+  "realtime.broadcasts": RealtimeBroadcasts;
+  "realtime.channels": RealtimeChannels;
+  "realtime.presences": RealtimePresences;
+  "realtime.schema_migrations": RealtimeSchemaMigrations;
+  "realtime.subscription": RealtimeSubscription;
   schedule: Schedule;
   session: Session;
   "storage.buckets": StorageBuckets;
   "storage.migrations": StorageMigrations;
   "storage.objects": StorageObjects;
+  "storage.s3_multipart_uploads": StorageS3MultipartUploads;
+  "storage.s3_multipart_uploads_parts": StorageS3MultipartUploadsParts;
   subjects_list: SubjectsList;
   user: User;
   "vault.decrypted_secrets": VaultDecryptedSecrets;

@@ -2,6 +2,7 @@ import { parse } from "node-html-parser";
 import { Session } from "types/session";
 import { db } from "./db";
 import encodeParamString from "./encodeParamString";
+import fetchAndDecode from "./fetchAndDecode";
 
 export async function getProfilePage(session: Session) {
   const decoder = new TextDecoder("windows-1251");
@@ -22,6 +23,14 @@ export async function getProfilePage(session: Session) {
 
   const tableCells = parse(eduplansPage).querySelectorAll("#TabCell");
   
+  const { html: profileHtml } = await fetchAndDecode("https://isu1.khmnu.edu.ua/isu/dbsupport/students/personnel.php", {
+    headers: {
+      Cookie: `PHPSESSID=${session.isu_cookie}`,
+    },
+  })  
+
+  const profileCells = profileHtml?.querySelector("#MainTab")?.querySelectorAll("#TabCell") || []
+
   const profile = {
     name: tableCells[2].textContent,
     surname: tableCells[1].textContent,
@@ -31,6 +40,7 @@ export async function getProfilePage(session: Session) {
     speciality: tableCells[5].textContent,
     group: tableCells[7].textContent,
     course: tableCells[10].textContent,
+    birthDate: profileCells[profileCells?.length - 1].textContent
   };
 
   return profile;
@@ -108,7 +118,8 @@ export async function getSubjectsPage(session: Session) {
 
     const currentSemester =
       secondPageHtml?.querySelector("[color=blue]")?.textContent;
-    let tabNo = 0;
+
+    let tabNo = 6;
     let elementInRow = 0;
     let currentRow: Record<string, string> = {};
 
@@ -120,12 +131,11 @@ export async function getSubjectsPage(session: Session) {
         if (currentSemester === "2") {
           currentYearString = `${date.getFullYear() - 1}-${date.getFullYear()}`;
         }
-
         if (
           currentSemester === currentRow.semseter &&
           currentYearString === currentRow.years
         ) {
-          tabNo = (i + 1) / 5 + 1;
+          // tabNo = (i + 1) / 5 + 1;
           tableKey = currentRow.journalLink;
         }
 
@@ -146,7 +156,6 @@ export async function getSubjectsPage(session: Session) {
       if (isYears) {
         currentRow.years = el.textContent.trim() || currentRow.years;
       }
-
       elementInRow++;
     });
     const letters = [
@@ -180,7 +189,8 @@ export async function getSubjectsPage(session: Session) {
       "Т",
       "Ь",
       "Б",
-      "Ю"
+      "Ю",
+      "м"
     ]
     const encodedLetters = [
       "%C9",
@@ -213,20 +223,20 @@ export async function getSubjectsPage(session: Session) {
       "%D2",
       "%DC",
       "%C1",
-      "%DE"
+      "%DE",
+      "%EC"
     ]
 
     paramStr = paramStr
       .replaceAll("&", "%26")
 
     for (let i = 0; i < paramStr.length; i++) {
-      const character = paramStr[i];
+      const character = paramStr[i]
       const indexInArray = letters.indexOf(character)
       if (indexInArray !== -1) {
         paramStr = paramStr.replaceAll(character, encodedLetters[indexInArray])
       }
     }
-
     let thirdPageBody = `mode=SubTable&key=${tableKey}&ref=&sort=&FieldChoice=&TabNo=${tabNo}&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=20&RecsDeleted=0&RecsCount=4&KeyStr=${keyStr}&TabStr=0%7C%7E%7C2&PgNoStr=1%7C%7E%7C&PgSzStr=200%7C%7E%7C&FilterStr=%7C%7E%7C&FieldChoiceStr=%7C%7E%7C&SortStr=%7C%7E%7C&ModeStr=%7C%7E%7CSubTable&FieldStr=&ChildStr=&ParamStr=${paramStr}`;
     thirdPageBody = thirdPageBody.replaceAll("^", "%5E");
     thirdPageBody = thirdPageBody.replaceAll("|", "%7C");
@@ -246,6 +256,7 @@ export async function getSubjectsPage(session: Session) {
       .then((res) => res.arrayBuffer())
       .then((res) => decoder.decode(res));
     
+
     const thirdPageHtml = parse(thirdPage);
     const subjects = Array.from(
       thirdPageHtml

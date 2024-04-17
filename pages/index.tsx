@@ -10,6 +10,20 @@ import React from 'react'
 
 import { trpc } from 'trpc/trpc-client'
 
+function checkIfBirthDay(birthDate?: string) {
+
+  if(!birthDate){
+    return false
+  }
+
+  const now = new Date();
+  const [day, month] = birthDate.split(".");
+  if (now.getMonth() + 1 === Number(month) && now.getDate() === Number(day)) {
+    return true
+  }
+  return false
+}
+
 export default function Home() {
   const router = useRouter()
   const {
@@ -41,7 +55,7 @@ export default function Home() {
 
   return (
     <main className='py-4 px-2'>
-      <h1 className='text-2xl font-bold mb-10'>Привіт {user?.name}</h1>
+      <h1 className='text-2xl font-bold mb-10'>{checkIfBirthDay(user?.birthDate) ? "З днем народження!" : "Привіт"} {user?.name}</h1>
 
       <h2 className='text-xl text-slate-400'>Поточний семестр</h2>
       <div className='flex flex-wrap gap-2 mb-14'>

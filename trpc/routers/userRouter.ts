@@ -8,7 +8,8 @@ export const userRouter = router({
 		const userProfile = await db.selectFrom("user")
 			.select([
 				"name",
-				"record_number as recordNumber"
+				"record_number as recordNumber",
+				"birth_date as birthDate"
 			])
 			.where("user.id", "=", ctx.session.user_id)
 			.executeTakeFirstOrThrow()

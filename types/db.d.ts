@@ -336,14 +336,12 @@ export interface PgsodiumValidKey {
 
 export interface RealtimeBroadcasts {
   channel_id: Int8;
-  check: Generated<boolean>;
   id: Generated<Int8>;
   inserted_at: Timestamp;
   updated_at: Timestamp;
 }
 
 export interface RealtimeChannels {
-  check: Generated<boolean | null>;
   id: Generated<Int8>;
   inserted_at: Timestamp;
   name: string;
@@ -352,7 +350,6 @@ export interface RealtimeChannels {
 
 export interface RealtimePresences {
   channel_id: Int8;
-  check: Generated<boolean>;
   id: Generated<Int8>;
   inserted_at: Timestamp;
   updated_at: Timestamp;
@@ -457,7 +454,9 @@ export interface User {
   course: Generated<string>;
   credentials: Generated<string>;
   faculty: Generated<string>;
+  faculty_id: Generated<number>;
   group: Generated<string>;
+  group_id: Generated<number>;
   id: Generated<number>;
   login: string;
   name: Generated<string>;

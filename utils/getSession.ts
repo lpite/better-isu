@@ -5,6 +5,8 @@ import { decryptText } from "./encryption";
 import { sql } from "kysely";
 import { getProfilePage, getSubjectsPage } from "./getPage";
 import getScheduleByApi from "./getScheduleByApi";
+import getFacultets from "./getFacultets";
+import getGroups from "./getGroups";
 
 export default async function getSession(req: NextApiRequest): Promise<{
 	error?: "unauthorized" | "no session",
@@ -146,6 +148,14 @@ export async function refreshSubjectsList(session: Session) {
 
 export async function refreshUserInfo(session: Session) {
 	const { name, surname, faculty, group, recordNumber, course, birthDate } = await getProfilePage(session);
+	const facultets = await getFacultets();
+
+	const facultyId = facultets.find(el => el.facultyName === faculty)?.facultyId || 0;
+
+	const groups = await getGroups(facultyId, course);
+
+	const groupId = groups.find(el => el.groupName === group)?.groupId || 0;
+
 
 	await db.updateTable("user")
 		.set({
@@ -155,7 +165,9 @@ export async function refreshUserInfo(session: Session) {
 			group,
 			record_number: recordNumber,
 			course,
-			birth_date: birthDate
+			birth_date: birthDate,
+			group_id: groupId,
+			faculty_id: facultyId
 		})
 		.where("user.id", "=", session.user_id)
 		.execute()

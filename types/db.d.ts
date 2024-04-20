@@ -384,6 +384,11 @@ export interface Session {
   user_id: number;
 }
 
+export interface SessionUpdateState {
+  id: Generated<number>;
+  session: string;
+}
+
 export interface StorageBuckets {
   allowed_mime_types: string[] | null;
   avif_autodetection: Generated<boolean | null>;
@@ -517,6 +522,7 @@ export interface DB {
   "realtime.subscription": RealtimeSubscription;
   schedule: Schedule;
   session: Session;
+  session_update_state: SessionUpdateState;
   "storage.buckets": StorageBuckets;
   "storage.migrations": StorageMigrations;
   "storage.objects": StorageObjects;

@@ -8,10 +8,12 @@ import getScheduleByApi from "./getScheduleByApi";
 import getFacultets from "./getFacultets";
 import getGroups from "./getGroups";
 
+
 export default async function getSession(req: NextApiRequest): Promise<{
 	error?: "unauthorized" | "no session",
 	data: Session | null
 }> {
+
 	const sessionCookie = req.cookies?.session;
 	if (!sessionCookie) {
 		return {
@@ -22,8 +24,9 @@ export default async function getSession(req: NextApiRequest): Promise<{
 	const session = await db.selectFrom("session")
 		.selectAll()
 		.where("session_id", "=", sessionCookie)
-		.executeTakeFirst()
-
+		.executeTakeFirst();
+	
+	
 	if (!session) {
 		return {
 			error: "no session",
@@ -34,22 +37,39 @@ export default async function getSession(req: NextApiRequest): Promise<{
 
 
 	const now = new Date().getTime() - (new Date().getTimezoneOffset() * 60);
-	
-	if (now - session.created_at.getTime() > 55 * 60 * 1000) {
-		const newSession = await refreshSession(session);
-		if (!newSession) {
+	if ((now - session.created_at.getTime() > 55 * 60 * 1000)) {
+		const { numInsertedOrUpdatedRows: isNotUpdating } = await db.insertInto("session_update_state")
+			.values({
+				session: sessionCookie
+			})
+
+			.executeTakeFirst().catch(() => {
+				return {
+					insertId: undefined,
+					numInsertedOrUpdatedRows: 0
+				}
+			})
+			
+		if (isNotUpdating) {
+			const newSession = await refreshSession(session);
+			if (!newSession) {
+				return {
+					error: "unauthorized",
+					data: null
+				}
+			}
+			await refreshSubjectsList(newSession);
+			await refreshUserInfo(newSession);
+			await refreshSchedule(newSession);
+			await db.deleteFrom("session_update_state")
+				.where("session", "=", sessionCookie)
+				.execute()
+
 			return {
-				error: "unauthorized",
-				data: null
+				data: newSession
 			}
 		}
-		await refreshSubjectsList(newSession);
-		await refreshUserInfo(newSession);
-		await refreshSchedule(newSession);
 
-		return {
-			data: newSession
-		}
 		
 	}
 	return {

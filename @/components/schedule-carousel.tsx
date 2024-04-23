@@ -159,7 +159,27 @@ export default function ScheduleCarousel() {
 						}
 
 
-						const scheduleForDay = schedule?.filter(el => el.day === day).filter((subj) => isEnabled(subj.name)).filter(({ type }) => (type === "full" || type === currentWeekType)) || []
+						const scheduleForDay = schedule?.filter(el => el.day === day)
+							.filter((subj) => isEnabled(subj.name))
+							.filter(({ type }) => (type === "full" || type === currentWeekType)) 
+							.filter(({ dateFrom, dateTo }) => {
+								const currentMonth = (new Date()).getMonth() + 1;
+								const currentDay = (new Date()).getDate();
+
+								const [fromDay, fromMonth] = dateFrom.split(".");
+								const [toDay, toMonth] = dateTo.split(".");
+
+								if (Number(fromMonth) <= currentMonth && Number(fromDay) <= currentDay) {
+									return true;
+								}
+
+								if (Number(toMonth) >= currentMonth && Number(toDay) >= currentDay) {
+									return true;
+								}
+
+								return false;
+							})
+							|| []
 						if (!scheduleForDay.length) {
 							return (
 								<CarouselItem className="flex flex-col" key={day}>

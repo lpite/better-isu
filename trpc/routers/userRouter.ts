@@ -43,7 +43,7 @@ export const userRouter = router({
 			.where("group", "=", user.group)
 			.executeTakeFirstOrThrow();
 
-		return schedule.data as { name: string, day: string, number: string, type: "full" | "up" | "bottom" }[]
+		return schedule.data as { name: string, day: string, number: string, type: "full" | "up" | "bottom", dateFrom: string, dateTo: string }[]
 	})
 
 })

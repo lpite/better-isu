@@ -15,3 +15,12 @@ export default async function getGroups(facultyId: number, course: string) {
 
 	return groups
 }
+
+
+export async function getGroup(groupId: number, facultyId: number, course: string) {
+	const groups = await getGroups(facultyId, course);
+
+	const group = groups.find((gr) => gr.groupId === groupId);
+
+	return group;
+}

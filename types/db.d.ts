@@ -385,6 +385,7 @@ export interface Session {
 }
 
 export interface SessionUpdateState {
+  created_at: Generated<Timestamp>;
   id: Generated<number>;
   session: string;
 }

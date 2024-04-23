@@ -26,7 +26,7 @@ export default async function getSession(req: NextApiRequest): Promise<{
 		.where("session_id", "=", sessionCookie)
 		.executeTakeFirst();
 	
-	
+
 	if (!session) {
 		return {
 			error: "no session",
@@ -34,7 +34,13 @@ export default async function getSession(req: NextApiRequest): Promise<{
 		}
 	}
 
-
+	await db.deleteFrom("session_update_state")
+		.where((eb) => eb.and([
+			eb("session", "=", session?.session_id),
+			eb("created_at", "<", sql<any>`now() - INTERVAL '5 minutes'`)	
+		]))
+		.execute()
+	
 
 	const now = new Date().getTime() - (new Date().getTimezoneOffset() * 60);
 	if ((now - session.created_at.getTime() > 55 * 60 * 1000)) {
@@ -76,8 +82,6 @@ export default async function getSession(req: NextApiRequest): Promise<{
 		data: session
 	}
 }
-
-
 
 async function refreshSession(session: Session) {
 	try {

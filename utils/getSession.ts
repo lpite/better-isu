@@ -37,7 +37,7 @@ export default async function getSession(req: NextApiRequest): Promise<{
 	await db.deleteFrom("session_update_state")
 		.where((eb) => eb.and([
 			eb("session", "=", session?.session_id),
-			eb("created_at", "<", sql<any>`now() - INTERVAL '5 minutes'`)	
+			eb("created_at", "<", sql<any>`now() - INTERVAL '1 minutes'`)	
 		]))
 		.execute()
 	

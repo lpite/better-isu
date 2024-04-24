@@ -72,7 +72,7 @@ export default async function getScheduleByApi(user_id: number) {
 	return schedule.map((el) => {
 		return {
 			day: el.dayName,
-			number: el.dayOfWeek,
+			number: el.pairNum,
 			type: pairTypes[el.weekId],
 			name: `${studyTypes[el.studyTypeId]} ${el.subjectName} ${el.audName} ${el.teacherShortName}`,
 			dateFrom: el.dateFrom,

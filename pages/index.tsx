@@ -12,7 +12,7 @@ import { trpc } from 'trpc/trpc-client'
 
 function checkIfBirthDay(birthDate?: string) {
 
-  if(!birthDate){
+  if (!birthDate) {
     return false
   }
 

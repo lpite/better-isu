@@ -93,9 +93,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         .executeTakeFirstOrThrow()
     }
 
-    refreshUserInfo(session);
-    refreshSubjectsList(session);
-    refreshSchedule(session);
+    await refreshUserInfo(session);
+    await refreshSubjectsList(session);
+    await refreshSchedule(session);
  
   
     res.setHeader("Set-Cookie", `session=${session.session_id};Max-Age=2592000000`);

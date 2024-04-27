@@ -21,8 +21,8 @@ export const userRouter = router({
 			.where("user_id", "=", ctx.session.user_id)
 			.executeTakeFirst()
 		if (!subjects || !subjects?.data?.length) {
-			await refreshSubjectsList(ctx.session)
-			return [] as { name: string, link: string }[]
+			const subjects = await refreshSubjectsList(ctx.session)
+			return subjects;
 		}
 
 		if (typeof subjects.data === "string") {

@@ -170,6 +170,8 @@ export async function refreshSubjectsList(session: Session) {
 			.executeTakeFirstOrThrow()
 
 	}
+	return subjects
+
 }
 
 

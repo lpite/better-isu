@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "../../utils/db";
 import { encryptText } from "../../utils/encryption";
 import getSession, { refreshSchedule, refreshSubjectsList, refreshUserInfo } from "../../utils/getSession";
-import { getProfilePage, getSubjectsPage } from "utils/getPage";
+import fetchAndDecode from "utils/fetchAndDecode";
 
 export type LoginResponse = {
   error: string | null,
@@ -26,6 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     formData.append("passwd", req.body.password)
     formData.append("btnSubmit", "%D3%E2%B3%E9%F2%E8")
 
+    const decoder = new TextDecoder('windows-1251');
     const response = await fetch("https://isu1.khmnu.edu.ua/isu/dbsupport/logon.php", {
       method: "POST",
       body: formData,
@@ -33,11 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       credentials: "include",
       redirect: "manual"
     })
-
-    const page = await response.arrayBuffer()
-
-    const decoder = new TextDecoder('windows-1251');
-    const text = decoder.decode(page);
+    const text = await response.arrayBuffer().then(res => decoder.decode(res))
 
     if (text.includes("Аутентифікація не пройшла")) {
       return res.send({
@@ -53,7 +50,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       })
     }
 
-    let user = await db.selectFrom("user").selectAll().where("login", "=", req.body.login).executeTakeFirst();
+    let user = await db.selectFrom("user")
+      .select("id")
+      .where("login", "=", req.body.login)
+      .executeTakeFirst();
 
     if (!user) {
       user = await db.insertInto("user")
@@ -61,7 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           login: req.body.login.trim(),
           credentials: encryptText(JSON.stringify(req.body), process.env.ENCRYPTION_KEY || "")
         })
-        .returningAll()
+        .returning("id")
         .executeTakeFirstOrThrow()
 
     }
@@ -94,7 +94,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
 
     await refreshUserInfo(session);
-    await Promise.all([refreshSubjectsList(session), refreshSchedule(session)])
+    // await refreshSubjectsList(session)
+    await refreshSchedule(session)
     
     res.setHeader("Set-Cookie", `session=${session.session_id};Max-Age=2592000000;HttpOnly`);
     res.send({

@@ -64,12 +64,15 @@ export default async function getSession(req: NextApiRequest): Promise<{
 					data: null
 				}
 			}
-			await refreshSubjectsList(newSession);
-			await refreshUserInfo(newSession);
-			await refreshSchedule(newSession);
-			await db.deleteFrom("session_update_state")
-				.where("session", "=", sessionCookie)
-				.execute()
+			
+			await Promise.all([
+				refreshUserInfo(newSession),
+				refreshSubjectsList(newSession),
+				refreshSchedule(newSession),
+				db.deleteFrom("session_update_state")
+					.where("session", "=", sessionCookie)
+					.execute()
+			])
 
 			return {
 				data: newSession

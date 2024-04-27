@@ -94,10 +94,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
 
     await refreshUserInfo(session);
-    await refreshSubjectsList(session);
-    await refreshSchedule(session);
- 
-  
+    await Promise.all([refreshSubjectsList(session), refreshSchedule(session)])
+    
     res.setHeader("Set-Cookie", `session=${session.session_id};Max-Age=2592000000;HttpOnly`);
     res.send({
       data: {},

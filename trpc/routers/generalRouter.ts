@@ -2,7 +2,10 @@ import parse from "node-html-parser";
 import { procedure, router } from "trpc/trpc";
 
 export const generalRouter = router({
-	typeOfWeek: procedure.query(async () => {
+	typeOfWeek: procedure.query(async ({ ctx: { res } }) => {
+		
+		res.setHeader("Cache-Control","max-age=14400")
+
 		const decoder = new TextDecoder("windows-1251");
 		
 		const page = await fetch("https://isu1.khmnu.edu.ua/isu/")

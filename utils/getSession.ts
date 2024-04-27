@@ -64,7 +64,7 @@ export default async function getSession(req: NextApiRequest): Promise<{
 					data: null
 				}
 			}
-			
+
 			await Promise.all([
 				refreshUserInfo(newSession),
 				refreshSubjectsList(newSession),

@@ -22,7 +22,7 @@ export default function ProfilePage() {
 		<main className="flex items-center flex-col justify-center h-full">
 			<span className="text-3xl">{user?.name}</span>
 			<span>Номер заліковки {user?.recordNumber}</span>
-
+			<a href="/api/logout" className="border-2 rounded-xl py-2 px-8 my-6 dark:bg-red-600 bg-red-400">Вийти</a>
 			<MobileNavigation />
 		</main>
 	)

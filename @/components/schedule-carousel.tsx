@@ -56,7 +56,12 @@ const scheduleTimes: Record<string, string> = {
 } 
 
 
-export default function ScheduleCarousel() {
+type ScheduleCarouselProps = {
+
+	subjects: RouterOutput["user"]["subjects"][]
+}
+
+export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProps) {
 
 	const [enabledSubjects, setEnabledSubjects] = React.useState<string[]>([])
 	const [carouselApi, setCarouselApi] = React.useState<CarouselApi>();
@@ -72,8 +77,16 @@ export default function ScheduleCarousel() {
 
 	React.useEffect(() => {
 		const storedEnabledSubjects = (JSON.parse(localStorage.getItem("enabledSubjects") || "[]") || []) as string[]
-		setEnabledSubjects(storedEnabledSubjects);
-	}, [])
+		if (!storedEnabledSubjects.length) {
+			const subjectNames = subjects.map((el) => el.name);
+			localStorage.setItem("enabledSubjects", JSON.stringify(subjectNames))
+			setEnabledSubjects(subjectNames)
+		} else {
+
+			setEnabledSubjects(storedEnabledSubjects);
+		}
+	}, [subjects])
+
 
 	React.useEffect(() => {
 		if (!carouselApi) {

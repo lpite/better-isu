@@ -71,7 +71,7 @@ export default function Home() {
           <a href={"/api/journal?index=" + i} key={el.name + i} target='_blank' className='flex w-full border rounded-lg py-5 px-3'>{el.name}</a>
         ))}
 
-        <ScheduleCarousel />
+        <ScheduleCarousel subjects={subjects} />
       </div>
       <MobileNavigation />
     </main>

@@ -57,7 +57,6 @@ const scheduleTimes: Record<string, string> = {
 
 
 type ScheduleCarouselProps = {
-
 	subjects: RouterOutput["user"]["subjects"][]
 }
 

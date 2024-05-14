@@ -24,7 +24,6 @@ import { RouterOutput } from "trpc/router";
 import { trpc } from "trpc/trpc-client";
 
 
-
 function generateSubjectsList(schedule?: RouterOutput["user"]["schedule"]) {
 
 	if (!schedule) {
@@ -159,6 +158,17 @@ export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProp
 				<CarouselContent className="mt-8">
 					{["Пн", "Вт", "Ср", "Чт", "Пт"].map((day) => {
 
+						if (isLoadingSchedule) {
+							return (
+								<CarouselItem className="flex flex-col" key={day}>
+									<span>{day}</span>
+									<div className="flex w-full h-64 items-center justify-center">
+										<div className="border-2 border-blue-600 p-4 rounded-full border-b-transparent animate-spin"></div>
+									</div>
+								</CarouselItem>
+							)
+						}
+
 						if (!enabledSubjects.length) {
 							return (
 								<CarouselItem className="flex flex-col" key={day}>
@@ -192,7 +202,7 @@ export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProp
 								return false;
 							})
 							|| []
-						if (!scheduleForDay.length) {
+						if (!scheduleForDay.length && !isLoadingSchedule) {
 							return (
 								<CarouselItem className="flex flex-col" key={day}>
 									<span>{day}</span>

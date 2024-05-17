@@ -97,7 +97,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     // await refreshSubjectsList(session)
     await refreshSchedule(session)
     
-    res.setHeader("Set-Cookie", `session=${session.session_id};Max-Age=2592000000;HttpOnly`);
+    res.setHeader("Set-Cookie", `session=${session.session_id};Max-Age=2592000000;HttpOnly;Path=/`);
     res.send({
       data: {},
       error: null

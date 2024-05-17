@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/card"
 import useSession from 'hooks/useSession'
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { useState } from 'react'
 
 import { trpc } from 'trpc/trpc-client'
 
@@ -25,6 +25,9 @@ function checkIfBirthDay(birthDate?: string) {
 }
 
 export default function Home() {
+
+  const [testJournal, setTestJournal] = useState(false)
+
   const router = useRouter()
   const {
     isLoading: isLoadingSession,
@@ -49,6 +52,14 @@ export default function Home() {
     if (!isLoadingSession && !data) {
       router.push("/login")
     }
+
+    const jrnT = localStorage.getItem("test_journal");
+    if (jrnT === "true") {
+      setTestJournal(true)
+    } else {
+      setTestJournal(false)
+    }
+
   }, [user, router, isLoadingUser, isLoadingSession, data, error])
 
   const isLoading = isLoadingSubjects;
@@ -68,7 +79,7 @@ export default function Home() {
         }</> : null}
 
         {!isLoading && subjects && subjects?.map((el, i) => (
-          <a href={"/api/journal?index=" + i} key={el.name + i} target='_blank' className='flex w-full border rounded-lg py-5 px-3'>{el.name}</a>
+          <a href={testJournal ? `/journal?index=${i}` : `/api/journal?index=${i}`} key={el.name + i} target='_blank' className='flex w-full border rounded-lg py-5 px-3'>{el.name}</a>
         ))}
 
         <ScheduleCarousel subjects={subjects} />

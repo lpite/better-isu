@@ -80,8 +80,9 @@ export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProp
 			localStorage.setItem("enabledSubjects", JSON.stringify(subjectNames))
 			setEnabledSubjects(subjectNames)
 		} else {
-
-			setEnabledSubjects(storedEnabledSubjects);
+			if (!enabledSubjects.length) {
+				setEnabledSubjects(storedEnabledSubjects);
+			}
 		}
 	}, [subjects])
 

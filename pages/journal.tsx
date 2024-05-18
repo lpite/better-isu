@@ -14,7 +14,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 		return {
 			redirect: {
 				destination: "/login",
-				statusCode: 200
+				permanent: false
 			}
 		}
 	}
@@ -48,7 +48,18 @@ export const getServerSideProps: GetServerSideProps = async ({
 				"Cookie": `PHPSESSID=${s.data.isu_cookie}`,
 			}
 		})
-			.then(res => res.text())	
+			.then(res => res.text())
+
+			
+		if (journalPage.includes("Key violation")) {
+			return {
+				redirect: {
+					destination: "/",
+					permanent: false
+				}
+			}
+		}
+
 		const obj = journalPage.split("'jrn.GradeGrid', {")[1].split("});")[0].trim().replaceAll("\t", "").split("\n");
 		const [_, groupId, journalId] = obj.map((el) => el.split("'")[1].split("'")[0])
 		journal_id = journalId;

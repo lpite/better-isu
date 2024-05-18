@@ -53,6 +53,10 @@ export default function Home() {
       router.push("/login")
     }
 
+    if (error === "unauthorized") {
+      router.push("/login")
+    }
+
     const jrnT = localStorage.getItem("test_journal");
     if (jrnT === "true") {
       setTestJournal(true)

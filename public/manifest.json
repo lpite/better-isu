@@ -22,7 +22,7 @@
   "theme_color": "#f8fafc",
   "background_color": "#020817",
   "start_url": "/",
-  "scope": "https://better-isu.vercel.app/".
+  "scope": "https://better-isu.vercel.app/",
   "display": "standalone",
   "orientation": "portrait"
 }

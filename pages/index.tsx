@@ -5,10 +5,12 @@ import {
   CardContent,
 } from "@/components/ui/card"
 import useSession from 'hooks/useSession'
+import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 
 import { trpc } from 'trpc/trpc-client'
+import getSession from 'utils/getSession'
 
 function checkIfBirthDay(birthDate?: string) {
 
@@ -22,6 +24,28 @@ function checkIfBirthDay(birthDate?: string) {
     return true
   }
   return false
+}
+
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req
+}) => {
+  
+  const s = await getSession(req as any);
+  if (!s.data) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false
+      }
+    }
+  }
+  return {
+    props: {
+
+    }
+  }
+
 }
 
 export default function Home() {

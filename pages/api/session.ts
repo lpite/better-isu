@@ -6,5 +6,6 @@ export default async function SessionRoute(req: NextApiRequest, res: NextApiResp
 	if (session.data) {
 		delete session.data.isu_cookie
 	}
+	res.appendHeader("Set-Cookie", `session=;Max-Age=0;HttpOnly;Path=/api`);
 	res.send(session)
 }

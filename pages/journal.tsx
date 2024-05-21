@@ -40,7 +40,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 
 	}
 
-	let { link: journal_link, journal_id } = data[query.index];
+	let { link: journal_link, journal_id, name } = data[query.index];
 
 	if (!journal_id) {
 		let journalPage = await fetch(`https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.php?key=${journal_link}`, {
@@ -92,45 +92,18 @@ export const getServerSideProps: GetServerSideProps = async ({
 
 	return {
 		props: {
+			journalName: name,
 			days: grades,
 			month
 		}
 	}
 }
 
-export default function JournalPage({ days, month }: any) {
-	// const [days, setDays] = useState<{
-	// 	CONTROLNAME: string,
-	// 	ROWID: number,
-	// 	STID: number,
-	// 	CONTROLSHORTNAME: string,
-	// 	GRADE: string,
-	// 	MONTHSTR: string,
-	// 	DAYNUM: string
-	// }[]>([])
-
-	// const [month, setMonth] = useState<string[]>([])
-
-	// useEffect(() => {
-	// 	fetch("http://localhost:49486/grades.json")
-	// 		.then(res => res.json())
-	// 		.then((res) => {
-
-	// 			setDays(res.filter((el: any) => el.LFP.trim() === "Фаріон Олександр Сергійович"))
-	// 			setMonth(res.filter((el: any) => el.LFP.trim() === "Фаріон Олександр Сергійович").reduce((prev, el) => {
-	// 				if (prev.indexOf(el.MONTHSTR.trim()) === -1) {
-	// 					return [...prev, el.MONTHSTR.trim()]
-	// 				}
-	// 				return prev
-	// 			}, [] as string[]))
-
-
-	// 		})
-	// }, [])
-
-	console.log(days)
+export default function JournalPage({ days, month, journalName }: any) {
+	
 	return (
 		<main className="h-full gap-1 p-2">
+			{journalName}
 			{month.map((m) => {
 				const grades = days.filter((d) => d.MONTHSTR.trim() === m)
 				return (

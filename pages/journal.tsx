@@ -89,7 +89,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 		}
 		return prev
 	}, [] as string[])
-	console.log(grades)
+
 	return {
 		props: {
 			days: grades,
@@ -185,7 +185,7 @@ function Day({
 
 
 	return (
-		<div className={`w-28 h-20  ${colors[grade]} rounded flex flex-col py-1 px-1.5`}>
+		<div style={{ width: "calc(33.33333333% - 3px)" }} className={`max-w-32 min-w-28 shrink-0 h-20  ${colors[grade]} rounded flex flex-col py-1 px-1.5`}>
 			<span className="block text-3xl text-white">{date}</span>
 			<div className="grow flex items-end justify-start">
 				<span className="text-white grow leading-tight">{types[type]}</span>

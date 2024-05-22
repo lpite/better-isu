@@ -27,26 +27,26 @@ function checkIfBirthDay(birthDate?: string) {
 }
 
 
-export const getServerSideProps: GetServerSideProps = async ({
-  req
-}) => {
+// export const getServerSideProps: GetServerSideProps = async ({
+//   req
+// }) => {
   
-  const s = await getSession(req as any);
-  if (!s.data) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false
-      }
-    }
-  }
-  return {
-    props: {
+//   const s = await getSession(req as any);
+//   if (!s.data) {
+//     return {
+//       redirect: {
+//         destination: "/login",
+//         permanent: false
+//       }
+//     }
+//   }
+//   return {
+//     props: {
 
-    }
-  }
+//     }
+//   }
 
-}
+// }
 
 export default function Home() {
 

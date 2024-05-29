@@ -105,7 +105,7 @@ export default function Home() {
           </>
         ))}
 
-        <ScheduleCarousel subjects={subjects} />
+        <ScheduleCarousel subjects={subjects || []} />
       </div>
       <MobileNavigation />
     </main>

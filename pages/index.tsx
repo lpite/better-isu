@@ -5,12 +5,11 @@ import {
   CardContent,
 } from "@/components/ui/card"
 import useSession from 'hooks/useSession'
-import { GetServerSideProps } from 'next'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 
 import { trpc } from 'trpc/trpc-client'
-import getSession from 'utils/getSession'
 
 function checkIfBirthDay(birthDate?: string) {
 
@@ -27,30 +26,9 @@ function checkIfBirthDay(birthDate?: string) {
 }
 
 
-// export const getServerSideProps: GetServerSideProps = async ({
-//   req
-// }) => {
-  
-//   const s = await getSession(req as any);
-//   if (!s.data) {
-//     return {
-//       redirect: {
-//         destination: "/login",
-//         permanent: false
-//       }
-//     }
-//   }
-//   return {
-//     props: {
-
-//     }
-//   }
-
-// }
-
 export default function Home() {
 
-  const [testJournal, setTestJournal] = useState(false)
+  const [testJournal, setTestJournal] = useState(localStorage.getItem("test_journal") === "true" ? true : false)
 
   const router = useRouter()
   const {
@@ -76,18 +54,6 @@ export default function Home() {
     if (!isLoadingSession && !data) {
       router.push("/login")
     }
-
-    // if (error === "unauthorized") {
-    //   router.push("/login")
-    // }
-
-    const jrnT = localStorage.getItem("test_journal");
-    if (jrnT === "true") {
-      setTestJournal(true)
-    } else {
-      setTestJournal(false)
-    }
-
   }, [user, router, isLoadingUser, isLoadingSession, data, error])
 
   const isLoading = isLoadingSubjects;
@@ -107,7 +73,27 @@ export default function Home() {
         }</> : null}
 
         {!isLoading && subjects && subjects?.map((el, i) => (
-          <a href={testJournal ? `/journal?index=${i}` : `/api/journal?index=${i}`} key={el.name + i} target='_blank' className='flex w-full border rounded-lg py-5 px-3'>{el.name}</a>
+          <>
+            {testJournal ? 
+              <Link 
+                href={`/journal?index=${i}`} 
+                key={el.name + i}
+              >
+                <a className='flex w-full border rounded-lg py-5 px-3'>
+                  
+                  {el.name}
+                </a>
+              </Link> 
+              :
+              <a 
+                href={`/api/journal?index=${i}`} 
+                key={el.name + i} 
+                target='_blank' 
+                className='flex w-full border rounded-lg py-5 px-3'>
+                {el.name}
+              </a>
+            }
+          </>
         ))}
 
         <ScheduleCarousel subjects={subjects} />

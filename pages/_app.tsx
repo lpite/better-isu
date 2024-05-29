@@ -5,6 +5,7 @@ import { trpc } from "../trpc/trpc-client"
 
 import type { AppProps } from 'next/app'
 import ServiceWorkerUpdater from '@/components/service-worker-updater'
+import NextProgress from 'next-progress'
  
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -20,6 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
       </Head>  
       <ServiceWorkerUpdater />
+      <NextProgress delay={200} options={{ showSpinner: false }} />
       <Component {...pageProps} />
     </>)
 }

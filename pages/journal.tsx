@@ -1,8 +1,9 @@
-// @ts-nocheck
+//@ts-nocheck
 
-import { GetServerSideProps } from "next"
+import { GetServerSideProps, InferGetServerSidePropsType } from "next"
+import Link from "next/link";
 import { db } from "utils/db";
-import getSession from "utils/getSession"
+import getSession, { refreshSubjectsList } from "utils/getSession"
 
 
 export const getServerSideProps: GetServerSideProps = async ({
@@ -10,6 +11,16 @@ export const getServerSideProps: GetServerSideProps = async ({
 }) => {
 	
 	const s = await getSession(req as any);
+
+	if (s.error !== undefined) {
+		return {
+			redirect: {
+				destination: "/login",
+				permanent: false
+			}
+		}
+	}
+
 	if (!s.data) {
 		return {
 			redirect: {
@@ -52,9 +63,10 @@ export const getServerSideProps: GetServerSideProps = async ({
 
 			
 		if (journalPage.includes("Key violation")) {
+			// await refreshSubjectsList(s)
 			return {
 				redirect: {
-					destination: "/",
+					destination: `/journal?index=${query.index}`,
 					permanent: false
 				}
 			}
@@ -81,45 +93,93 @@ export const getServerSideProps: GetServerSideProps = async ({
 		},
 		method: "POST",
 		body: `grp=${user.group_id}&jrn=${journal_id}&page=1&start=0&limit=25`
-	}).then(res => res.json())
-	grades = grades.filter((el: any) => el.RECORDBOOK.trim() === user.record_number)
-	const month = grades.reduce((prev, el) => {
+	})
+		.then(res => res.json())
+		.catch((err) => {
+			console.error(err);
+			return []
+		}) as { RECORDBOOK: string, MONTHSTR: string, DAYNUM: string, CONTROLSHORTNAME: string, GRADE: string }[]
+
+	grades = grades.filter((el) => el.RECORDBOOK.trim() === user.record_number)
+	const month: string[] = grades.reduce((prev, el) => {
 		if (prev.indexOf(el.MONTHSTR.trim()) === -1) {
 			return [...prev, el.MONTHSTR.trim()]
 		}
 		return prev
 	}, [] as string[])
+		.sort((a, b) => {
+			const aIndex = monthList.indexOf(a);
+			const bIndex = monthList.indexOf(b);
+
+			if (aIndex > bIndex) {
+				return 1
+			}
+
+			if (bIndex > aIndex) {
+				return -1
+			}
+			return 0
+
+		})
 
 	return {
 		props: {
 			journalName: name,
 			days: grades,
-			month
+			month: month
 		}
 	}
 }
 
-export default function JournalPage({ days, month, journalName }: any) {
+const monthList = [
+	"Січень",
+	"Лютий",
+	"Березень",
+	"Квітень",
+	"Травень",
+	"Червень",
+	"Липень",
+	"Серпень",
+	"Вересень",
+	"Жовтень",
+	"Листопад",
+	"Грудень",
+	"Сем"
+]
+
+
+export default function JournalPage({ days, month, journalName }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	
 	return (
-		<main className="h-full gap-1 p-2">
-			{journalName}
-			{month.map((m) => {
-				const grades = days.filter((d) => d.MONTHSTR.trim() === m)
-				return (
-					<>
-						<h2 className="w-full text-2xl mb-0.5 mt-3">{m}</h2>
-						<div className={`flex flex-row justify-start flex-wrap gap-1`}>
+		<>
+			<header className="p-2 flex">
+				<Link href="/">
+					<a className="p-2">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+							<path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+						</svg>
+					</a>
+				</Link>
+				<span className="text-xl">{journalName}</span>
+			</header>
+			<main className="gap-1 p-2">
+				{month.map((m) => {
+					const grades = days.filter((d) => d.MONTHSTR.trim() === m)
+					return (
+						<>
+							<h2 className="w-full text-2xl mb-0.5 mt-3">{m}</h2>
+							<div className={`flex flex-row justify-start flex-wrap gap-1`}>
 							
-							{grades.map((g, i) => (
-								<Day key={i} date={g.DAYNUM} type={g.CONTROLSHORTNAME} grade={g.GRADE} />))
-							}
-						</div>
-					</>
-				)
-			})}
+								{grades.map((g, i) => (
+									<Day key={i} date={g.DAYNUM} type={g.CONTROLSHORTNAME} grade={g.GRADE} />))
+								}
+							</div>
+						</>
+					)
+				})}
 		
-		</main>
+			</main>
+		</>
 	)
 }
 
@@ -147,10 +207,14 @@ function Day({
 
 	const types: Record<string, string> = {
 		"Пр": "Практична",
-		"ДР": "Домашня",
+		"ДР": "Домашнє",
+		"ІДЗ": "Домашнє",
 		"ЗЛР": "Лаба",
 		"ЛР": "Лаба",
 		"КР": "Контрольна",
+		"Тст": "Тест",
+		"ПЗ": "Практична",
+		"ПКЗ": "Підсумковий КЗ",
 		"<b>Ат1</b>": "Атестація",
 		"<b>ПО</b>": "Підсумкова",
 	}

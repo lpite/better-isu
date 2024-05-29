@@ -28,7 +28,7 @@ function checkIfBirthDay(birthDate?: string) {
 
 export default function Home() {
 
-  const [testJournal, setTestJournal] = useState(localStorage.getItem("test_journal") === "true" ? true : false)
+  const [testJournal, setTestJournal] = useState(false)
 
   const router = useRouter()
   const {
@@ -55,6 +55,15 @@ export default function Home() {
       router.push("/login")
     }
   }, [user, router, isLoadingUser, isLoadingSession, data, error])
+
+  React.useEffect(() => {
+    const jrnT = localStorage.getItem("test_journal");
+    if (jrnT === "true") {
+      setTestJournal(true)
+    } else {
+      setTestJournal(false)
+    }
+  }, [])
 
   const isLoading = isLoadingSubjects;
 

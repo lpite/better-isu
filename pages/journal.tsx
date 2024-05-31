@@ -194,15 +194,15 @@ function Day({
 }: DayProps) {
 
 	const colors: Record<string, string> = {
-		"1": "bg-rose-400",
-		"2": "bg-rose-300",
-		"3": "bg-orange-300",
-		"4": "bg-green-400",
-		"5": "bg-emerald-400 dark:bg-emerald-300",
-		"Н": "bg-slate-500",
-		"В": "bg-slate-500",
-		"Х": "bg-slate-500",
-		"": "bg-slate-500",
+		"1": "text-rose-400",
+		"2": "text-rose-300",
+		"3": "text-orange-300",
+		"4": "text-green-400",
+		"5": "text-emerald-400 dark:text-emerald-300",
+		"Н": "text-slate-500",
+		"В": "text-slate-500",
+		"Х": "text-slate-500",
+		"": "text-slate-500",
 	}
 
 	const types: Record<string, string> = {
@@ -222,11 +222,11 @@ function Day({
 
 
 	return (
-		<div style={{ width: "calc(33.33333333% - 3px)" }} className={`max-w-32 min-w-28 shrink-0 h-20  ${colors[grade]} rounded flex flex-col py-1 px-1.5`}>
+		<div style={{ width: "calc(33.33333333% - 3px)" }} className={`max-w-32 min-w-28 shrink-0 h-20 rounded flex flex-col py-1 px-1.5 bg-slate-500`}>
 			<span className="block text-3xl text-white">{date}</span>
 			<div className="grow flex items-end justify-start">
 				<span className="text-white grow leading-tight">{types[type]}</span>
-				<span className="text-white text-lg font-bold leading-none">{types[type] === "Атестація" || types[type] === "Підсумкова" ? "?" : grade}</span>
+				<span className={`text-lg font-bold leading-none ${colors[grade]}`}>{types[type] === "Атестація" || types[type] === "Підсумкова" ? "?" : grade}</span>
 			</div>
 		</div>
 	)

@@ -63,7 +63,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 
 			
 		if (journalPage.includes("Key violation")) {
-			await refreshSubjectsList(s)
+			await refreshSubjectsList(s.data)
 			return {
 				redirect: {
 					destination: `/journal?index=${query.index}`,

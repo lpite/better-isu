@@ -3,7 +3,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "../../utils/db";
 import { encryptText } from "../../utils/encryption";
 import getSession, { refreshSchedule, refreshSubjectsList, refreshUserInfo } from "../../utils/getSession";
-import fetchAndDecode from "utils/fetchAndDecode";
 
 export type LoginResponse = {
   error: string | null,

@@ -1,10 +1,10 @@
-//@ts-nocheck
-
 import { GetServerSideProps, InferGetServerSidePropsType } from "next"
 import Link from "next/link";
 import { db } from "utils/db";
 import getSession, { refreshSubjectsList } from "utils/getSession"
 
+
+type Day = { RECORDBOOK: string, MONTHSTR: string, DAYNUM: string, CONTROLSHORTNAME: string, GRADE: string }
 
 export const getServerSideProps: GetServerSideProps = async ({
 	req, query
@@ -45,12 +45,12 @@ export const getServerSideProps: GetServerSideProps = async ({
 	if (!data) {
 		throw "no subjects list in db;";
 	}
-
+	// @ts-ignore
 	if (!data[query.index]) {
 		throw "no subjects list in db;";
 
 	}
-
+	// @ts-ignore
 	let { link: journal_link, journal_id, name } = data[query.index];
 
 	if (!journal_id) {
@@ -73,8 +73,9 @@ export const getServerSideProps: GetServerSideProps = async ({
 		}
 
 		const obj = journalPage.split("'jrn.GradeGrid', {")[1].split("});")[0].trim().replaceAll("\t", "").split("\n");
-		const [_, groupId, journalId] = obj.map((el) => el.split("'")[1].split("'")[0])
+		const journalId = obj.map((el) => el.split("'")[1].split("'")[0])[2]
 		journal_id = journalId;
+		// @ts-ignore
 		data[query.index] = { ...data[query.index], journal_id: journalId }
 		await db.updateTable("subjects_list")
 			.set({
@@ -98,7 +99,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 		.catch((err) => {
 			console.error(err);
 			return []
-		}) as { RECORDBOOK: string, MONTHSTR: string, DAYNUM: string, CONTROLSHORTNAME: string, GRADE: string }[]
+		}) as Day[]
 
 	grades = grades.filter((el) => el.RECORDBOOK.trim() === user.record_number)
 	const month: string[] = grades.reduce((prev, el) => {
@@ -148,7 +149,7 @@ const monthList = [
 ]
 
 
-export default function JournalPage({ days, month, journalName }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function JournalPage({ days, month, journalName }: { days: Day[], month: string[], journalName: string }) {
 	
 	return (
 		<>
@@ -209,8 +210,8 @@ function Day({
 		"Пр": "Практична",
 		"ДР": "Домашнє",
 		"ІДЗ": "Домашнє",
-		"ЗЛР": "Лаба",
-		"ЛР": "Лаба",
+		"ЗЛР": "Лабораторна",
+		"ЛР": "Лабораторна",
 		"КР": "Контрольна",
 		"Тст": "Тест",
 		"ПЗ": "Практична",
@@ -223,11 +224,11 @@ function Day({
 
 	return (
 		<div style={{ width: "calc(33.33333333% - 3px)" }} className={`max-w-32 min-w-28 shrink-0 h-20 rounded flex flex-col py-1 px-1.5 bg-slate-500`}>
-			<span className="block text-3xl text-white">{date}</span>
-			<div className="grow flex items-end justify-start">
-				<span className="text-white grow leading-tight">{types[type]}</span>
-				<span className={`text-lg font-bold leading-none ${colors[grade]}`}>{types[type] === "Атестація" || types[type] === "Підсумкова" ? "?" : grade}</span>
+			<div className="grow flex items-start justify-start">
+				<span className="text-2xl text-white grow">{date}</span>
+				<span className={`text-3xl font-bold leading-none ${colors[grade]}`}>{types[type] === "Атестація" || types[type] === "Підсумкова" ? "?" : grade}</span>
 			</div>
+			<span className="text-white  leading-tight">{types[type]}</span>
 		</div>
 	)
 }

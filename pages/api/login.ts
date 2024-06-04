@@ -35,6 +35,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     })
     const text = await response.arrayBuffer().then(res => decoder.decode(res))
 
+    if (text.includes("Викладач")) {
+      return res.send({
+        error: "Ви не є студентом (наразі реалізовано тільки для студентів)",
+        data: null
+      })
+    }
+
     if (text.includes("Аутентифікація не пройшла")) {
       return res.send({
         error: "Неправильний пароль або логін",

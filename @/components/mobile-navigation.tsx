@@ -7,7 +7,6 @@ export default function MobileNavigation() {
 		<nav className="fixed bottom-0 left-0 w-full h-14 dark:bg-slate-900 bg-slate-100 flex items-center pb-2">
 			<Link href="/">
 				<a className="flex grow justify-center">
-
 					<svg 
 						xmlns="http://www.w3.org/2000/svg" 
 						fill="none" 

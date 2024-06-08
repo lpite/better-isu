@@ -61,7 +61,17 @@ export default function JournalPage() {
 			</header>
 			<main className="gap-1 p-2">
 				{months.map((m) => {
-					const gradesForMonth = grades.filter((d) => d.MONTHSTR.trim() === m)
+					const gradesForMonth = 
+						grades.filter((d) => d.MONTHSTR.trim() === m)
+							.sort((a, b) => {
+								if (Number(a.DAYNUM) > Number(b.DAYNUM)) {
+									return 1
+								}
+								if (Number(a.DAYNUM) < Number(b.DAYNUM)) {
+									return -1
+								}
+								return 0
+							})
 					return (
 						<Fragment key={m}>
 							<h2 className="w-full text-2xl mb-0.5 mt-3">{m}</h2>
@@ -106,7 +116,7 @@ function Day({
 		"пр": "Практична",
 		"др": "Домашнє",
 		"ідз": "Домашнє",
-		"злр": "Лабораторна",
+		"злр": "Захист ЛР",
 		"лр": "Лабораторна",
 		"кр": "Контрольна",
 		"тст": "Тест",

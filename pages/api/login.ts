@@ -58,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     let user = await db.selectFrom("user")
       .select("id")
-      .where("login", "=", req.body.login)
+      .where("login", "=", req.body.login.trim())
       .executeTakeFirst();
 
     if (!user) {

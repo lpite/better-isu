@@ -11,9 +11,9 @@ export default function JournalPage() {
 	if (isLoading) {
 		return (
 			<>
-				<header className="p-2 flex">
+				<header className="px-1 pt-3 pb-2 flex items-center border-b">
 					<Link href="/">
-						<a className="px-1">
+						<a className="pl-2 pr-4">
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
 								<path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
 							</svg>
@@ -31,9 +31,9 @@ export default function JournalPage() {
 	if (!data || isError) {
 		return (
 			<>
-				<header className="p-2 flex">
+				<header className="px-1 pt-3 pb-2 flex items-center border-b">
 					<Link href="/">
-						<a className="px-1">
+						<a className="pl-2 pr-4">
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
 								<path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
 							</svg>
@@ -49,9 +49,9 @@ export default function JournalPage() {
 	const { grades, months, journalName } = data
 	return (
 		<>
-			<header className="p-2 flex">
+			<header className="px-1 pt-3 pb-2 flex items-center border-b">
 				<Link href="/">
-					<a className="px-1">
+					<a className="pl-2 pr-4">
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
 							<path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
 						</svg>

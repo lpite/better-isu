@@ -7,9 +7,11 @@ import {
 import useSession from 'hooks/useSession'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React, { useState } from 'react'
+import React from 'react'
 
 import { trpc } from 'trpc/trpc-client'
+
+import zod from "zod"
 
 function checkIfBirthDay(birthDate?: string) {
 
@@ -25,10 +27,11 @@ function checkIfBirthDay(birthDate?: string) {
   return false
 }
 
+const journalTypeSchema = zod.enum(["default", "new"])
 
 export default function Home() {
 
-  const [testJournal, setTestJournal] = useState(false)
+  const [journalType, setJournalType] = React.useState<"default" | "new">("default") 
 
   const router = useRouter()
   const {
@@ -57,12 +60,10 @@ export default function Home() {
   }, [user, router, isLoadingUser, isLoadingSession, data, error])
 
   React.useEffect(() => {
-    const jrnT = localStorage.getItem("test_journal");
-    if (jrnT === "true") {
-      setTestJournal(true)
-    } else {
-      setTestJournal(false)
-    }
+    const journalType = journalTypeSchema.parse(localStorage.getItem("journalType") || "default")
+
+    setJournalType(journalType);
+
   }, [])
 
   const isLoading = isLoadingSubjects;
@@ -83,7 +84,7 @@ export default function Home() {
 
         {!isLoading && subjects && subjects?.map((el, i) => (
           <>
-            {testJournal ? 
+            {journalType === "new" ? 
               <Link 
                 href={`/journal?index=${i}`} 
                 key={el.name + i}

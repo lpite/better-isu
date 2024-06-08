@@ -8,6 +8,7 @@ export const userRouter = router({
 		const userProfile = await db.selectFrom("user")
 			.select([
 				"name",
+				"surname",
 				"record_number as recordNumber",
 				"birth_date as birthDate"
 			])

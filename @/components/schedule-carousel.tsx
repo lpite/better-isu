@@ -186,7 +186,7 @@ export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProp
 							.filter((subj) => isEnabled(subj.name))
 							.filter(({ type }) => (type === "full" || type === currentWeekType)) 
 							.filter(({ dateFrom, dateTo }) => {
-								if (!dateFrom || dateTo) {
+								if (!dateFrom || !dateTo) {
 									return true
 								}
 								const currentMonth = (new Date()).getMonth() + 1;
@@ -199,7 +199,7 @@ export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProp
 									return true;
 								}
 
-								if (Number(toMonth) >= currentMonth && Number(toDay) >= currentDay) {
+								if (Number(toMonth) > currentMonth || (Number(toMonth) === currentMonth && Number(toDay) >= currentDay)) {
 									return true;
 								}
 

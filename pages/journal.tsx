@@ -51,7 +51,7 @@ export default function JournalPage() {
 						</Fragment>
 					)
 				})}
-				<div className="fixed bottom-0 left-0 right-0 flex items-center justify-center h-12 bg-slate-800">
+				<div className="fixed bottom-0 left-0 right-0 flex items-center justify-center h-12 border-t-2" style={{ backgroundColor: "#020817" }}>
 					<Link href="/">
 						<a className="pl-2 pr-4">
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 inline mr-3">
@@ -107,7 +107,7 @@ function Day({
 
 
 	return (
-		<div className={`min-w-28 shrink-0 h-20 rounded flex flex-col py-1 px-1.5 dark:bg-slate-800 bg-slate-200`}>
+		<div className={`min-w-28 shrink-0 h-20 rounded flex flex-col py-1 px-1.5 dark:bg-gray-800 bg-slate-200`}>
 			<div className="grow flex items-start justify-start">
 				<span className="text-2xl dark:text-white grow">{date}</span>
 				<span className={`text-3xl font-bold leading-none ${colors[grade]}`}>{types[type] === "Атестація" || types[type] === "Підсумкова" ? "?" : grade}</span>

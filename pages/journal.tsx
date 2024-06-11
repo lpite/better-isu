@@ -33,7 +33,7 @@ export default function JournalPage() {
 	const { months, journalName } = data
 	return (
 		<>
-			<header className="px-3 pt-3 pb-2 flex items-center border-b fixed top-0 left-0 right-0" style={{ backgroundColor: "#020817" }}>
+			<header className="px-3 pt-3 pb-2 flex items-center border-b fixed top-0 left-0 right-0" style={{ backgroundColor: "var(--background)" }}>
 				<h1 className={`text-xl text-nowrap overflow-x-auto`}>{journalName}</h1>
 			</header>
 			<main className="gap-1 p-2 pt-12 pb-14">
@@ -51,7 +51,7 @@ export default function JournalPage() {
 						</Fragment>
 					)
 				})}
-				<div className="fixed bottom-0 left-0 right-0 flex items-center justify-center h-12 border-t-2" style={{ backgroundColor: "#020817" }}>
+				<div className="fixed bottom-0 left-0 right-0 flex items-center justify-center h-12 border-t-2" style={{ backgroundColor: "var(--background)" }}>
 					<Link href="/">
 						<a className="pl-2 pr-4">
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 inline mr-3">

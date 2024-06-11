@@ -46,7 +46,7 @@ export default function JournalPage() {
 			</>)
 	}
 
-	const { grades, months, journalName } = data
+	const { months, journalName } = data
 	return (
 		<>
 			<header className="px-1 pt-3 pb-2 flex items-center border-b">
@@ -61,24 +61,14 @@ export default function JournalPage() {
 			</header>
 			<main className="gap-1 p-2">
 				{months.map((m) => {
-					const gradesForMonth = 
-						grades.filter((d) => d.MONTHSTR.trim() === m)
-							.sort((a, b) => {
-								if (Number(a.DAYNUM) > Number(b.DAYNUM)) {
-									return 1
-								}
-								if (Number(a.DAYNUM) < Number(b.DAYNUM)) {
-									return -1
-								}
-								return 0
-							})
+					const gradesForMonth = m.grades 
+						
 					return (
-						<Fragment key={m}>
-							<h2 className="w-full text-2xl mb-0.5 mt-3">{m}</h2>
-							<div className={`flex flex-row justify-start flex-wrap gap-1`}>
-							
+						<Fragment key={m.name}>
+							<h2 className="w-full text-2xl mb-0.5 mt-3">{m.name}</h2>
+							<div className={`grid grid-cols-3 gap-1`}>
 								{gradesForMonth.map((g, i) => (
-									<Day key={i} date={g.DAYNUM} type={g.CONTROLSHORTNAME} grade={g.GRADE} />))
+									<Day key={m.name + i} date={g.DAYNUM} type={g.CONTROLSHORTNAME} grade={g.GRADE} />))
 								}
 							</div>
 						</Fragment>
@@ -130,7 +120,7 @@ function Day({
 
 
 	return (
-		<div style={{ width: "calc(33.33333333% - 3px)" }} className={`max-w-32 min-w-28 shrink-0 h-20 rounded flex flex-col py-1 px-1.5 dark:bg-slate-800 bg-slate-200`}>
+		<div className={`min-w-28 shrink-0 h-20 rounded flex flex-col py-1 px-1.5 dark:bg-slate-800 bg-slate-200`}>
 			<div className="grow flex items-start justify-start">
 				<span className="text-2xl dark:text-white grow">{date}</span>
 				<span className={`text-3xl font-bold leading-none ${colors[grade]}`}>{types[type] === "Атестація" || types[type] === "Підсумкова" ? "?" : grade}</span>

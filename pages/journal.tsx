@@ -33,7 +33,7 @@ export default function JournalPage() {
 	const { months, journalName } = data
 	return (
 		<>
-			<header className="px-3 pt-3 pb-2 flex items-center border-b fixed top-0 left-0 right-0" style={{ backgroundColor: "var(--background)" }}>
+			<header className="px-3 pt-3 pb-2 flex items-center border-b fixed top-0 left-0 right-0 bg" >
 				<h1 className={`text-xl text-nowrap overflow-x-auto`}>{journalName}</h1>
 			</header>
 			<main className="gap-1 p-2 pt-12 pb-14">
@@ -51,7 +51,7 @@ export default function JournalPage() {
 						</Fragment>
 					)
 				})}
-				<div className="fixed bottom-0 left-0 right-0 flex items-center justify-center h-12 border-t-2" style={{ backgroundColor: "var(--background)" }}>
+				<div className="fixed bottom-0 left-0 right-0 flex items-center justify-center h-12 border-t-2 bg">
 					<Link href="/">
 						<a className="pl-2 pr-4">
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 inline mr-3">
@@ -110,7 +110,7 @@ function Day({
 		<div className={`min-w-28 shrink-0 h-20 rounded flex flex-col py-1 px-1.5 dark:bg-gray-800 bg-slate-200`}>
 			<div className="grow flex items-start justify-start">
 				<span className="text-2xl dark:text-white grow">{date}</span>
-				<span className={`text-3xl font-bold leading-none ${colors[grade]}`}>{types[type] === "Атестація" || types[type] === "Підсумкова" ? "?" : grade}</span>
+				<span className={`text-3xl font-bold leading-none ${colors[isNaN(Number(grade)) ? grade : Math.floor(Number(grade))]}`}>{grade}</span>
 			</div>
 			<span className="dark:text-white leading-tight">{types[type.toLowerCase()]}</span>
 		</div>

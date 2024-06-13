@@ -5,10 +5,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export * from './getGeneralGet200';
-export * from './getGeneralGet200MonthsItem';
-export * from './getGeneralGet200MonthsItemGradesItem';
-export * from './getGeneralGetParams';
 export * from './getGeneralGetTypeOfWeek200';
 export * from './getJournalGet200';
 export * from './getJournalGet200MonthsItem';
@@ -18,8 +14,3 @@ export * from './getUserProfile200';
 export * from './getUserSchedule200Item';
 export * from './getUserSchedule200ItemType';
 export * from './getUserSubjects200Item';
-export * from './test';
-export * from './test1';
-export * from './test1Item';
-export * from './test2';
-export * from './testType';

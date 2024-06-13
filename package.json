@@ -8,9 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "migrate": "ts-node migrator.ts",
-    "gen-db-types": "kysely-codegen --out-file ./types/db.d.ts"
+    "gen-db-types": "kysely-codegen --out-file ./types/db.d.ts --include-pattern public.\\* --exclude-pattern pg_\\*",
+    "generate-openapi": "orval"
   },
   "dependencies": {
+    "@hono/node-server": "^1.11.2",
+    "@hono/zod-openapi": "^0.14.2",
     "@hookform/resolvers": "^3.3.4",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dialog": "^1.0.5",
@@ -26,6 +29,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "embla-carousel-react": "^8.0.0",
+    "hono": "^4.4.5",
     "kysely": "^0.27.2",
     "next": "12.3.4",
     "next-progress": "^2.3.1",
@@ -36,6 +40,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.50.1",
+    "swr": "^2.2.5",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
@@ -49,6 +54,7 @@
     "eslint": "8.56.0",
     "eslint-config-next": "14.1.0",
     "kysely-codegen": "^0.11.0",
+    "orval": "^6.30.2",
     "pg": "^8.11.3",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",

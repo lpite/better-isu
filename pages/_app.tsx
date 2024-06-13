@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import '../styles/globals.css'
 
-import { trpc } from "../trpc/trpc-client"
 import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic';
 
@@ -27,4 +26,5 @@ function MyApp({ Component, pageProps }: AppProps) {
     </>)
 }
 
-export default trpc.withTRPC(MyApp)
+export default MyApp
+// export default trpc.withTRPC(MyApp)

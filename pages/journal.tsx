@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment } from "react";
-import { trpc } from "trpc/trpc-client";
 
+import { useGetJournalGet } from "orval/default/default"
 export default function JournalPage() {
 	const router = useRouter()
-
-	const { data, isLoading, isError } = trpc.journal.get.useQuery(Number(router.query.index) || 0);
+	console.log(router.query.index?.toString())
+	const { data, isLoading, error } = useGetJournalGet({ index: router.query.index?.toString() || "jopa" });
 
 	if (isLoading) {
 		return (
@@ -20,12 +20,22 @@ export default function JournalPage() {
 			</>)
 	}
 
-	if (!data || isError) {
+	if (!data || error) {
 		return (
 			<>
 				<header className="px-1 pt-3 pb-2 flex items-center border-b"></header>
 				<main className="gap-1 p-2 flex items-center justify-center">
 					<h1>Щось пішло не так :(</h1>
+					<div className="fixed bottom-0 left-0 right-0 flex items-center justify-center h-12 border-t-2 bg">
+						<Link href="/">
+							<a className="pl-2 pr-4">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 inline mr-3">
+									<path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+								</svg>
+								<span className="inline">Повернутися</span>
+							</a>
+						</Link>
+					</div>
 				</main>
 			</>)
 	}

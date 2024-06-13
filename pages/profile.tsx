@@ -1,21 +1,23 @@
 import MobileNavigation from "@/components/mobile-navigation"
 import { useRouter } from "next/router"
 import React from "react"
-import { trpc } from "trpc/trpc-client"
 import zod from "zod"
-
+import { useGetUserProfile } from "orval/default/default"
 const journalTypeSchema = zod.enum(["default", "new"])
 
 
 export default function ProfilePage() {
 	const router = useRouter()
-
-	const [journalType, setJournalType] = React.useState<"default" | "new">("default") 
-
 	const {
 		data: user,
 		isLoading: isLoadingUser
-	} = trpc.user.profile.useQuery()
+	} = useGetUserProfile()
+	const [journalType, setJournalType] = React.useState<"default" | "new">("default") 
+
+	// const {
+	// 	data: user,
+	// 	isLoading: isLoadingUser
+	// } = trpc.user.profile.useQuery()
 
 	React.useEffect(() => {
 		if (!isLoadingUser && !user) {

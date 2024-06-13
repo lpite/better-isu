@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React from 'react'
 
-import { trpc } from 'trpc/trpc-client'
+import { useGetUserProfile, useGetUserSubjects } from "orval/default/default"
 
 import zod from "zod"
 
@@ -34,6 +34,7 @@ export default function Home() {
   const [journalType, setJournalType] = React.useState<"default" | "new">("default") 
 
   const router = useRouter()
+
   const {
     isLoading: isLoadingSession,
     data,
@@ -43,12 +44,12 @@ export default function Home() {
   const {
     data: user,
     isLoading: isLoadingUser,
-  } = trpc.user.profile.useQuery()
+  } = useGetUserProfile()
 
   const {
     data: subjects,
     isLoading: isLoadingSubjects,
-  } = trpc.user.subjects.useQuery()
+  } = useGetUserSubjects()
 
   React.useEffect(() => {
     if (!user && !isLoadingUser) {

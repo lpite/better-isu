@@ -1,13 +1,16 @@
 import { handle } from '@hono/node-server/vercel'
 
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { userRouter } from 'honoRouters/userRouter'
-// import userRouter from 'hono/userRouter'
+import { userRouter } from 'backend/routers/userRouter'
+import { generalRouter } from 'backend/routers/generalRouter'
+import { journalRouter } from 'backend/routers/journalRouter'
 
 const app = new OpenAPIHono().basePath('/api/hono')
 
-console.log(userRouter.routes[0])
 app.route("/user", userRouter)
+app.route("/journal", journalRouter)
+app.route("/general", generalRouter)
+
 
 app.doc('/doc', {
   openapi: '3.0.0',

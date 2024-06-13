@@ -19,12 +19,10 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 
 import React, { useEffect } from "react";
-import { RouterOutput } from "trpc/router";
 
-import { trpc } from "trpc/trpc-client";
+import { useGetUserSchedule, useGetGeneralGetTypeOfWeek, GetUserScheduleQueryResult, GetUserSubjectsQueryResult } from "orval/default/default"
 
-
-function generateSubjectsList(schedule?: RouterOutput["user"]["schedule"]) {
+function generateSubjectsList(schedule?: GetUserScheduleQueryResult) {
 
 	if (!schedule) {
 		return []
@@ -56,7 +54,7 @@ const scheduleTimes: Record<string, string> = {
 
 
 type ScheduleCarouselProps = {
-	subjects?: RouterOutput["user"]["subjects"]
+	subjects?: GetUserSubjectsQueryResult
 }
 
 export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProps) {
@@ -67,11 +65,11 @@ export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProp
 	const {
 		data: schedule,
 		isLoading: isLoadingSchedule,
-	} = trpc.user.schedule.useQuery()
+	} = useGetUserSchedule()
 
 	const {
 		data: currentWeekType
-	} = trpc.general.typeOfWeek.useQuery()
+	} = useGetGeneralGetTypeOfWeek()
 
 	React.useEffect(() => {
 		const storedEnabledSubjects = (JSON.parse(localStorage.getItem("enabledSubjects") || "[]") || []) as string[]
@@ -129,7 +127,6 @@ export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProp
 
 		return false
 	}
-
 
 	return (
 		<div className="flex flex-col align-center justify-center grow w-full relative">

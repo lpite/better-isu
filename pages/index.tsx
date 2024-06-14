@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React from 'react'
 
-import { useGetUserProfile, useGetUserSubjects } from "orval/default/default"
+import { useGetAuthSession, useGetUserProfile, useGetUserSubjects } from "orval/default/default"
 
 import zod from "zod"
 
@@ -37,9 +37,9 @@ export default function Home() {
 
   const {
     isLoading: isLoadingSession,
-    data,
+    data: session,
     error
-  } = useSession()
+  } = useGetAuthSession()
 
   const {
     data: user,
@@ -55,10 +55,10 @@ export default function Home() {
     if (!user && !isLoadingUser) {
       router.push("/login")
     }
-    if (!isLoadingSession && !data) {
+    if (!isLoadingSession && !session?.data) {
       router.push("/login")
     }
-  }, [user, router, isLoadingUser, isLoadingSession, data, error])
+  }, [user, router, isLoadingUser, isLoadingSession, session, error])
 
   React.useEffect(() => {
     const journalType = journalTypeSchema.parse(localStorage.getItem("journalType") || "default")

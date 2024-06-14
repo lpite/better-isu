@@ -7,10 +7,11 @@ import { Context } from 'hono'
 import { refreshSchedule, refreshSubjectsList, refreshUserInfo } from 'utils/getSession'
 import refreshSession from 'utils/refreshSession'
 import { db } from "utils/db"
+import { Session } from "types/session"
 
-async function getSession(ctx: Context): Promise<{
+export async function getSession(ctx: Context): Promise<{
 	error?: "unauthorized" | "no session",
-	data: any | null
+	data: Session | null
 }> {
 	const sessionCookie = getCookie(ctx, "session");
 

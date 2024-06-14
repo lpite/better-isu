@@ -10,6 +10,8 @@ import type {
   SWRConfiguration
 } from 'swr'
 import type {
+  GetAuthSession200,
+  GetAuthSession401,
   GetGeneralGetTypeOfWeek200,
   GetJournalGet200,
   GetJournalGetParams,
@@ -22,6 +24,7 @@ import getUserSubjectsMutator from '.././custom-client';
 import getUserScheduleMutator from '.././custom-client';
 import getJournalGetMutator from '.././custom-client';
 import getGeneralGetTypeOfWeekMutator from '.././custom-client';
+import getAuthSessionMutator from '.././custom-client';
 
 
   
@@ -183,6 +186,39 @@ export const useGetGeneralGetTypeOfWeek = <TError = unknown>(
   const isEnabled = swrOptions?.enabled !== false
   const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getGetGeneralGetTypeOfWeekKey() : null);
   const swrFn = () => getGeneralGetTypeOfWeek();
+
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
+export const getAuthSession = (
+    
+ ) => {
+      return getAuthSessionMutator<GetAuthSession200>(
+      {url: `/api/hono/auth/session`, method: 'GET'
+    },
+      );
+    }
+  
+
+
+export const getGetAuthSessionKey = () => [`/api/hono/auth/session`] as const;
+
+
+export type GetAuthSessionQueryResult = NonNullable<Awaited<ReturnType<typeof getAuthSession>>>
+export type GetAuthSessionQueryError = GetAuthSession401
+
+export const useGetAuthSession = <TError = GetAuthSession401>(
+   options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof getAuthSession>>, TError> & { swrKey?: Key, enabled?: boolean },  }
+) => {
+  const {swr: swrOptions} = options ?? {}
+
+  const isEnabled = swrOptions?.enabled !== false
+  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getGetAuthSessionKey() : null);
+  const swrFn = () => getAuthSession();
 
   const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
 

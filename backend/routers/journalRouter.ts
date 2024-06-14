@@ -5,6 +5,7 @@ import { db } from "utils/db";
 import { refreshSubjectsList } from "utils/getSession";
 import parse from "node-html-parser";
 import { sessionMiddleware } from "backend/middlewares/sessionMiddleware";
+import { HTTPException } from "hono/http-exception";
 
 const monthList = [
 	"Січень",
@@ -59,7 +60,6 @@ journalRouter.openapi(get, async (c) => {
 	} = c.req.valid("query")
 	
 	const query = { index: Number(index) }
-console.log("index= ====", session)
 	const user = await db.selectFrom("user")
 		.select(["record_number", "group_id"])
 		.where("id", "=", session.user_id)
@@ -96,9 +96,10 @@ console.log("index= ====", session)
 		if (journalPage.includes("Key violation")) {
 			await refreshSubjectsList(session)
 
-			// throw new TRPCError({
-			// 	code: 'TIMEOUT',
-			// });
+			const res = new Response('Unauthorized', {
+				status: 500
+			})
+			throw new HTTPException(500, { res })
 		}
 
 		const obj = journalPage.split("'jrn.GradeGrid', {")[1].split("});")[0].trim().replaceAll("\t", "").split("\n");

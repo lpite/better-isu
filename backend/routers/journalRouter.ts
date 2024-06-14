@@ -120,9 +120,8 @@ journalRouter.openapi(get, async (c) => {
 				return { type, weight, isRequired }
 			}) || []
 
-
-		// @ts-ignore
 		data[query.index] = { ...data[query.index], journal_id: journalId, weights }
+
 		await db.updateTable("subjects_list")
 			.set({
 				data: JSON.stringify(data)
@@ -182,6 +181,9 @@ journalRouter.openapi(get, async (c) => {
 				let grade = 0;
 				let currentSumOfWeights = 0;
 				Object.entries(sumByType).forEach(([key, sum]) => {
+					if (!weights) {
+						weights = data[query.index].weights
+					}
 					const {
 						weight: weightString,
 						isRequired
@@ -210,7 +212,10 @@ journalRouter.openapi(get, async (c) => {
 				continue;
 
 			}
-			const pairAttributes = weights.find(el => el.type === CONTROLSHORTNAME)
+			if (!weights) {
+				weights = data[query.index].weights
+			}
+			const pairAttributes = data[query.index].weights.find(el => el.type === CONTROLSHORTNAME)
 
 			if (!pairAttributes?.isRequired && !GRADE.length) {
 				continue;

@@ -2,7 +2,7 @@ import MobileNavigation from "@/components/mobile-navigation"
 import { useRouter } from "next/router"
 import React from "react"
 import zod from "zod"
-import { useGetUserProfile } from "orval/default/default"
+import { useGetUserProfile, usePostAuthLogout } from "orval/default/default"
 const journalTypeSchema = zod.enum(["default", "new"])
 
 
@@ -14,10 +14,9 @@ export default function ProfilePage() {
 	} = useGetUserProfile()
 	const [journalType, setJournalType] = React.useState<"default" | "new">("default") 
 
-	// const {
-	// 	data: user,
-	// 	isLoading: isLoadingUser
-	// } = trpc.user.profile.useQuery()
+	const {
+		trigger: logoutTrigger
+	} = usePostAuthLogout()
 
 	React.useEffect(() => {
 		if (!isLoadingUser && !user) {
@@ -35,6 +34,11 @@ export default function ProfilePage() {
 	function changeJournalType(type: zod.output<typeof journalTypeSchema>) {
 		localStorage.setItem("journalType", type);
 		setJournalType(type)
+	}
+
+	async function logout() {
+		await logoutTrigger()
+		router.push("/login")
 	}
 
 	return (
@@ -70,13 +74,12 @@ export default function ProfilePage() {
 				</form>
 			
 			</div>
-			{/* eslint-disable-next-line */}
-			<a 
-				href="/api/logout" 
+			<button 
+				onClick={logout}
 				className="border-2 rounded-xl py-2 px-8 my-6 dark:bg-red-600 bg-red-400"
 			>
 				Вийти
-			</a>
+			</button>
 			<MobileNavigation />
 		</main>
 	)

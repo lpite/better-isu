@@ -62,3 +62,20 @@ authRouter.openapi(getSessionRoute, async (c) => {
 		data: temp
 	}, 200)
 })
+
+
+const logout = createRoute({
+	path: "logout",
+	method: "post",
+	responses: {
+		200: {
+			description: "success logout"
+		}
+	}
+})
+
+
+authRouter.openapi(logout, async (c) => {
+	c.header("Set-Cookie", `session=;Max-Age=0;HttpOnly;Path=/`);
+	return c.json({})
+})

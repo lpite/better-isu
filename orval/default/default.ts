@@ -6,9 +6,14 @@
  */
 import useSwr from 'swr'
 import type {
+  Arguments,
   Key,
   SWRConfiguration
 } from 'swr'
+import useSWRMutation from 'swr/mutation'
+import type {
+  SWRMutationConfiguration
+} from 'swr/mutation'
 import type {
   GetAuthSession200,
   GetAuthSession401,
@@ -25,9 +30,9 @@ import getUserScheduleMutator from '.././custom-client';
 import getJournalGetMutator from '.././custom-client';
 import getGeneralGetTypeOfWeekMutator from '.././custom-client';
 import getAuthSessionMutator from '.././custom-client';
+import postAuthLogoutMutator from '.././custom-client';
 
 
-  
   export const getUserProfile = (
     
  ) => {
@@ -221,6 +226,43 @@ export const useGetAuthSession = <TError = GetAuthSession401>(
   const swrFn = () => getAuthSession();
 
   const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
+export const postAuthLogout = (
+    
+ ) => {
+      return postAuthLogoutMutator<void>(
+      {url: `/api/hono/auth/logout`, method: 'POST'
+    },
+      );
+    }
+  
+
+
+export const getPostAuthLogoutMutationFetcher = ( ) => {
+  return (_: string, __: { arg: Arguments }): Promise<void> => {
+    return postAuthLogout();
+  }
+}
+export const getPostAuthLogoutMutationKey = () => `/api/hono/auth/logout` as const;
+
+export type PostAuthLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthLogout>>>
+export type PostAuthLogoutMutationError = unknown
+
+export const usePostAuthLogout = <TError = unknown>(
+   options?: { swr?:SWRMutationConfiguration<Awaited<ReturnType<typeof postAuthLogout>>, TError, string, Arguments, Awaited<ReturnType<typeof postAuthLogout>>> & { swrKey?: string },  }
+) => {
+
+  const {swr: swrOptions} = options ?? {}
+
+  const swrKey = swrOptions?.swrKey ?? getPostAuthLogoutMutationKey();
+  const swrFn = getPostAuthLogoutMutationFetcher();
+
+  const query = useSWRMutation(swrKey, swrFn, swrOptions)
 
   return {
     swrKey,

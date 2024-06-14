@@ -5,8 +5,14 @@ import { Fragment } from "react";
 import { useGetJournalGet } from "orval/default/default"
 export default function JournalPage() {
 	const router = useRouter()
-	console.log(router.query.index?.toString())
-	const { data, isLoading, error } = useGetJournalGet({ index: router.query.index?.toString() || "jopa" });
+	const { data, isLoading, error } = useGetJournalGet({ index: router.query.index?.toString() || "jopa" }, {
+		swr: {
+			onErrorRetry: (_error, _key, _config, revalidate, { retryCount }) => {
+				if (retryCount >= 10) return
+				setTimeout(() => revalidate({ retryCount }), 300)
+			}
+		}
+	});
 
 	if (isLoading) {
 		return (

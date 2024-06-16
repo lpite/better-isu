@@ -1,6 +1,6 @@
 import PageBackButton from "@/components/page-back-button";
 import PageHeader from "@/components/page-header";
-import { useGetUserRaiting } from "orval/default/default";
+import { useGetUserRating } from "orval/default/default";
 
 
 
@@ -8,7 +8,7 @@ export default function RaitingPage() {
 	const {
 		data: rating,
 		isLoading
-	} = useGetUserRaiting()
+	} = useGetUserRating()
 
 	if (isLoading) {
 		return (

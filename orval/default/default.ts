@@ -21,18 +21,21 @@ import type {
   GetJournalGet200,
   GetJournalGetParams,
   GetUserProfile200,
+  GetUserRating200Item,
   GetUserSchedule200Item,
   GetUserSubjects200Item
 } from '.././model'
 import getUserProfileMutator from '.././custom-client';
 import getUserSubjectsMutator from '.././custom-client';
 import getUserScheduleMutator from '.././custom-client';
+import getUserRatingMutator from '.././custom-client';
 import getJournalGetMutator from '.././custom-client';
 import getGeneralGetTypeOfWeekMutator from '.././custom-client';
 import getAuthSessionMutator from '.././custom-client';
 import postAuthLogoutMutator from '.././custom-client';
 
 
+  
   export const getUserProfile = (
     
  ) => {
@@ -124,6 +127,39 @@ export const useGetUserSchedule = <TError = unknown>(
   const isEnabled = swrOptions?.enabled !== false
   const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getGetUserScheduleKey() : null);
   const swrFn = () => getUserSchedule();
+
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
+export const getUserRating = (
+    
+ ) => {
+      return getUserRatingMutator<GetUserRating200Item[]>(
+      {url: `/api/hono/user/rating`, method: 'GET'
+    },
+      );
+    }
+  
+
+
+export const getGetUserRatingKey = () => [`/api/hono/user/rating`] as const;
+
+
+export type GetUserRatingQueryResult = NonNullable<Awaited<ReturnType<typeof getUserRating>>>
+export type GetUserRatingQueryError = unknown
+
+export const useGetUserRating = <TError = unknown>(
+   options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof getUserRating>>, TError> & { swrKey?: Key, enabled?: boolean },  }
+) => {
+  const {swr: swrOptions} = options ?? {}
+
+  const isEnabled = swrOptions?.enabled !== false
+  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getGetUserRatingKey() : null);
+  const swrFn = () => getUserRating();
 
   const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
 

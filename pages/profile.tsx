@@ -3,6 +3,7 @@ import { useRouter } from "next/router"
 import React from "react"
 import zod from "zod"
 import { useGetUserProfile, usePostAuthLogout } from "orval/default/default"
+import Link from "next/link"
 const journalTypeSchema = zod.enum(["default", "new"])
 
 
@@ -51,6 +52,12 @@ export default function ProfilePage() {
 				<span className="text-2xl">{user?.name} {user?.surname}</span>
 				<span>Номер заліковки {user?.recordNumber}</span>
 				
+				<div className="w-full my-2">
+					<Link href="/rating">
+						<a className="block w-full p-2 bg-slate-800 rounded-lg">Рейтинг</a>
+					</Link>
+				</div>
+
 				<span className="mt-4 mb-2">Вигляд журналу</span>
 				<form className="flex gap-4 w-full px-6">
 					<label className={`flex justify-center p-4 border-2 rounded-xl w-1/2 ${journalType === "default" ? "border-blue-900" : ""}`}>

@@ -65,6 +65,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       user = await db.insertInto("user")
         .values({
           login: req.body.login.trim(),
+          // TODO: rewrite to better encryption
           credentials: encryptText(JSON.stringify(req.body), process.env.ENCRYPTION_KEY || "")
         })
         .returning("id")

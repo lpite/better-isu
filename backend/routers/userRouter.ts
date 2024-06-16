@@ -5,6 +5,7 @@ import { Session } from 'types/session'
 import { sessionMiddleware } from 'backend/middlewares/sessionMiddleware'
 import { sql } from 'kysely'
 import { refreshSubjectsList } from 'utils/getSession'
+import getRaitingPage from 'utils/getRaitingPage'
 
 export const userRouter = new OpenAPIHono<{ Variables: { session: Session } }>();
 
@@ -125,4 +126,34 @@ userRouter.openapi(schedule, async (c) => {
 		.executeTakeFirstOrThrow();
 
 	return c.json(schedule.data as any)
+})
+
+
+const rating = createRoute({
+	path: "rating",
+	method: "get",
+	responses: {
+		200: {
+			description: "returns rating for user",
+			content: {
+				"application/json": {
+					schema: zod.array(zod.object({
+						number: zod.string(),
+						name: zod.string(),
+						surname: zod.string(),
+						rating: zod.string(),
+						type: zod.string(),
+						group: zod.string()
+					}))
+				}
+			}
+		}
+	}
+})
+
+userRouter.openapi(rating, async (c) => {
+	const session = c.get("session")
+	const rating = await getRaitingPage(session);
+	c.header("Cache-Control", "max-age=14400");
+	return c.json(rating)
 })

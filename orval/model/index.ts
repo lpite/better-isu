@@ -14,6 +14,7 @@ export * from './getJournalGet200MonthsItem';
 export * from './getJournalGet200MonthsItemGradesItem';
 export * from './getJournalGetParams';
 export * from './getUserProfile200';
+export * from './getUserRating200Item';
 export * from './getUserSchedule200Item';
 export * from './getUserSchedule200ItemType';
 export * from './getUserSubjects200Item';

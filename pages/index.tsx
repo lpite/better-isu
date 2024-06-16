@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card"
-import useSession from 'hooks/useSession'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React from 'react'

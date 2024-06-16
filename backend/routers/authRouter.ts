@@ -1,9 +1,8 @@
 import { OpenAPIHono, createRoute, z as zod } from "@hono/zod-openapi";
 import { getSession } from "backend/middlewares/sessionMiddleware";
 import { getCookie } from "hono/cookie"
-import { Session } from "types/session";
 
-export const authRouter = new OpenAPIHono<{ Variables: { session: Session } }>();
+export const authRouter = new OpenAPIHono();
 
 
 const getSessionRoute = createRoute({
@@ -79,3 +78,52 @@ authRouter.openapi(logout, async (c) => {
 	c.header("Set-Cookie", `session=;Max-Age=0;HttpOnly;Path=/`);
 	return c.json({})
 })
+
+const login = createRoute({
+	path: "login",
+	method: "post",
+	request: {
+		body: {
+			content: {
+				'application/json': { 
+					schema: zod.object({ a: zod.string() })
+				},
+			}
+		}
+	},
+
+	responses: {
+		200: {
+			description: "success or not success login",
+			content: {
+				"application/json": {
+					schema: zod.object({ error: zod.string().nullable().optional() })
+				}
+			}
+		}
+	}
+})
+
+
+// authRouter.openapi(login, async (c) => {
+// 	// const session = await getSession(c);
+// 	// const body = c.req.valid("json");
+
+// 	// if (!session.error || session.data) {
+// 	// 	return c.json({
+// 	// 		error: "Вже авторизований"
+// 	// 	})
+// 	// }
+
+// 	// const formData = new FormData()
+// 	// formData.append("login", req.body.login);
+// 	// formData.append("passwd", req.body.password)
+// 	// formData.append("btnSubmit", "%D3%E2%B3%E9%F2%E8")
+
+// 	return c.json({ error: "d" })
+
+// })
+
+
+
+

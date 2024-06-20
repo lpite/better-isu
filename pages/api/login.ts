@@ -62,49 +62,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       .executeTakeFirst();
 
     if (!user) {
+
       user = await db.insertInto("user")
         .values({
           login: req.body.login.trim(),
-          // TODO: rewrite to better encryption
-          credentials: encryptText(JSON.stringify(req.body), process.env.ENCRYPTION_KEY || "")
+          // TODO: delete this
+          // credentials: encryptText(JSON.stringify(req.body), process.env.ENCRYPTION_KEY || "")
         })
         .returning("id")
         .executeTakeFirstOrThrow()
 
     }
 
-    let session = await db.selectFrom("session")
-      .selectAll()
-      .where("user_id", "=", user.id)
-      .executeTakeFirst()
+  
 
-    if (!session) {
-      const newSessionId = crypto.randomUUID()
+    const sessionKey = crypto.randomUUID().replaceAll("-", "")
 
-      session = await db.insertInto("session")
-        .values({
-          isu_cookie: response.headers.getSetCookie().toString().split("=")[1].split(";")[0],
-          user_id: user?.id,
-          session_id: newSessionId
-        })
-        .returningAll()
-        .executeTakeFirstOrThrow() 
+    const newSessionId = crypto.randomUUID()
+    const session = await db.insertInto("session")
+      .values({
+        isu_cookie: response.headers.getSetCookie().toString().split("=")[1].split(";")[0],
+        user_id: user?.id,
+        session_id: newSessionId,
+        credentials: encryptText(JSON.stringify(req.body), sessionKey)
+      })
+      .returningAll()
+      .executeTakeFirstOrThrow() 
 
-    } else {
-      session = await db.updateTable("session")
-        .set({
-          isu_cookie: response.headers.getSetCookie().toString().split("=")[1].split(";")[0],
-        })
-        .where("user_id", "=", user.id)
-        .returningAll()
-        .executeTakeFirstOrThrow()
-    }
+    
 
     await refreshUserInfo(session);
     // await refreshSubjectsList(session)
     await refreshSchedule(session)
     
-    res.setHeader("Set-Cookie", `session=${session.session_id};Max-Age=2592000000;HttpOnly;Path=/`);
+    res.appendHeader("Set-Cookie", `session=${session.session_id};Max-Age=2592000000;HttpOnly;Path=/`);
+    res.appendHeader("Set-Cookie", `session_key=${sessionKey};Max-Age=2592000000;HttpOnly;Path=/`);
+
     res.send({
       data: {},
       error: null

@@ -3,7 +3,7 @@ import { decryptText } from "./encryption";
 import { db } from "./db";
 import { sql } from "kysely";
 
-export default async function refreshSession(session: Session) {
+export default async function refreshSession(session: Session, cookies: Record<string, string>) {
 	try {
 		console.log("refreshing session")
 		const user = await db.selectFrom("user")
@@ -15,14 +15,17 @@ export default async function refreshSession(session: Session) {
 			console.error("can't refresh session no user");
 			return null
 		}
-		await db.updateTable("session")
-			.set({
-				created_at: sql`now()`
-			})
-			.where("id", "=", session.id)
-			.executeTakeFirst()
 
-		const credentials = JSON.parse(decryptText(user.credentials, process.env.ENCRYPTION_KEY || ""));
+
+		let credentials = JSON.parse(decryptText(user.credentials, process.env.ENCRYPTION_KEY || ""));
+
+		if (session.credentials.length && "session_key" in cookies) {
+			console.log("refreshing in new way")
+			// використання ключа з сесії
+			credentials = JSON.parse(decryptText(session.credentials, cookies.session_key))
+
+			console.log(credentials)
+		}
 
 		const formData = new FormData()
 		formData.append("login", credentials.login);
@@ -50,12 +53,7 @@ export default async function refreshSession(session: Session) {
 		return newSession;
 	} catch (err) {
 		console.error(err);
-		await db.updateTable("session")
-			.set({
-				created_at: sql` now() - interval '1 hour'`
-			})
-			.where("id", "=", session.id)
-			.executeTakeFirst()
+		
 	}
 	
 

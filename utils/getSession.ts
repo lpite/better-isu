@@ -1,7 +1,6 @@
 import { NextApiRequest } from "next";
 import { db } from "./db";
 import { Session } from "../types/session";
-import { decryptText } from "./encryption";
 import { sql } from "kysely";
 import { getProfilePage, getSubjectsPage } from "./getPage";
 import getScheduleByApi from "./getScheduleByApi";
@@ -58,7 +57,7 @@ export default async function getSession(req: NextApiRequest): Promise<{
 			})
 			
 		if (isNotUpdating) {
-			const newSession = await refreshSession(session);
+			const newSession = await refreshSession(session, req.cookies as any);
 			if (!newSession) {
 				return {
 					error: "unauthorized",

@@ -4,12 +4,11 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card"
-import useSession from 'hooks/useSession'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React from 'react'
 
-import { trpc } from 'trpc/trpc-client'
+import { useGetAuthSession, useGetUserProfile, useGetUserSubjects } from "orval/default/default"
 
 import zod from "zod"
 
@@ -34,30 +33,31 @@ export default function Home() {
   const [journalType, setJournalType] = React.useState<"default" | "new">("default") 
 
   const router = useRouter()
+
   const {
     isLoading: isLoadingSession,
-    data,
+    data: session,
     error
-  } = useSession()
+  } = useGetAuthSession()
 
   const {
     data: user,
     isLoading: isLoadingUser,
-  } = trpc.user.profile.useQuery()
+  } = useGetUserProfile()
 
   const {
     data: subjects,
     isLoading: isLoadingSubjects,
-  } = trpc.user.subjects.useQuery()
+  } = useGetUserSubjects()
 
   React.useEffect(() => {
     if (!user && !isLoadingUser) {
       router.push("/login")
     }
-    if (!isLoadingSession && !data) {
+    if (!isLoadingSession && !session?.data) {
       router.push("/login")
     }
-  }, [user, router, isLoadingUser, isLoadingSession, data, error])
+  }, [user, router, isLoadingUser, isLoadingSession, session, error])
 
   React.useEffect(() => {
     const journalType = journalTypeSchema.parse(localStorage.getItem("journalType") || "default")

@@ -1,5 +1,16 @@
 
-type Day = { RECORDBOOK: string, MONTHSTR: string, DAYNUM: string, CONTROLSHORTNAME: string, GRADE: string, LFP: string }
+import zod from "zod"
+
+export const DaySchema = zod.object({
+	RECORDBOOK: zod.string(), 
+	MONTHSTR: zod.string(), 
+	DAYNUM: zod.string(), 
+	CONTROLSHORTNAME: zod.string(),
+	GRADE: zod.string(), 
+	LFP: zod.string()
+})
+
+type Day = zod.infer<typeof DaySchema>
 
 type GetGradesParams = {
 	isu_cookie?: string,

@@ -15,8 +15,8 @@ import { useForm } from "react-hook-form"
 import React from "react"
 import { useRouter } from "next/router"
 import { Input } from "@/components/ui/input"
-import useSession from "hooks/useSession"
 import { LoginResponse } from "./api/login"
+import { useGetAuthSession } from "orval/default/default"
 
 const formSchema = z.object({
   login: z.string().min(2).max(50),
@@ -32,10 +32,10 @@ export default function LoginPage() {
   const {
     data: session,
     isLoading: isLoadingSession
-  } = useSession()
+  } = useGetAuthSession()
 
   React.useEffect(() => {
-    if (!isLoadingSession && session) {
+    if (!isLoadingSession && session?.data) {
       router.push("/")
     }
   }, [router, isLoadingSession, session])

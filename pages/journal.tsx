@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Fragment } from "react";
+import React, { Fragment } from "react";
 
-import { useGetJournalGet } from "orval/default/default"
+import { useGetAuthSession, useGetJournalGet } from "orval/default/default"
 import PageHeader from "@/components/page-header";
 import PageBackButton from "@/components/page-back-button";
 export default function JournalPage() {
 	const router = useRouter()
+	const { data: session, isLoading: isLoadingSession } = useGetAuthSession();
 	const { data, isLoading, error } = useGetJournalGet({ index: router.query.index?.toString() || "jopa" }, {
 		swr: {
 			onErrorRetry: (_error, _key, _config, revalidate, { retryCount }) => {
@@ -15,6 +16,12 @@ export default function JournalPage() {
 			}
 		}
 	});
+
+	React.useEffect(() => {
+		if (!session?.data && !isLoadingSession) {
+			router.push("/login")
+		}
+	}, [session])
 
 	if (isLoading) {
 		return (
@@ -53,7 +60,7 @@ export default function JournalPage() {
 		<>
 			<PageHeader name={journalName} />
 
-			<main className="gap-1 p-2 pt-12 pb-14">
+			<main className="gap-1 p-2 pb-14">
 				{months.map((m) => {
 					const gradesForMonth = m.grades 
 						

@@ -105,7 +105,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   } catch (err) {
     console.error(err);
     res.send({
-      error: "something went wrong",
+      error: "Натисність ще раз",
       data: null
     })
   }

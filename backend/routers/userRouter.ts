@@ -70,7 +70,7 @@ userRouter.openapi(subjects, async (c) => {
 	const session = c.get("session");
 	const subjects = await db.selectFrom("subjects_list")
 		.select([sql<{ name: string, link: string }[] | string>`data`.as("data")])
-		.where("user_id", "=", session.user_id)
+		.where("session_id", "=", session.id)
 		.executeTakeFirst()
 
 	if (!subjects || !subjects?.data?.length) {

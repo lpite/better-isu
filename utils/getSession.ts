@@ -101,7 +101,7 @@ export async function refreshSubjectsList(session: Session) {
 		.set({
 			data: JSON.stringify(subjects)
 		})
-		.where("user_id", "=", session.user_id)
+		.where("session_id", "=", session.id)
 		.returningAll()
 		.executeTakeFirst()
 
@@ -109,7 +109,7 @@ export async function refreshSubjectsList(session: Session) {
 		await db.insertInto("subjects_list")
 			.values({
 				data: JSON.stringify(subjects),
-				user_id: session.user_id
+				session_id: session.id
 			})
 			.executeTakeFirstOrThrow()
 

@@ -26,7 +26,7 @@ export default async function JournalRoute(req: NextApiRequest, res: NextApiResp
 
 	const subjects = await db.selectFrom("subjects_list")
 		.select(["data"])
-		.where("user_id", "=", session.data?.user_id)
+		.where("session_id", "=", session.data.id)
 		.executeTakeFirstOrThrow()
 
 	const data = subjects.data as any;

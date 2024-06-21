@@ -43,7 +43,7 @@ export interface SubjectsList {
   created_at: Generated<Timestamp>;
   data: Json;
   id: Generated<number>;
-  user_id: number;
+  session_id: number;
 }
 
 export interface User {

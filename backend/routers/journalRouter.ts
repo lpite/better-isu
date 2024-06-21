@@ -67,7 +67,7 @@ journalRouter.openapi(get, async (c) => {
 
 	const subjects = await db.selectFrom("subjects_list")
 		.select(["data"])
-		.where("user_id", "=", session.user_id)
+		.where("session_id", "=", session.id)
 		.executeTakeFirstOrThrow()
 
 
@@ -126,7 +126,7 @@ journalRouter.openapi(get, async (c) => {
 			.set({
 				data: JSON.stringify(data)
 			})
-			.where("user_id", "=", session.user_id)
+			.where("session_id", "=", session.id)
 			.executeTakeFirstOrThrow()
 	}
 

@@ -23,8 +23,6 @@ export default async function refreshSession(session: Session, cookies: Record<s
 			console.log("refreshing in new way")
 			// використання ключа з сесії
 			credentials = JSON.parse(decryptText(session.credentials, cookies.session_key))
-
-			console.log(credentials)
 		}
 
 		const formData = new FormData()

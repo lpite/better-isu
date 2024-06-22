@@ -17,12 +17,14 @@ export default async function refreshSession(session: Session, cookies: Record<s
 		}
 
 
-		let credentials = JSON.parse(decryptText(user.credentials, process.env.ENCRYPTION_KEY || ""));
+		let credentials: Record<string, string> = {}
 
 		if (session.credentials.length && "session_key" in cookies) {
 			console.log("refreshing in new way")
 			// використання ключа з сесії
 			credentials = JSON.parse(decryptText(session.credentials, cookies.session_key))
+		} else {
+			credentials = JSON.parse(decryptText(user.credentials, process.env.ENCRYPTION_KEY || ""));
 		}
 
 		const formData = new FormData()

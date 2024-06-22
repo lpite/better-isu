@@ -178,7 +178,7 @@ export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProp
 							)
 						}
 
-						const scheduleForDay = schedule?.filter(el => el.day === "Пн")
+						const scheduleForDay = schedule?.filter(el => el.day === day)
 							.filter((subj) => isEnabled(subj.name))
 							.filter(({ type }) => (type === "full" || type === currentWeekType)) 
 							.filter(({ dateFrom, dateTo }) => {

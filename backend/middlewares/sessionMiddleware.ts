@@ -54,7 +54,9 @@ export async function getSession(ctx: Context): Promise<{
 			const newSession = await refreshSession(session, getCookie(ctx));
 			if (!newSession) {
 				console.error("no new session created")
-				
+				await db.deleteFrom("session_update_state")
+					.where("session", "=", sessionCookie)
+					.execute()
 				return {
 					error: "unauthorized",
 					data: null

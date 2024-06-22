@@ -29,7 +29,7 @@ export async function getSession(ctx: Context): Promise<{
 	
 
 	if (!session) {
-		console.log("no in db")
+		console.error("no such session db (sessionMiddleware)")
 		return {
 			error: "unauthorized",
 			data: null

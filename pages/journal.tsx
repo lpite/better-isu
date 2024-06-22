@@ -126,7 +126,7 @@ function Day({
 				<span className="text-2xl dark:text-white grow">{date}</span>
 				<span className={`text-3xl font-bold leading-none ${colors[isNaN(Number(grade)) ? grade : Math.floor(Number(grade))]}`}>{grade}</span>
 			</div>
-			<span className="dark:text-white leading-tight">{types[type.toLowerCase()]}</span>
+			<span className="dark:text-white leading-tight">{types[type.toLowerCase()] || type}</span>
 		</div>
 	)
 }

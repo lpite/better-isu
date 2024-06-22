@@ -53,7 +53,7 @@ export async function getSession(ctx: Context): Promise<{
 		if (isNotUpdating) {
 			const newSession = await refreshSession(session, getCookie(ctx));
 			if (!newSession) {
-				console.log("no newSession")
+				console.error("no new session created")
 				
 				return {
 					error: "unauthorized",

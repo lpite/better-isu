@@ -51,7 +51,8 @@ export default async function refreshSession(session: Session, cookies: Record<s
 		return newSession;
 	} catch (err) {
 		console.error(err);
-		
+		console.error(session);
+		return null
 	}
 	
 

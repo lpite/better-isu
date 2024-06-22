@@ -22,8 +22,12 @@ export const customClient = async <T>({
       ...(data ? { body: JSON.stringify(data) } : {}),
     },
   );
-  return response.json();
+  if (response.headers.get("Content-Type")?.includes("json")) {
 
+    return response.json();
+  }
+
+  return response.text() as T
 };
 
  

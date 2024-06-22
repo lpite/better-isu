@@ -178,8 +178,7 @@ export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProp
 							)
 						}
 
-
-						const scheduleForDay = schedule?.filter(el => el.day === day)
+						const scheduleForDay = schedule?.filter(el => el.day === "Пн")
 							.filter((subj) => isEnabled(subj.name))
 							.filter(({ type }) => (type === "full" || type === currentWeekType)) 
 							.filter(({ dateFrom, dateTo }) => {
@@ -191,12 +190,9 @@ export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProp
 
 								const [fromDay, fromMonth] = dateFrom.split(".");
 								const [toDay, toMonth] = dateTo.split(".");
+								
+								if ((Number(fromMonth) <= currentMonth && Number(fromDay) <= currentDay) && (Number(toMonth) >= currentMonth && Number(toDay) >= currentDay )) {
 
-								if (Number(fromMonth) <= currentMonth && Number(fromDay) <= currentDay) {
-									return true;
-								}
-
-								if (Number(toMonth) > currentMonth || (Number(toMonth) === currentMonth && Number(toDay) >= currentDay)) {
 									return true;
 								}
 
@@ -205,7 +201,7 @@ export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProp
 							|| []
 						if (!scheduleForDay.length && !isLoadingSchedule) {
 							return (
-								<CarouselItem className="flex flex-col" key={day}>
+								<CarouselItem className="flex flex-col h-72" key={day}>
 									<span>{day}</span>
 									<div className="flex w-full h-full items-center justify-center">
 										Вільний день :)

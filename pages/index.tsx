@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/card"
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { Fragment } from 'react'
 
 import { useGetAuthSession, useGetUserProfile, useGetUserSubjects } from "orval/default/default"
 
@@ -83,11 +83,10 @@ export default function Home() {
         }</> : null}
 
         {!isLoading && subjects && subjects?.map((el, i) => (
-          <>
+          <Fragment key={el.name + i}>
             {journalType === "new" ? 
               <Link 
-                href={`/journal?index=${i}`} 
-                key={el.name + i}
+                href={`/journal?index=${i}`}    
               >
                 <a className='flex w-full border rounded-lg py-5 px-3'>
                   
@@ -97,13 +96,12 @@ export default function Home() {
               :
               <a 
                 href={`/api/journal?index=${i}`} 
-                key={el.name + i} 
                 target='_blank' 
                 className='flex w-full border rounded-lg py-5 px-3'>
                 {el.name}
               </a>
             }
-          </>
+          </Fragment>
         ))}
 
         <ScheduleCarousel subjects={subjects || []} />

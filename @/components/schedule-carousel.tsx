@@ -182,6 +182,8 @@ export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProp
 							.filter((subj) => isEnabled(subj.name))
 							.filter(({ type }) => (type === "full" || type === currentWeekType)) 
 							.filter(({ dateFrom, dateTo }) => {
+								return true
+								
 								if (!dateFrom || !dateTo) {
 									return true
 								}
@@ -191,7 +193,7 @@ export default function ScheduleCarousel({ subjects = [] }: ScheduleCarouselProp
 								const [fromDay, fromMonth] = dateFrom.split(".");
 								const [toDay, toMonth] = dateTo.split(".");
 								
-								if ((Number(fromMonth) <= currentMonth && Number(fromDay) <= currentDay) && (Number(toMonth) >= currentMonth && Number(toDay) >= currentDay )) {
+								if ((Number(fromMonth) <= currentMonth && Number(fromDay) <= currentDay) && (Number(toMonth) >= currentMonth && Number(toDay) >= currentDay)) {
 
 									return true;
 								}

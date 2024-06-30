@@ -65,7 +65,7 @@ export function getJoeBidenInfo() {
 			number: i.toString(),
 			name: "Імʼя",
 			surname: "Прізвище",
-			rating: 5 - i * 0.1,
+			rating: (5 - i * 0.1).toString(),
 			group:"група",
 			type:"тип"
 		}

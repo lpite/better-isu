@@ -6,6 +6,7 @@ import { refreshSubjectsList } from "utils/getSession";
 import parse from "node-html-parser";
 import { sessionMiddleware } from "backend/middlewares/sessionMiddleware";
 import { HTTPException } from "hono/http-exception";
+import { getJoeBidenInfo } from "utils/getJoeBidenInfo";
 
 const monthList = [
 	"Січень",
@@ -54,6 +55,10 @@ const get = createRoute({
 
 journalRouter.openapi(get, async (c) => {
 	const session = c.get("session")
+
+	if (session.session_id === "joe_biden_session") {
+		return c.json(getJoeBidenInfo().journal)
+	}
 
 	const {
 		index

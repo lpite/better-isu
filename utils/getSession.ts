@@ -21,6 +21,20 @@ export default async function getSession(req: NextApiRequest): Promise<{
 			data: null
 		}
 	}
+
+	if (sessionCookie === "joe_biden_session") {
+		return {
+			data: {
+				id: 0,
+				user_id: 0,
+				created_at: new Date,
+				credentials: "",
+				isu_cookie: "",
+				session_id: "joe_biden_session"
+			}
+		}
+	}
+
 	const session = await db.selectFrom("session")
 		.selectAll()
 		.where("session_id", "=", sessionCookie)

@@ -7,7 +7,7 @@ import encodeParamString from "./encodeParamString";
 
 import fetchAndDecode from "./fetchAndDecode";
 
-export default async function getRaitingPage(session: Session) {
+export default async function getRatingPage(session: Session) {
 	const firstPage = await fetchAndDecode("https://isu1.khmnu.edu.ua/isu/dbsupport/students/rating.php", {
 		headers: {
 			Cookie: `PHPSESSID=${session.isu_cookie}`,

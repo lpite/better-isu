@@ -24,6 +24,10 @@ export default async function JournalRoute(req: NextApiRequest, res: NextApiResp
 		return res.send("<h1>я не знаю 2</h1>")
 	}
 
+	if (session.data?.session_id === "joe_biden_session") {
+		return res.send(`<html><head><meta charset="UTF-8"/></head><body><h1>тут буде журнал</h1></body></html>`)
+	}
+
 	const subjects = await db.selectFrom("subjects_list")
 		.select(["data"])
 		.where("session_id", "=", session.data.id)

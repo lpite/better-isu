@@ -5,7 +5,8 @@ import { Session } from 'types/session'
 import { sessionMiddleware } from 'backend/middlewares/sessionMiddleware'
 import { sql } from 'kysely'
 import { refreshSubjectsList } from 'utils/getSession'
-import getRaitingPage from 'utils/getRaitingPage'
+import getRatingPage from 'utils/getRatingPage'
+import { getJoeBidenInfo } from 'utils/getJoeBidenInfo'
 
 export const userRouter = new OpenAPIHono<{ Variables: { session: Session } }>();
 
@@ -33,6 +34,11 @@ const profile = createRoute({
 
 userRouter.openapi(profile, async (c) => {
 	const session = c.get("session")
+
+	if (session.session_id === "joe_biden_session") {
+		return c.json(getJoeBidenInfo().profile)
+	}
+
 	const userProfile = await db.selectFrom("user")
 		.select([
 			"name",
@@ -66,8 +72,12 @@ const subjects = createRoute({
 })
 
 userRouter.openapi(subjects, async (c) => {
-
 	const session = c.get("session");
+
+	if (session.session_id === "joe_biden_session") {
+		return c.json(getJoeBidenInfo().subjects)
+	}
+
 	const subjects = await db.selectFrom("subjects_list")
 		.select([sql<{ name: string, link: string }[] | string>`data`.as("data")])
 		.where("session_id", "=", session.id)
@@ -115,6 +125,10 @@ const schedule = createRoute({
 userRouter.openapi(schedule, async (c) => {
 	const session = c.get("session");
 
+	if (session.session_id === "joe_biden_session") {
+		return c.json(getJoeBidenInfo().schedule)
+	}
+
 	const user = await db.selectFrom("user")
 		.select("group")
 		.where("id", "=", session.user_id)
@@ -153,7 +167,12 @@ const rating = createRoute({
 
 userRouter.openapi(rating, async (c) => {
 	const session = c.get("session")
-	const rating = await getRaitingPage(session);
+
+	if(session.session_id === "joe_biden_session"){
+		return c.json(getJoeBidenInfo().rating)
+	}
+
+	const rating = await getRatingPage(session);
 	c.header("Cache-Control", "max-age=14400");
 	return c.json(rating)
 })

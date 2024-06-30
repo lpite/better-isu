@@ -34,6 +34,7 @@ export default function LoginPage() {
   } = useGetAuthSession()
 
   React.useEffect(() => {
+      console.log(isLoadingSession)
     if (!isLoadingSession && session?.data) {
       router.push("/")
     }

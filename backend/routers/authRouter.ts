@@ -50,7 +50,7 @@ authRouter.openapi(getSessionRoute, async (c) => {
 				session_id: "joe_biden_session",
 				created_at: new Date
 			}	
-		})
+		}, 200)
 	}
 
 	const session = await getSession(c);

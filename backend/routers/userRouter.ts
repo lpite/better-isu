@@ -4,7 +4,7 @@ import { z as zod } from "@hono/zod-openapi"
 import { Session } from 'types/session'
 import { sessionMiddleware } from 'backend/middlewares/sessionMiddleware'
 import { sql } from 'kysely'
-import { refreshSubjectsList } from 'utils/getSession'
+import { refreshSchedule, refreshSubjectsList } from 'utils/getSession'
 import getRatingPage from 'utils/getRatingPage'
 import { getJoeBidenInfo } from 'utils/getJoeBidenInfo'
 
@@ -134,10 +134,18 @@ userRouter.openapi(schedule, async (c) => {
 		.where("id", "=", session.user_id)
 		.executeTakeFirstOrThrow();
 
-	const schedule = await db.selectFrom("schedule")
+	let schedule = await db.selectFrom("schedule")
 		.select(["data"])
 		.where("group", "=", user.group)
-		.executeTakeFirstOrThrow();
+		.executeTakeFirst();
+
+	if (!schedule) {
+		await refreshSchedule(session);
+		schedule = await db.selectFrom("schedule")
+			.select(["data"])
+			.where("group", "=", user.group)
+			.executeTakeFirstOrThrow();
+	}
 
 	return c.json(schedule.data as any)
 })
@@ -168,7 +176,7 @@ const rating = createRoute({
 userRouter.openapi(rating, async (c) => {
 	const session = c.get("session")
 
-	if(session.session_id === "joe_biden_session"){
+	if (session.session_id === "joe_biden_session") {
 		return c.json(getJoeBidenInfo().rating)
 	}
 

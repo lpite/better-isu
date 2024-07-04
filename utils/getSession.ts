@@ -140,8 +140,13 @@ export async function refreshUserInfo(session: Session) {
 	const facultyId = facultets.find(el => el.facultyName === faculty)?.facultyId || 0;
 
 	const groups = await getGroups(facultyId, course);
+	let groupId = groups.find(el => el.groupName === group)?.groupId;
 
-	const groupId = groups.find(el => el.groupName === group)?.groupId || 0;
+	if (!groupId) {
+		// кейс коли курс оновився на сайті, але не в апі
+		const groups = await getGroups(facultyId, (parseInt(course) - 1).toString());
+		groupId = groups.find(el => el.groupName === group)?.groupId;
+	}
 
 
 	await db.updateTable("user")

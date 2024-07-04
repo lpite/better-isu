@@ -76,6 +76,9 @@ export default function Home() {
         <link rel="preload" href="/api/hono/user/subjects" as="fetch" crossOrigin="anonymous" />
         <link rel="preload" href="/api/hono/user/schedule" as="fetch" crossOrigin="anonymous" />
         <link rel="preload" href="/api/hono/auth/session" as="fetch" crossOrigin="anonymous" />
+        {subjects?.map((_, i) => (
+          <link key={"preload" + i} rel="preload" href={`/api/hono/journal/get?index=${i}`} as="fetch" crossOrigin="anonymous" />  
+        ))}
       </Head>
       <h1 className='text-2xl font-bold mb-10'>{checkIfBirthDay(user?.birthDate) ? "З днем народження!" : "Привіт"} {user?.name}</h1>
 

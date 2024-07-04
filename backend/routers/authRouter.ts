@@ -1,6 +1,7 @@
 import { OpenAPIHono, createRoute, z as zod } from "@hono/zod-openapi";
 import { getSession } from "backend/middlewares/sessionMiddleware";
 import { getCookie } from "hono/cookie"
+// import { db } from "utils/db";
 
 export const authRouter = new OpenAPIHono();
 
@@ -84,7 +85,23 @@ const logout = createRoute({
 
 
 authRouter.openapi(logout, async (c) => {
-	c.header("Set-Cookie", `session=;Max-Age=0;HttpOnly;Path=/`);
+
+	// ПРОСТО ОСЬ ТАК КУКІС НЕ ДІСТАТИ!
+	// ТОМУ ВИДАЛИТИ СЕСІЮ З БД НЕ ВИЙДЕ.....
+	// const session = getCookie(c, "session");
+	// if (!session) {
+	// 	return c.json({})
+	// }
+	// if (session !== "joe_biden_session") {
+	// 	await db.deleteFrom("session")
+	// 		.where("session.session_id", "=", session)
+	// 		.execute()
+	// }
+
+	c.header("Set-Cookie", `session=;Max-Age=0;HttpOnly;Path=/`, { append: true });
+	c.header("Set-Cookie", `session_key=;Max-Age=0;HttpOnly;Path=/`, { append: true });
+
+
 	return c.json({})
 })
 

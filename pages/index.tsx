@@ -11,7 +11,6 @@ import React, { Fragment } from 'react'
 import { useGetAuthSession, useGetUserProfile, useGetUserSubjects } from "orval/default/default"
 
 import zod from "zod"
-import Head from 'next/head'
 
 function checkIfBirthDay(birthDate?: string) {
 
@@ -71,12 +70,6 @@ export default function Home() {
 
   return (
     <main className='py-4 px-2'>
-      <Head>
-        <link rel="preload" href="/api/hono/user/profile" as="fetch" crossOrigin="anonymous" />
-        <link rel="preload" href="/api/hono/user/subjects" as="fetch" crossOrigin="anonymous" />
-        <link rel="preload" href="/api/hono/user/schedule" as="fetch" crossOrigin="anonymous" />
-        <link rel="preload" href="/api/hono/auth/session" as="fetch" crossOrigin="anonymous" />
-      </Head>
       <h1 className='text-2xl font-bold mb-10'>{checkIfBirthDay(user?.birthDate) ? "З днем народження!" : "Привіт"} {user?.name}</h1>
 
       <h2 className='text-xl text-slate-400'>Поточний семестр</h2>

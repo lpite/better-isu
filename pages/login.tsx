@@ -38,7 +38,7 @@ export default function LoginPage() {
     if (!isLoadingSession && !isValidatingSession && session?.data) {
       router.push("/")
     }
-  }, [router, isLoadingSession, session])
+  }, [router, isLoadingSession, isValidatingSession, session])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

@@ -8,8 +8,12 @@ import PageBackButton from "@/components/page-back-button";
 import ProtectedRoute from "@/components/protected-route";
 export default function JournalPage() {
 	const router = useRouter()
-	const { data, isLoading, error } = useGetJournalGet({ index: router.query.index?.toString() || "jopa" }, {
+	const { data, isLoading, error, mutate } = useGetJournalGet({ index: router.query.index?.toString() || "jopa" }, {
 		swr: {
+			revalidateIfStale: true,
+			revalidateOnMount: true,
+			revalidateOnFocus: true,
+			revalidateOnReconnect: true,
 			onErrorRetry: (_error, _key, _config, revalidate, { retryCount }) => {
 				if (retryCount >= 10) return
 				setTimeout(() => revalidate({ retryCount }), 300)

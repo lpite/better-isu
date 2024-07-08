@@ -22,5 +22,11 @@ export async function getGroup(groupId: number, facultyId: number, course: strin
 
 	const group = groups.find((gr) => gr.groupId === groupId);
 
+	if (!group) {
+		const groups = await getGroups(facultyId, (parseInt(course) - 1).toString());
+		const group = groups.find(el => el.groupId === groupId);
+		return group
+	}
+
 	return group;
 }

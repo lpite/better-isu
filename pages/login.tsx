@@ -30,12 +30,12 @@ export default function LoginPage() {
 
   const {
     data: session,
-    isLoading: isLoadingSession
+    isLoading: isLoadingSession,
+    isValidating: isValidatingSession
   } = useGetAuthSession()
 
   React.useEffect(() => {
-      console.log(isLoadingSession)
-    if (!isLoadingSession && session?.data) {
+    if (!isLoadingSession && !isValidatingSession && session?.data) {
       router.push("/")
     }
   }, [router, isLoadingSession, session])

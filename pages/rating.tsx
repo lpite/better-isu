@@ -1,5 +1,6 @@
 import PageBackButton from "@/components/page-back-button";
 import PageHeader from "@/components/page-header";
+import ProtectedRoute from "@/components/protected-route";
 import { useGetUserRating } from "orval/default/default";
 
 
@@ -13,6 +14,7 @@ export default function RaitingPage() {
 	if (isLoading) {
 		return (
 			<>
+				<ProtectedRoute />
 				<PageHeader name="" />
 				<main className="h-full flex items-center justify-center">
 					<div className="flex w-full h-64 items-center justify-center">
@@ -24,6 +26,7 @@ export default function RaitingPage() {
 
 	return (
 		<>
+			<ProtectedRoute />
 			<PageHeader name="Рейтинг" />
 			<main className="gap-1 p-2 pt-3 pb-14">
 				{rating?.map((row, i) => (

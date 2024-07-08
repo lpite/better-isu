@@ -2,8 +2,9 @@ import MobileNavigation from "@/components/mobile-navigation"
 import { useRouter } from "next/router"
 import React from "react"
 import zod from "zod"
-import { useGetUserProfile, usePostAuthLogout } from "orval/default/default"
+import { useGetAuthSession, useGetUserProfile, usePostAuthLogout } from "orval/default/default"
 import Link from "next/link"
+import ProtectedRoute from "@/components/protected-route"
 const journalTypeSchema = zod.enum(["default", "new"])
 
 
@@ -13,17 +14,14 @@ export default function ProfilePage() {
 		data: user,
 		isLoading: isLoadingUser
 	} = useGetUserProfile()
+
+	const { mutate: mutateSession } = useGetAuthSession()
+
 	const [journalType, setJournalType] = React.useState<"default" | "new">("default") 
 
 	const {
 		trigger: logoutTrigger
 	} = usePostAuthLogout()
-
-	React.useEffect(() => {
-		if (!isLoadingUser && !user) {
-			router.push("/login")
-		}
-	}, [user, router, isLoadingUser])
   
 	React.useEffect(() => {
 		const journalType = journalTypeSchema.parse(localStorage.getItem("journalType") || "default")
@@ -39,11 +37,13 @@ export default function ProfilePage() {
 
 	async function logout() {
 		await logoutTrigger()
+		mutateSession()
 		router.push("/login")
 	}
 
 	return (
 		<main className="flex items-center flex-col justify-center h-full pb-14 px-2">
+			<ProtectedRoute />
 			<div className="flex flex-col justify-center items-center grow w-full pt-24">	
 				{/*<img 
 					src="/icons/apple-touch-icon.png" 

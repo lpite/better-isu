@@ -2,12 +2,12 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { Fragment } from "react";
 
-import { useGetAuthSession, useGetJournalGet } from "orval/default/default"
+import { useGetJournalGet } from "orval/default/default"
 import PageHeader from "@/components/page-header";
 import PageBackButton from "@/components/page-back-button";
+import ProtectedRoute from "@/components/protected-route";
 export default function JournalPage() {
 	const router = useRouter()
-	const { data: session, isLoading: isLoadingSession } = useGetAuthSession();
 	const { data, isLoading, error } = useGetJournalGet({ index: router.query.index?.toString() || "jopa" }, {
 		swr: {
 			onErrorRetry: (_error, _key, _config, revalidate, { retryCount }) => {
@@ -17,15 +17,12 @@ export default function JournalPage() {
 		}
 	});
 
-	React.useEffect(() => {
-		if (!session?.data && !isLoadingSession) {
-			router.push("/login")
-		}
-	}, [session])
 
 	if (isLoading) {
 		return (
 			<>
+				<ProtectedRoute />
+
 				<PageHeader name="" />
 				<main className="h-full flex items-center justify-center">
 					<div className="flex w-full h-64 items-center justify-center">
@@ -38,6 +35,8 @@ export default function JournalPage() {
 	if (!data || error) {
 		return (
 			<>
+				<ProtectedRoute />
+
 				<PageHeader name="" />
 				<main className="gap-1 p-2 flex items-center justify-center">
 					<h1>Щось пішло не так :(</h1>
@@ -58,6 +57,8 @@ export default function JournalPage() {
 	const { months, journalName } = data
 	return (
 		<>
+			<ProtectedRoute />
+
 			<PageHeader name={journalName} />
 
 			<main className="gap-1 p-2 pb-14">

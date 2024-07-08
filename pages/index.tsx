@@ -5,13 +5,13 @@ import {
   CardContent,
 } from "@/components/ui/card"
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import React, { Fragment } from 'react'
 
-import { useGetAuthSession, useGetUserProfile, useGetUserSubjects } from "orval/default/default"
+import { useGetUserProfile, useGetUserSubjects } from "orval/default/default"
 
 import zod from "zod"
 import Head from 'next/head'
+import ProtectedRoute from '@/components/protected-route'
 
 function checkIfBirthDay(birthDate?: string) {
 
@@ -33,14 +33,6 @@ export default function Home() {
 
   const [journalType, setJournalType] = React.useState<"default" | "new">("default") 
 
-  const router = useRouter()
-
-  const {
-    isLoading: isLoadingSession,
-    data: session,
-    error
-  } = useGetAuthSession()
-
   const {
     data: user,
     isLoading: isLoadingUser,
@@ -50,15 +42,6 @@ export default function Home() {
     data: subjects,
     isLoading: isLoadingSubjects,
   } = useGetUserSubjects()
-
-  React.useEffect(() => {
-    if (!user && !isLoadingUser) {
-      router.push("/login")
-    }
-    if (!isLoadingSession && !session?.data) {
-      router.push("/login")
-    }
-  }, [user, router, isLoadingUser, isLoadingSession, session, error])
 
   React.useEffect(() => {
     const journalType = journalTypeSchema.parse(localStorage.getItem("journalType") || "default")
@@ -80,6 +63,7 @@ export default function Home() {
           <link key={"preload" + i} rel="preload" href={`/api/hono/journal/get?index=${i}`} as="fetch" crossOrigin="anonymous" />  
         ))}
       </Head>
+      <ProtectedRoute />
       <h1 className='text-2xl font-bold mb-10'>{checkIfBirthDay(user?.birthDate) ? "З днем народження!" : "Привіт"} {user?.name}</h1>
 
       <h2 className='text-xl text-slate-400'>Поточний семестр</h2>

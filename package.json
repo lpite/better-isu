@@ -9,7 +9,8 @@
     "lint": "next lint",
     "migrate": "ts-node migrator.ts",
     "gen-db-types": "kysely-codegen --out-file ./types/db.d.ts --include-pattern public.\\* --exclude-pattern pg_\\*",
-    "generate-openapi": "orval"
+    "generate-openapi": "orval",
+    "start-backend": "ts-node server.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.12.0",

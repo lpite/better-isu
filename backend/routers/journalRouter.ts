@@ -101,16 +101,35 @@ journalRouter.openapi(get, async (c) => {
 		if (journalPage.includes("Key violation")) {
 			await refreshSubjectsList(session)
 
-			const res = new Response('Unauthorized', {
+			const res = new Response('Error', {
 				status: 500
 			})
 			throw new HTTPException(500, { res })
 		}
 
-		const obj = journalPage.split("'jrn.GradeGrid', {")[1].split("});")[0].trim().replaceAll("\t", "").split("\n");
-		journalId = obj.map((el) => el.split("'")[1].split("'")[0])[2];
-
+		if (!journalPage) {
+			console.error("Сторінка журналу пуста");
+			throw new HTTPException(500, {
+				res: new Response('Error', {
+					status: 500
+				})
+			})
+		}
 		const html = parse(journalPage);
+
+		// тег в якому лежать дані про журнал
+		const scriptTag = html.querySelectorAll("script")[3].textContent.trim();
+
+		journalId = (scriptTag.match(/journalId:\s*'([^']+)'/) || [])[1];
+
+		if (!journalId || !journalId?.length) {
+			console.error("Немає айді журналу");
+			throw new HTTPException(500, {
+				res: new Response('Error', {
+					status: 500
+				})
+			})
+		}
 
 		const weights = html.querySelector("table")
 			?.querySelectorAll("tr")
@@ -138,7 +157,7 @@ journalRouter.openapi(get, async (c) => {
 	const grades = await getGradesForUser({
 		isu_cookie: session.isu_cookie,
 		groupId: user.group_id,
-		journalId,
+		journalId: journalId,
 		recordNumber: user.record_number
 	})
 

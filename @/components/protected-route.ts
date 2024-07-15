@@ -15,13 +15,7 @@ export default function ProtectedRoute() {
 			revalidateOnMount: true,
 			revalidateIfStale: true,
 			revalidateOnFocus: true,
-			revalidateOnReconnect: true,
-			fallbackData: {
-				data: {
-					created_at: "",
-					session_id: "1"
-				}
-			}
+			revalidateOnReconnect: true
 		}
 	});
 

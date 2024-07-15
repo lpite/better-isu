@@ -5,10 +5,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createTable("subjects_list")
     .addColumn("id", "serial", (cl) => cl.primaryKey())
     .addColumn("data", "jsonb", (cl) => cl.notNull())
-    .execute()
+    .execute();
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable("subjects_list").execute();
-
 }

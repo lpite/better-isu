@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,30 +15,18 @@
     "jsx": "preserve",
     "baseUrl": "./",
     "paths": {
-      "@/components/*": [
-        "@/components/*"
-      ],
-      "@/lib/*": [
-        "@/lib/*"
-      ]
+      "@/components/*": ["@/components/*"],
+      "@/lib/*": ["@/lib/*"]
     },
     "target": "ES6",
     "forceConsistentCasingInFileNames": true
   },
   "ts-node": {
-    "require": [
-      "tsconfig-paths/register"
-    ],
+    "require": ["tsconfig-paths/register"],
     "compilerOptions": {
-      "module": "CommonJS",
+      "module": "CommonJS"
     }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
 }

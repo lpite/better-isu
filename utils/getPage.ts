@@ -13,23 +13,27 @@ export async function getProfilePage(session: Session) {
       headers: {
         Cookie: `PHPSESSID=${session.isu_cookie}`,
       },
-    }
+    },
   )
     .then((res) => res.arrayBuffer())
     .then((res) => decoder.decode(res))
     .catch((res) => {
-      return ""
-    })
+      return "";
+    });
 
   const tableCells = parse(eduplansPage).querySelectorAll("#TabCell");
-  
-  const { html: profileHtml } = await fetchAndDecode("https://isu1.khmnu.edu.ua/isu/dbsupport/students/personnel.php", {
-    headers: {
-      Cookie: `PHPSESSID=${session.isu_cookie}`,
-    },
-  })  
 
-  const profileCells = profileHtml?.querySelector("#MainTab")?.querySelectorAll("#TabCell") || []
+  const { html: profileHtml } = await fetchAndDecode(
+    "https://isu1.khmnu.edu.ua/isu/dbsupport/students/personnel.php",
+    {
+      headers: {
+        Cookie: `PHPSESSID=${session.isu_cookie}`,
+      },
+    },
+  );
+
+  const profileCells =
+    profileHtml?.querySelector("#MainTab")?.querySelectorAll("#TabCell") || [];
 
   const profile = {
     name: tableCells[2].textContent,
@@ -40,7 +44,7 @@ export async function getProfilePage(session: Session) {
     speciality: tableCells[5].textContent,
     group: tableCells[7].textContent,
     course: tableCells[10].textContent,
-    birthDate: profileCells[profileCells?.length - 1].textContent
+    birthDate: profileCells[profileCells?.length - 1].textContent,
   };
 
   return profile;
@@ -48,8 +52,6 @@ export async function getProfilePage(session: Session) {
 
 export async function getSubjectsPage(session: Session) {
   try {
-
-
     const decoder = new TextDecoder("windows-1251");
 
     const firstPage = await fetch(
@@ -58,17 +60,16 @@ export async function getSubjectsPage(session: Session) {
         headers: {
           Cookie: `PHPSESSID=${session.isu_cookie}`,
         },
-      }
+      },
     )
       .then((res) => res.arrayBuffer())
       .then((res) => decoder.decode(res));
     if (!firstPage) {
       console.error("no eduplans page 1");
-      return []
+      return [];
     }
 
     const firstPageHtml = parse(firstPage);
-
 
     const firstPageKey = firstPageHtml
       .querySelector("#TabLeftBorderLink")
@@ -84,19 +85,20 @@ export async function getSubjectsPage(session: Session) {
           Cookie: `PHPSESSID=${session.isu_cookie}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
-      }
+      },
     )
       .then((res) => res.arrayBuffer())
       .then((res) => decoder.decode(res));
 
     if (!secondPage) {
       console.error("no eduplans page 2");
-      return []
+      return [];
     }
     const secondPageHtml = parse(secondPage);
 
     let keyStr =
-      secondPageHtml.querySelector("[name=KeyStr]")?.getAttribute("value") || "";
+      secondPageHtml.querySelector("[name=KeyStr]")?.getAttribute("value") ||
+      "";
     let paramStr =
       secondPageHtml.querySelector("[name=ParamStr]")?.getAttribute("value") ||
       "";
@@ -107,13 +109,13 @@ export async function getSubjectsPage(session: Session) {
     const tableElements = Array.from(
       secondPageHtml
         ?.querySelectorAll("#MainTab")[1]
-        ?.querySelectorAll("#TabLeftBorderLink,#TabCell,#TabCell2")
+        ?.querySelectorAll("#TabLeftBorderLink,#TabCell,#TabCell2"),
     );
 
     if (!tableElements.length) {
       console.error("no tableElements");
 
-      return []
+      return [];
     }
 
     const currentSemester =
@@ -190,8 +192,8 @@ export async function getSubjectsPage(session: Session) {
       "Ь",
       "Б",
       "Ю",
-      "м"
-    ]
+      "м",
+    ];
     const encodedLetters = [
       "%C9",
       "%D6",
@@ -224,17 +226,16 @@ export async function getSubjectsPage(session: Session) {
       "%DC",
       "%C1",
       "%DE",
-      "%EC"
-    ]
+      "%EC",
+    ];
 
-    paramStr = paramStr
-      .replaceAll("&", "%26")
+    paramStr = paramStr.replaceAll("&", "%26");
 
     for (let i = 0; i < paramStr.length; i++) {
-      const character = paramStr[i]
-      const indexInArray = letters.indexOf(character)
+      const character = paramStr[i];
+      const indexInArray = letters.indexOf(character);
       if (indexInArray !== -1) {
-        paramStr = paramStr.replaceAll(character, encodedLetters[indexInArray])
+        paramStr = paramStr.replaceAll(character, encodedLetters[indexInArray]);
       }
     }
     let thirdPageBody = `mode=SubTable&key=${tableKey}&ref=&sort=&FieldChoice=&TabNo=${tabNo}&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=20&RecsDeleted=0&RecsCount=4&KeyStr=${keyStr}&TabStr=0%7C%7E%7C2&PgNoStr=1%7C%7E%7C&PgSzStr=200%7C%7E%7C&FilterStr=%7C%7E%7C&FieldChoiceStr=%7C%7E%7C&SortStr=%7C%7E%7C&ModeStr=%7C%7E%7CSubTable&FieldStr=&ChildStr=&ParamStr=${paramStr}`;
@@ -251,17 +252,16 @@ export async function getSubjectsPage(session: Session) {
           Cookie: `PHPSESSID=${session.isu_cookie}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
-      }
+      },
     )
       .then((res) => res.arrayBuffer())
       .then((res) => decoder.decode(res));
-    
 
     const thirdPageHtml = parse(thirdPage);
     const subjects = Array.from(
       thirdPageHtml
         ?.querySelectorAll("#MainTab")[2]
-        ?.querySelectorAll("#TabCell, #TabCell2") || []
+        ?.querySelectorAll("#TabCell, #TabCell2") || [],
     ).filter((_, i) => {
       if (i % 2 == 0) {
         return true;
@@ -270,24 +270,24 @@ export async function getSubjectsPage(session: Session) {
     });
 
     if (!subjects.length) {
-      console.error("no subjects on thirdPage")
-      return []
+      console.error("no subjects on thirdPage");
+      return [];
     }
 
     const subjectsList = subjects.map((el, i) => {
       const link = Array.from(
-        thirdPageHtml?.querySelectorAll("#TabLeftBorderLink")
+        thirdPageHtml?.querySelectorAll("#TabLeftBorderLink"),
       )
         .slice(0, -1)
-      [i]?.getAttribute("href")
+        [i]?.getAttribute("href")
         ?.split("'")[3];
       return { name: el.textContent, link: link };
     });
 
     return subjectsList;
   } catch (err) {
-    console.error(err)
-    return [] 
+    console.error(err);
+    return [];
   }
 }
 
@@ -295,56 +295,71 @@ export async function getSubjectsPage(session: Session) {
  * @deprecated для цього є функція getScheduleByApi
  */
 export async function getSchedulePage(session: Session) {
-
-  const user = await db.selectFrom("user")
+  const user = await db
+    .selectFrom("user")
     .selectAll()
     .where("user.id", "=", session.user_id)
-    .executeTakeFirstOrThrow()
+    .executeTakeFirstOrThrow();
 
   const decoder = new TextDecoder("windows-1251");
 
-
-  const firstPage = await fetch("https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedule.php", {
-    headers: {
-      Cookie: `PHPSESSID=${session.isu_cookie}`,
-
-    }
-  })
+  const firstPage = await fetch(
+    "https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedule.php",
+    {
+      headers: {
+        Cookie: `PHPSESSID=${session.isu_cookie}`,
+      },
+    },
+  )
     .then((res) => res.arrayBuffer())
     .then((res) => decoder.decode(res));
-
 
   const firstPageHtml = parse(firstPage);
 
-  const firstKey = firstPageHtml?.querySelector("#TabLeftBorder")?.querySelector("a")?.getAttribute("href")?.split("'")[1]
-  const secondPage = await fetch("https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedule.php", {
-    method: "POST",
-    body: `mode=SubTable&key=${firstKey}&ref=&sort=&FieldChoice=&TabNo=1&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=100&RecsDeleted=&RecsCount=12&KeyStr=&TabStr=0&PgNoStr=&PgSzStr=&FilterStr=&FieldChoiceStr=&SortStr=&ModeStr=&FieldStr=&ChildStr=&ParamStr=`,
-    headers: {
-      Cookie: `PHPSESSID=${session.isu_cookie}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    }
-  })
+  const firstKey = firstPageHtml
+    ?.querySelector("#TabLeftBorder")
+    ?.querySelector("a")
+    ?.getAttribute("href")
+    ?.split("'")[1];
+  const secondPage = await fetch(
+    "https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedule.php",
+    {
+      method: "POST",
+      body: `mode=SubTable&key=${firstKey}&ref=&sort=&FieldChoice=&TabNo=1&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=100&RecsDeleted=&RecsCount=12&KeyStr=&TabStr=0&PgNoStr=&PgSzStr=&FilterStr=&FieldChoiceStr=&SortStr=&ModeStr=&FieldStr=&ChildStr=&ParamStr=`,
+      headers: {
+        Cookie: `PHPSESSID=${session.isu_cookie}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    },
+  )
     .then((res) => res.arrayBuffer())
     .then((res) => decoder.decode(res));
 
-
-
   const secondPageHtml = parse(secondPage);
-
 
   const secondPageTable = secondPageHtml?.querySelectorAll("#MainTab")[1];
 
   if (!secondPageTable) {
-    throw "no second schedule table"
+    throw "no second schedule table";
   }
-  const secondPageCells = secondPageTable?.querySelectorAll("#TabCell,#TabCell2,#TabLeftBorder");
+  const secondPageCells = secondPageTable?.querySelectorAll(
+    "#TabCell,#TabCell2,#TabLeftBorder",
+  );
 
-  const userFacultyCellIndex = secondPageCells?.findIndex((el) => el.textContent === user.faculty) 
+  const userFacultyCellIndex = secondPageCells?.findIndex(
+    (el) => el.textContent === user.faculty,
+  );
 
-  const link = secondPageCells[userFacultyCellIndex - 1]?.querySelector("a")?.getAttribute("href")?.split("'")[1];
-  let paramStr = secondPageHtml.querySelector("input[name=ParamStr]")?.getAttribute("value");
-  let keyStr = secondPageHtml.querySelector("input[name=KeyStr]")?.getAttribute("value");
+  const link = secondPageCells[userFacultyCellIndex - 1]
+    ?.querySelector("a")
+    ?.getAttribute("href")
+    ?.split("'")[1];
+  let paramStr = secondPageHtml
+    .querySelector("input[name=ParamStr]")
+    ?.getAttribute("value");
+  let keyStr = secondPageHtml
+    .querySelector("input[name=KeyStr]")
+    ?.getAttribute("value");
 
   paramStr = paramStr?.replaceAll("&", "%26").replaceAll("КІ", "%CA%B2");
   // TODO :
@@ -355,29 +370,44 @@ export async function getSchedulePage(session: Session) {
   bodyStr = bodyStr.replaceAll("^", "%5E");
   bodyStr = bodyStr.replaceAll("|", "%7C");
   bodyStr = bodyStr.replaceAll("@", "%40");
-  bodyStr = bodyStr.replaceAll("~", "%7E"); 
+  bodyStr = bodyStr.replaceAll("~", "%7E");
 
-  const courseSelectionPage = await fetch("https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedule.php", {
-    method: "POST",
-    body: bodyStr,
-    headers: {
-      Cookie: `PHPSESSID=${session.isu_cookie}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    }
-  })
+  const courseSelectionPage = await fetch(
+    "https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedule.php",
+    {
+      method: "POST",
+      body: bodyStr,
+      headers: {
+        Cookie: `PHPSESSID=${session.isu_cookie}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    },
+  )
     .then((res) => res.arrayBuffer())
     .then((res) => decoder.decode(res));
 
   const courseSelectionPageHtml = parse(courseSelectionPage);
 
-  const courseCells = courseSelectionPageHtml.querySelectorAll("#MainTab")[2].querySelectorAll("#TabCell,#TabCell2,#TabLeftBorder");
+  const courseCells = courseSelectionPageHtml
+    .querySelectorAll("#MainTab")[2]
+    .querySelectorAll("#TabCell,#TabCell2,#TabLeftBorder");
 
+  const courseCellIndex = courseCells.findIndex(
+    (el) => el.textContent === user.course,
+  );
 
-  const courseCellIndex = courseCells.findIndex((el) => el.textContent === user.course);
-
-  const courseKey = courseCells[courseCellIndex - 1].querySelector("a")?.getAttribute("href")?.split("'")[1];
-  const courseParamStr = encodeParamString(courseSelectionPageHtml.querySelector("input[name=ParamStr]")?.getAttribute("value") || "");
-  const courseKeyStr = courseSelectionPageHtml.querySelector("input[name=KeyStr]")?.getAttribute("value");
+  const courseKey = courseCells[courseCellIndex - 1]
+    .querySelector("a")
+    ?.getAttribute("href")
+    ?.split("'")[1];
+  const courseParamStr = encodeParamString(
+    courseSelectionPageHtml
+      .querySelector("input[name=ParamStr]")
+      ?.getAttribute("value") || "",
+  );
+  const courseKeyStr = courseSelectionPageHtml
+    .querySelector("input[name=KeyStr]")
+    ?.getAttribute("value");
 
   // courseParamStr.
 
@@ -386,58 +416,71 @@ export async function getSchedulePage(session: Session) {
   courseBody = courseBody.replaceAll("^", "%5E");
   courseBody = courseBody.replaceAll("|", "%7C");
   courseBody = courseBody.replaceAll("@", "%40");
-  courseBody = courseBody.replaceAll("~", "%7E"); 
+  courseBody = courseBody.replaceAll("~", "%7E");
 
-  const groupSelectionPage = await fetch("https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedule.php", {
-    method: "POST",
-    body: courseBody,
-    headers: {
-      Cookie: `PHPSESSID=${session.isu_cookie}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    }
-  })
+  const groupSelectionPage = await fetch(
+    "https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedule.php",
+    {
+      method: "POST",
+      body: courseBody,
+      headers: {
+        Cookie: `PHPSESSID=${session.isu_cookie}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    },
+  )
     .then((res) => res.arrayBuffer())
     .then((res) => decoder.decode(res));
 
   const groupSelectionPageHtml = parse(groupSelectionPage);
 
-  const groupSelectionTable = groupSelectionPageHtml.querySelectorAll("#MainTab")[3];
+  const groupSelectionTable =
+    groupSelectionPageHtml.querySelectorAll("#MainTab")[3];
   const groupSelectionCells = groupSelectionTable.querySelectorAll("#TabCell");
-
-
 
   const groupArray = user.group.split("-");
 
   if (groupArray.length === 3) {
-
-  } 
-  let chkOp = ""
-  const userInfo = user.group.split("-")
+  }
+  let chkOp = "";
+  const userInfo = user.group.split("-");
   groupSelectionCells.forEach((cell, i) => {
-    if (cell.textContent === userInfo[0] && groupSelectionCells[i + 1].textContent === `20${userInfo[1]}` && groupSelectionCells[i + 2].textContent === userInfo[2]) {
-      chkOp = groupSelectionCells[i - 1].querySelector("input")?.getAttribute("value") || ""
+    if (
+      cell.textContent === userInfo[0] &&
+      groupSelectionCells[i + 1].textContent === `20${userInfo[1]}` &&
+      groupSelectionCells[i + 2].textContent === userInfo[2]
+    ) {
+      chkOp =
+        groupSelectionCells[i - 1]
+          .querySelector("input")
+          ?.getAttribute("value") || "";
     }
-  })
+  });
 
-  const scheduleKeyStr = groupSelectionPageHtml.querySelector("input[name=KeyStr]")?.getAttribute("value");
-  const scheduleParamStr = encodeParamString(groupSelectionPageHtml.querySelector("input[name=ParamStr]")?.getAttribute("value") || "");
+  const scheduleKeyStr = groupSelectionPageHtml
+    .querySelector("input[name=KeyStr]")
+    ?.getAttribute("value");
+  const scheduleParamStr = encodeParamString(
+    groupSelectionPageHtml
+      .querySelector("input[name=ParamStr]")
+      ?.getAttribute("value") || "",
+  );
 
+  const scheduleBody = `chkOp%5B%5D=${chkOp}&mode=RunOperation&key=&ref=0&sort=&FieldChoice=&TabNo=&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=200&RecsDeleted=0&RecsCount=36&KeyStr=${scheduleKeyStr}&TabStr=0%7C%7E%7C1%7C%7E%7C3%7C%7E%7C4&PgNoStr=1%7C%7E%7C1%7C%7E%7C1%7C%7E%7C&PgSzStr=100%7C%7E%7C50%7C%7E%7C200%7C%7E%7C&FilterStr=%7C%7E%7C%7C%7E%7C%7C%7E%7C&FieldChoiceStr=%7C%7E%7C%7C%7E%7C%7C%7E%7C&SortStr=%7C%7E%7C%7C%7E%7C%7C%7E%7C&ModeStr=%7C%7E%7CSubTable%7C%7E%7CSubTable%7C%7E%7CSubTable&FieldStr=&ChildStr=&ParamStr=${scheduleParamStr}&opWarning=&opGotoPage=groupsSchedulePage.php%3Ftype%3Dgroup&opWarning=&opGotoPage=groupsSchedulePage.php%3Ftype%3Dgroup%26showMode%3DforPrint`;
 
-  const scheduleBody = `chkOp%5B%5D=${chkOp}&mode=RunOperation&key=&ref=0&sort=&FieldChoice=&TabNo=&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=200&RecsDeleted=0&RecsCount=36&KeyStr=${scheduleKeyStr}&TabStr=0%7C%7E%7C1%7C%7E%7C3%7C%7E%7C4&PgNoStr=1%7C%7E%7C1%7C%7E%7C1%7C%7E%7C&PgSzStr=100%7C%7E%7C50%7C%7E%7C200%7C%7E%7C&FilterStr=%7C%7E%7C%7C%7E%7C%7C%7E%7C&FieldChoiceStr=%7C%7E%7C%7C%7E%7C%7C%7E%7C&SortStr=%7C%7E%7C%7C%7E%7C%7C%7E%7C&ModeStr=%7C%7E%7CSubTable%7C%7E%7CSubTable%7C%7E%7CSubTable&FieldStr=&ChildStr=&ParamStr=${scheduleParamStr}&opWarning=&opGotoPage=groupsSchedulePage.php%3Ftype%3Dgroup&opWarning=&opGotoPage=groupsSchedulePage.php%3Ftype%3Dgroup%26showMode%3DforPrint`
-
-
-  const schedulePage = await fetch("https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedulePage.php?type=group", {
-    method: "POST",
-    body: scheduleBody,
-    headers: {
-      Cookie: `PHPSESSID=${session.isu_cookie}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    }
-  })
+  const schedulePage = await fetch(
+    "https://isu1.khmnu.edu.ua/isu/dbsupport/students/groupsSchedulePage.php?type=group",
+    {
+      method: "POST",
+      body: scheduleBody,
+      headers: {
+        Cookie: `PHPSESSID=${session.isu_cookie}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    },
+  )
     .then((res) => res.arrayBuffer())
     .then((res) => decoder.decode(res));
 
-
   return schedulePage;
-
 }

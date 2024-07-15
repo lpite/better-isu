@@ -1,301 +1,294 @@
-import { parse, HTMLElement } from "node-html-parser"
+import { parse, HTMLElement } from "node-html-parser";
 
-
-// НАЙГІРШИЙ КОД ЗА ВСЮ ІСТОРІЮ МОГО ІСНУВАННЯ 
+// НАЙГІРШИЙ КОД ЗА ВСЮ ІСТОРІЮ МОГО ІСНУВАННЯ
 // so far.......
 
 export function parseScheduleTable(htmlText: string) {
-	const html = parse(htmlText);
+  const html = parse(htmlText);
 
-	const table = html.querySelector("table")
+  const table = html.querySelector("table");
 
+  const days = ["Пн", "Вт", "Ср", "Чт", "Пт"];
 
-	const days = ["Пн", "Вт", "Ср", "Чт", "Пт"]
+  let cells = table
+    ?.querySelectorAll("td")
+    .filter((el) => !el.classList.contains("dates"))
+    .filter((el) => !el.classList.contains("pairS"))
+    .flatMap((el, i) => {
+      if (el.querySelector("table")) {
+        // if(cells[i])
 
-	let cells = table?.querySelectorAll("td")
-		.filter(el => !el.classList.contains("dates"))
-		.filter(el => !el.classList.contains("pairS"))
-		.flatMap((el, i) => {
-			if (el.querySelector("table")) {
+        const innerCells = el.querySelectorAll("td");
+        if (innerCells) {
+          // console.log("OH YEAH KILL ME PLEASE")
+          // console.log(innerCells.map((el)=>el.textContent))
+          // innerCells[0].setAttribute("cols", innerCells.length.toString());
+          return innerCells.map((el) => {
+            return el.setAttribute("cols", innerCells.length.toString());
+          });
+        }
+      }
+      return el;
+    });
+  if (!cells) {
+    return {};
+  }
+  // console.log(cells?.length)
 
-				// if(cells[i])
+  if (!cells) {
+    throw "Табличка пуста чомусь";
+  }
 
-				const innerCells = el.querySelectorAll("td");
-				if (innerCells) {
-					// console.log("OH YEAH KILL ME PLEASE")
-					// console.log(innerCells.map((el)=>el.textContent))
-					// innerCells[0].setAttribute("cols", innerCells.length.toString());
-					return innerCells.map((el) => {
-						return el.setAttribute("cols", innerCells.length.toString())
-					});
-				}
-			}
-			return el
-		});
-	if (!cells) {
-		return {}
-	}
-	// console.log(cells?.length)
+  const subjArray: any[] = [];
 
+  let subj: any = {};
 
+  let rowLength = 0;
 
-	if (!cells) {
-		throw "Табличка пуста чомусь"
-	}
+  let firstDay = true;
 
-	const subjArray: any[] = []
+  let currentNumber = "";
+  let currentDay = days[0];
 
-	let subj: any = {}
+  for (let i = 0; i < cells?.length; i++) {
+    const el = cells[i];
 
-	let rowLength = 0;
+    if (
+      el.getAttribute("style")?.includes("height:1px;") &&
+      i !== cells.length - 1
+    ) {
+      currentDay = days[days.indexOf(currentDay) + 1];
+      continue;
+    }
+    subj["day"] = currentDay;
+    rowLength++;
 
-	let firstDay = true;
+    if (i === cells.length - 1) {
+      rowLength++;
+    }
 
-	let currentNumber = ""
-	let currentDay = days[0];
+    if (days.indexOf(el.textContent.trim()) !== -1 || i === cells.length - 1) {
+      // console.log(i)
+      if (i === cells.length - 1) {
+      }
+      // console.log(rowLength)
 
-	for (let i = 0; i < cells?.length; i++) {
-		const el = cells[i];
-		
-		
-		if (el.getAttribute("style")?.includes("height:1px;") && i !== cells.length - 1) {
-			currentDay = days[days.indexOf(currentDay) + 1];
-			continue;
-		}
-		subj["day"] = currentDay
-		rowLength++;
+      subj["number"] = currentNumber;
 
-		if (i === cells.length - 1) {
-			rowLength++;
-		}
+      if (rowLength === 3) {
+        if (cells[i - 1].getAttribute("style")?.includes("height")) {
+          subj["name"] = cells[i - 2].textContent;
+          subj["day"] = days[days.indexOf(subj["day"]) - 1];
+        } else {
+          subj["name"] = cells[i - 1].textContent;
+        }
+        subj["type"] = "full";
+      }
 
-		if (days.indexOf(el.textContent.trim()) !== -1 || i === cells.length - 1) {
-			// console.log(i)
-			if (i === cells.length - 1) {
-			}
-			// console.log(rowLength)
+      if (rowLength === 4) {
+        const upperPair = cells[i - 2].textContent
+          .replaceAll(/\t|\n/gi, "")
+          .trim();
+        const bottomPair = cells[i - 1].textContent
+          .replaceAll(/\t|\n/gi, "")
+          .trim();
+        if (upperPair.length && !bottomPair.length) {
+          subj["type"] = "up";
+          subj["name"] = upperPair;
+        }
 
-			subj["number"] = currentNumber
+        if (!upperPair.length && bottomPair.length) {
+          subj["type"] = "bottom";
+          subj["name"] = bottomPair;
+        }
 
-			if (rowLength === 3) {
+        if (upperPair.length && bottomPair.length) {
+          subjArray.push({
+            day: subj["day"],
+            number: subj["number"],
+            name: upperPair,
+            type: "up",
+          });
+          subjArray.push({
+            day: subj["day"],
+            number: subj["number"],
+            name: bottomPair,
+            type: "bottom",
+          });
+        }
+      }
+      if (subj["day"] === "Пт") {
+        // console.log(cells[i - 6].textContent.replaceAll(/\t|\n/gi, "").trim())
+        // console.log(rowLength)
+        if (
+          cells[i - 6].textContent
+            .replaceAll(/\t|\n/gi, "")
+            .trim()
+            .includes("1-210")
+        ) {
+          // console.log("fucK", subj)
+          // console.log({
+          // 	day: subj["day"],
+          // 	number: subj["number"],
+          // 	name: el.textContent,
+          // 	type: "full"
+          // })
+        }
+      }
+      // if (el.textContent.replaceAll(/\t|\n/gi, "").trim().includes("1-210")) {
+      // 	console.log("fucK", subj)
+      // 	console.log({
+      // 		day: subj["day"],
+      // 		number: subj["number"],
+      // 		name: el.textContent,
+      // 		type: "full"
+      // 	})
+      // }
 
-				if (cells[i - 1].getAttribute("style")?.includes("height")) {
-					subj["name"] = cells[i - 2].textContent
-					subj["day"] = days[days.indexOf(subj["day"]) - 1]
+      if (rowLength > 5) {
+        let idk = 2;
+        if (cells[i - 1].getAttribute("style")?.includes("height")) {
+          subj["day"] = cells[i - rowLength - 1]?.textContent.trim();
+          // console.log(rowLength)
+          rowLength -= 1;
+          idk = 0;
+          // console.log("i changedsmth")
+          // console.log(rowLength)
+        }
 
-				} else {
-					subj["name"] = cells[i - 1].textContent
-				
-				}
-				subj["type"] = "full";
+        if (cells[i].getAttribute("style")?.includes("height")) {
+          rowLength--;
+        }
+        if (subj["day"] === "Пт") {
+          // console.log(rowLength)
+          if (
+            cells[i - 6].textContent
+              .replaceAll(/\t|\n/gi, "")
+              .trim()
+              .includes("1-210")
+          ) {
+            // console.log("fucK", subj)
+            // console.log({
+            // 	day: subj["day"],
+            // 	number: subj["number"],
+            // 	name: el.textContent,
+            // 	type: "full"
+            // })
+          }
+        }
 
-			}
+        const newArray = cells.slice(i - rowLength + idk, i);
+        console.log(
+          cells.slice(i - rowLength + idk, i).map((el) => el.textContent),
+        );
+        newArray.forEach((el, ind) => {
+          const text = el.textContent.replaceAll(/\t|\n/gi, "").trim();
 
-			if (rowLength === 4) {
-		
-				const upperPair = cells[i - 2].textContent.replaceAll(/\t|\n/gi, "").trim();
-				const bottomPair = cells[i - 1].textContent.replaceAll(/\t|\n/gi, "").trim();
-				if (upperPair.length && !bottomPair.length) {
-					subj["type"] = "up";
-					subj["name"] = upperPair;
-				}
+          if (text.length) {
+            if (el.getAttribute("cols")) {
+              // Якщо там оцей innerTab то у клітинок немає роу спана
+              // console.log((rowLength - 2 - ind) / Number(el.getAttribute("cols")))
+              const isItOnTopOrBottom =
+                (rowLength - 2 - ind) / Number(el.getAttribute("cols"));
 
-				if (!upperPair.length && bottomPair.length) {
-					subj["type"] = "bottom";
-					subj["name"] = bottomPair;
-				}
+              if (isItOnTopOrBottom % 2 === 0) {
+                subjArray.push({
+                  day: subj["day"],
+                  number: subj["number"],
+                  name: text,
+                  type: "up",
+                });
+              } else {
+                subjArray.push({
+                  day: subj["day"],
+                  number: subj["number"],
+                  name: text,
+                  type: "bottom",
+                });
+              }
+            }
 
-				if (upperPair.length && bottomPair.length) {
-					subjArray.push({
-						day: subj["day"],
-						number: subj["number"],
-						name: upperPair,
-						type: "up"
-					})
-					subjArray.push({
-						day: subj["day"],
-						number: subj["number"],
-						name: bottomPair,
-						type: "bottom"
-					})
+            if (Number(el.getAttribute("rowspan")) >= 2) {
+              subjArray.push({
+                day: subj["day"],
+                number: subj["number"],
+                name: text,
+                type: "full",
+              });
+            }
+            if (el.getAttribute("style")?.includes("border-bottom-color")) {
+              subjArray.push({
+                day: subj["day"],
+                number: subj["number"],
+                name: text,
+                type: "up",
+              });
+            }
+            if (
+              el.getAttribute("rowspan") === "1" &&
+              !el.getAttribute("style")?.includes("border-bottom-color")
+            ) {
+              subjArray.push({
+                day: subj["day"],
+                number: subj["number"],
+                name: text,
+                type: "up",
+              });
+            }
+          }
+        });
+      }
 
-				}
+      rowLength = 0;
 
-			}
-			if (subj["day"] === "Пт") {
-				// console.log(cells[i - 6].textContent.replaceAll(/\t|\n/gi, "").trim())
-				// console.log(rowLength)
-				if (cells[i - 6].textContent.replaceAll(/\t|\n/gi, "").trim().includes("1-210")) {
-					// console.log("fucK", subj)
-					// console.log({
-					// 	day: subj["day"],
-					// 	number: subj["number"],
-					// 	name: el.textContent,
-					// 	type: "full"
-					// })
-				}
-			}
-			// if (el.textContent.replaceAll(/\t|\n/gi, "").trim().includes("1-210")) {
-			// 	console.log("fucK", subj)
-			// 	console.log({
-			// 		day: subj["day"],
-			// 		number: subj["number"],
-			// 		name: el.textContent,
-			// 		type: "full"
-			// 	})
-			// }
+      if (!firstDay) {
+        if (subj.name) {
+          subjArray.push(subj);
+        } else {
+          // console.log(cells[i - 6].textContent)
+          // console.log(subj)
+        }
+        subj = {};
+      }
+      firstDay = false;
+      currentNumber = cells[i + 1]?.textContent;
+    }
+  }
 
-			if (rowLength > 5) {
-
-				let idk = 2;
-				if (cells[i - 1].getAttribute("style")?.includes("height")) {
-					subj["day"] = cells[i - rowLength - 1]?.textContent.trim()
-					// console.log(rowLength)
-					rowLength -= 1;
-					idk = 0;
-					// console.log("i changedsmth")
-					// console.log(rowLength)
-
-				}
-
-				if (cells[i].getAttribute("style")?.includes("height")) {
-					rowLength--;
-				
-				}
-				if (subj["day"] === "Пт") {
-					// console.log(rowLength)
-					if (cells[i - 6].textContent.replaceAll(/\t|\n/gi, "").trim().includes("1-210")) {
-						// console.log("fucK", subj)
-						// console.log({
-						// 	day: subj["day"],
-						// 	number: subj["number"],
-						// 	name: el.textContent,
-						// 	type: "full"
-						// })
-					}
-				}
-
-				const newArray = cells.slice(i - rowLength + idk, i);
-				console.log(cells.slice(i - rowLength + idk, i).map(el => el.textContent))
-				newArray.forEach((el, ind) => {
-					const text = el.textContent.replaceAll(/\t|\n/gi, "").trim()
-					
-					
-					
-					if (text.length) {
-
-						if (el.getAttribute("cols")) {
-							// Якщо там оцей innerTab то у клітинок немає роу спана
-							// console.log((rowLength - 2 - ind) / Number(el.getAttribute("cols")))
-							const isItOnTopOrBottom = (rowLength - 2 - ind) / Number(el.getAttribute("cols"));
-
-							if (isItOnTopOrBottom % 2 === 0) {
-								subjArray.push({
-									day: subj["day"],
-									number: subj["number"],
-									name: text,
-									type: "up"
-								})
-							} else {
-								subjArray.push({
-									day: subj["day"],
-									number: subj["number"],
-									name: text,
-									type: "bottom"
-								})
-							}
-							
-						}
-
-						if (Number(el.getAttribute("rowspan")) >= 2) {
-
-							subjArray.push({
-								day: subj["day"],
-								number: subj["number"],
-								name: text,
-								type: "full"
-							})
-						}
-						if (el.getAttribute("style")?.includes("border-bottom-color")) {
-							subjArray.push({
-								day: subj["day"],
-								number: subj["number"],
-								name: text,
-								type: "up"
-							})
-						}
-						if (el.getAttribute("rowspan") === "1" && !el.getAttribute("style")?.includes("border-bottom-color")) {
-							subjArray.push({
-								day: subj["day"],
-								number: subj["number"],
-								name: text,
-								type: "up"
-							})
-						}
-						
-					}
-				})
-			}
-
-
-			rowLength = 0;
-		
-
-			if (!firstDay) {
-				if (subj.name) {
-					subjArray.push(subj)
-				} else {
-					// console.log(cells[i - 6].textContent)
-					// console.log(subj)
-				}
-				subj = {}
-			}
-			firstDay = false;
-			currentNumber = cells[i + 1]?.textContent
-
-		}
-
-	}
-
-	console.log(subjArray)
-	return subjArray
+  console.log(subjArray);
+  return subjArray;
 }
-
 
 export function altParse(htmlText: string) {
-	const html = parse(htmlText);
+  const html = parse(htmlText);
 
-	const table = html.querySelector("table")
+  const table = html.querySelector("table");
 
+  const days = ["Пн", "Вт", "Ср", "Чт", "Пт"];
 
-	const days = ["Пн", "Вт", "Ср", "Чт", "Пт"]
+  let cells = table
+    ?.querySelectorAll("td")
+    .filter((el) => !el.classList.contains("dates"))
+    .filter((el) => !el.classList.contains("pairS"))
+    .flatMap((el, i) => {
+      if (el.querySelector("table")) {
+        const innerCells = el.querySelectorAll("td");
+        if (innerCells) {
+          // console.log("OH YEAH KILL ME PLEASE")
+          // console.log(innerCells.map((el)=>el.textContent))
+          // innerCells[0].setAttribute("cols", innerCells.length.toString());
+          return innerCells.map((el) => {
+            return el.setAttribute("cols", innerCells.length.toString());
+          });
+        }
+      }
+      return el;
+    });
 
-	let cells = table?.querySelectorAll("td")
-		.filter(el => !el.classList.contains("dates"))
-		.filter(el => !el.classList.contains("pairS"))
-		.flatMap((el, i) => {
-			if (el.querySelector("table")) {
-
-				const innerCells = el.querySelectorAll("td");
-				if (innerCells) {
-					// console.log("OH YEAH KILL ME PLEASE")
-					// console.log(innerCells.map((el)=>el.textContent))
-					// innerCells[0].setAttribute("cols", innerCells.length.toString());
-					return innerCells.map((el) => {
-						return el.setAttribute("cols", innerCells.length.toString())
-					});
-				}
-			}
-			return el
-		});
-
-	if (!cells) {
-		return []
-	}
-	for (let i = 0; i < cells?.length; i++) {
-		const cell = cells[i];
-
-	}
+  if (!cells) {
+    return [];
+  }
+  for (let i = 0; i < cells?.length; i++) {
+    const cell = cells[i];
+  }
 }
-
-

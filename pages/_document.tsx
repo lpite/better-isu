@@ -1,18 +1,17 @@
-import { ThemeProvider } from 'next-themes';
-import { Html, Head, Main, NextScript } from 'next/document';
-
+import { ThemeProvider } from "next-themes";
+import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
   return (
-    <Html lang="en" className='h-full'>
-      <Head />  
-      <body className='h-full'>
+    <Html lang="en" className="h-full">
+      <Head />
+      <body className="h-full">
         <ThemeProvider
-          attribute='class'
-          defaultTheme='system'
+          attribute="class"
+          defaultTheme="system"
           enableSystem
-          disableTransitionOnChange>
-        
+          disableTransitionOnChange
+        >
           <Main />
         </ThemeProvider>
         <NextScript />

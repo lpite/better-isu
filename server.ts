@@ -1,9 +1,7 @@
-import 'dotenv/config'
+import "dotenv/config";
 
-import { serve } from '@hono/node-server'
+import { serve } from "@hono/node-server";
 
-import {
-	app
-} from "./backend/honoApp"
+import { app } from "./backend/honoApp";
 
-serve({ port: 3001, fetch: app.fetch })
+serve({ port: 3001, fetch: app.fetch });

@@ -9,266 +9,284 @@ import { HTTPException } from "hono/http-exception";
 import { getJoeBidenInfo } from "utils/getJoeBidenInfo";
 
 const monthList = [
-	"Січень",
-	"Лютий",
-	"Березень",
-	"Квітень",
-	"Травень",
-	"Червень",
-	"Липень",
-	"Серпень",
-	"Вересень",
-	"Жовтень",
-	"Листопад",
-	"Грудень",
-	"Сем"
-]
+  "Січень",
+  "Лютий",
+  "Березень",
+  "Квітень",
+  "Травень",
+  "Червень",
+  "Липень",
+  "Серпень",
+  "Вересень",
+  "Жовтень",
+  "Листопад",
+  "Грудень",
+  "Сем",
+];
 
-export const journalRouter = new OpenAPIHono<{ Variables: { session: Session } }>();
-journalRouter.use(sessionMiddleware)
+export const journalRouter = new OpenAPIHono<{
+  Variables: { session: Session };
+}>();
+journalRouter.use(sessionMiddleware);
 
 const get = createRoute({
-	path: "/get",
-	method: "get",
-	request: {
-		query: zod.object({
-			index: zod.string()
-		})
-	},
-	responses: {
-		200: {
-			description: "grades for user",
-			content: {
-				"application/json": {
-					schema: zod.object({
-						journalName: zod.string(),
-						months: zod.array(zod.object({
-							name: zod.string(),
-							grades: zod.array(DaySchema)
-						}))
-					})
-				}
-			}
-		}
-	}
-})
+  path: "/get",
+  method: "get",
+  request: {
+    query: zod.object({
+      index: zod.string(),
+    }),
+  },
+  responses: {
+    200: {
+      description: "grades for user",
+      content: {
+        "application/json": {
+          schema: zod.object({
+            journalName: zod.string(),
+            months: zod.array(
+              zod.object({
+                name: zod.string(),
+                grades: zod.array(DaySchema),
+              }),
+            ),
+          }),
+        },
+      },
+    },
+  },
+});
 
 journalRouter.openapi(get, async (c) => {
-	const session = c.get("session")
+  const session = c.get("session");
 
-	if (session.session_id === "joe_biden_session") {
-		return c.json(getJoeBidenInfo().journal)
-	}
+  if (session.session_id === "joe_biden_session") {
+    return c.json(getJoeBidenInfo().journal);
+  }
 
-	const {
-		index
-	} = c.req.valid("query")
-	
-	const query = { index: Number(index) }
-	const user = await db.selectFrom("user")
-		.select(["record_number", "group_id"])
-		.where("id", "=", session.user_id)
-		.executeTakeFirstOrThrow()
+  const { index } = c.req.valid("query");
 
-	const subjects = await db.selectFrom("subjects_list")
-		.select(["data"])
-		.where("session_id", "=", session.id)
-		.executeTakeFirstOrThrow()
+  const query = { index: Number(index) };
+  const user = await db
+    .selectFrom("user")
+    .select(["record_number", "group_id"])
+    .where("id", "=", session.user_id)
+    .executeTakeFirstOrThrow();
 
+  const subjects = await db
+    .selectFrom("subjects_list")
+    .select(["data"])
+    .where("session_id", "=", session.id)
+    .executeTakeFirstOrThrow();
 
-	const data = subjects.data as { link: string, name: string, journal_id?: string, weights: { type: string, weight: string, isRequired: boolean }[] }[];
+  const data = subjects.data as {
+    link: string;
+    name: string;
+    journal_id?: string;
+    weights: { type: string; weight: string; isRequired: boolean }[];
+  }[];
 
-	if (!data) {
-		throw "no subjects list in db;";
-	}
-	// @ts-ignore
-	if (!data[query.index]) {
-		throw "no subjects list in db;";
+  if (!data) {
+    throw "no subjects list in db;";
+  }
+  // @ts-ignore
+  if (!data[query.index]) {
+    throw "no subjects list in db;";
+  }
 
-	}
+  let {
+    link: journalLink,
+    journal_id: journalId,
+    name: journalName,
+    weights,
+  } = data[query.index];
 
-	let { link: journalLink, journal_id: journalId, name: journalName, weights } = data[query.index]
+  if (!journalId) {
+    let journalPage = await fetch(
+      `https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.php?key=${journalLink}`,
+      {
+        headers: {
+          Cookie: `PHPSESSID=${session.isu_cookie}`,
+        },
+      },
+    ).then((res) => res.text());
 
-	if (!journalId) {
-		let journalPage = await fetch(`https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.php?key=${journalLink}`, {
-			headers: {
-				"Cookie": `PHPSESSID=${session.isu_cookie}`,
-			}
-		})
-			.then(res => res.text())
+    if (journalPage.includes("Key violation")) {
+      await refreshSubjectsList(session);
 
-			
-		if (journalPage.includes("Key violation")) {
-			await refreshSubjectsList(session)
+      const res = new Response("Error", {
+        status: 500,
+      });
+      throw new HTTPException(500, { res });
+    }
 
-			const res = new Response('Error', {
-				status: 500
-			})
-			throw new HTTPException(500, { res })
-		}
+    if (!journalPage) {
+      console.error("Сторінка журналу пуста");
+      throw new HTTPException(500, {
+        res: new Response("Error", {
+          status: 500,
+        }),
+      });
+    }
+    const html = parse(journalPage);
 
-		if (!journalPage) {
-			console.error("Сторінка журналу пуста");
-			throw new HTTPException(500, {
-				res: new Response('Error', {
-					status: 500
-				})
-			})
-		}
-		const html = parse(journalPage);
+    // тег в якому лежать дані про журнал
+    const scriptTag = html.querySelectorAll("script")[3].textContent.trim();
 
-		// тег в якому лежать дані про журнал
-		const scriptTag = html.querySelectorAll("script")[3].textContent.trim();
+    journalId = (scriptTag.match(/journalId:\s*'([^']+)'/) || [])[1];
 
-		journalId = (scriptTag.match(/journalId:\s*'([^']+)'/) || [])[1];
+    if (!journalId || !journalId?.length) {
+      console.error("Немає айді журналу");
+      throw new HTTPException(500, {
+        res: new Response("Error", {
+          status: 500,
+        }),
+      });
+    }
 
-		if (!journalId || !journalId?.length) {
-			console.error("Немає айді журналу");
-			throw new HTTPException(500, {
-				res: new Response('Error', {
-					status: 500
-				})
-			})
-		}
+    const weights =
+      html
+        .querySelector("table")
+        ?.querySelectorAll("tr")
+        .slice(2)
+        .map((el) => {
+          const line = el.textContent.trim().split("\n\t\t");
+          const type = line[0];
+          const isRequired = line[2] === "Так" ? true : false;
 
-		const weights = html.querySelector("table")
-			?.querySelectorAll("tr")
-			.slice(2)
-			.map(el => { 
-				const line = el.textContent.trim().split("\n\t\t") 
-				const type = line[0];
-				const isRequired = line[2] === "Так" ? true : false;
-					
-				const weight = line[3]
+          const weight = line[3];
 
-				return { type, weight, isRequired }
-			}) || []
+          return { type, weight, isRequired };
+        }) || [];
 
-		data[query.index] = { ...data[query.index], journal_id: journalId, weights }
+    data[query.index] = {
+      ...data[query.index],
+      journal_id: journalId,
+      weights,
+    };
 
-		await db.updateTable("subjects_list")
-			.set({
-				data: JSON.stringify(data)
-			})
-			.where("session_id", "=", session.id)
-			.executeTakeFirstOrThrow()
-	}
+    await db
+      .updateTable("subjects_list")
+      .set({
+        data: JSON.stringify(data),
+      })
+      .where("session_id", "=", session.id)
+      .executeTakeFirstOrThrow();
+  }
 
-	const grades = await getGradesForUser({
-		isu_cookie: session.isu_cookie,
-		groupId: user.group_id,
-		journalId: journalId,
-		recordNumber: user.record_number
-	})
+  const grades = await getGradesForUser({
+    isu_cookie: session.isu_cookie,
+    groupId: user.group_id,
+    journalId: journalId,
+    recordNumber: user.record_number,
+  });
 
-	const months: string[] = grades.reduce((prev, el) => {
-		if (prev.indexOf(el.MONTHSTR.trim()) === -1) {
-			return [...prev, el.MONTHSTR.trim()]
-		}
-		return prev
-	}, [] as string[])
-		.sort((a, b) => {
-			const aIndex = monthList.indexOf(a);
-			const bIndex = monthList.indexOf(b);
+  const months: string[] = grades
+    .reduce((prev, el) => {
+      if (prev.indexOf(el.MONTHSTR.trim()) === -1) {
+        return [...prev, el.MONTHSTR.trim()];
+      }
+      return prev;
+    }, [] as string[])
+    .sort((a, b) => {
+      const aIndex = monthList.indexOf(a);
+      const bIndex = monthList.indexOf(b);
 
-			if (aIndex > bIndex) {
-				return 1
-			}
+      if (aIndex > bIndex) {
+        return 1;
+      }
 
-			if (bIndex > aIndex) {
-				return -1
-			}
-			return 0
+      if (bIndex > aIndex) {
+        return -1;
+      }
+      return 0;
+    });
+  const pairsCountByType: Record<string, number> = {};
+  const sumByType: Record<string, number> = {};
 
-		})
-	const pairsCountByType: Record<string, number> = {}
-	const sumByType: Record<string, number> = {}
+  const monthsWithGrades = months.map((month) => {
+    const gradesForMonth = grades
+      .filter((d) => d.MONTHSTR.trim() === month)
+      .sort((a, b) => {
+        if (Number(a.DAYNUM) > Number(b.DAYNUM)) {
+          return 1;
+        }
+        if (Number(a.DAYNUM) < Number(b.DAYNUM)) {
+          return -1;
+        }
+        return 0;
+      });
 
-	const monthsWithGrades = months.map((month) => {
-		const gradesForMonth = 
-			grades.filter((d) => d.MONTHSTR.trim() === month)
-				.sort((a, b) => {
-					if (Number(a.DAYNUM) > Number(b.DAYNUM)) {
-						return 1
-					}
-					if (Number(a.DAYNUM) < Number(b.DAYNUM)) {
-						return -1
-					}
-					return 0
-				})
+    for (let i = 0; i < gradesForMonth.length; i++) {
+      let { CONTROLSHORTNAME, GRADE } = gradesForMonth[i];
 
+      if (
+        CONTROLSHORTNAME === "<b>Ат1</b>" ||
+        CONTROLSHORTNAME === "<b>ПО</b>"
+      ) {
+        let grade = 0;
+        let currentSumOfWeights = 0;
+        Object.entries(sumByType).forEach(([key, sum]) => {
+          if (!weights) {
+            weights = data[query.index].weights;
+          }
+          const { weight: weightString, isRequired } = weights.find(
+            (el) => el.type === key,
+          ) || { weight: "0", isRequired: false };
 
-		for (let i = 0; i < gradesForMonth.length; i++) {
-			let { CONTROLSHORTNAME, GRADE } = gradesForMonth[i];
+          const weight = Number(weightString);
 
-			if (CONTROLSHORTNAME === "<b>Ат1</b>" || CONTROLSHORTNAME === "<b>ПО</b>") {
-				let grade = 0;
-				let currentSumOfWeights = 0;
-				Object.entries(sumByType).forEach(([key, sum]) => {
-					if (!weights) {
-						weights = data[query.index].weights
-					}
-					const {
-						weight: weightString,
-						isRequired
-					} = weights.find(el => el.type === key) || { weight: "0", isRequired: false }
+          const count = pairsCountByType[key];
+          const average = sum / count;
+          console.log(key, average, sum, count, weight);
+          grade += average * weight;
+          console.log(grade);
+          if (average * weight || isRequired) {
+            // перевірка якщо оцінка 0 то не враховувати ваговий в розрахунках
+            // Враховувати завжди якщо вид заняття обовʼязковий
+            currentSumOfWeights += weight;
+          }
+        });
+        console.log(currentSumOfWeights);
+        grade = grade / currentSumOfWeights;
 
-					const weight = Number(weightString)
+        gradesForMonth[i].GRADE = grade.toFixed(2);
+        // console.log(pairsCountByType, sumByType)
+        continue;
+      }
+      if (!weights) {
+        weights = data[query.index].weights;
+      }
+      const pairAttributes = data[query.index].weights.find(
+        (el) => el.type === CONTROLSHORTNAME,
+      );
 
-					const count = pairsCountByType[key]
-					const average = sum / count;
-					console.log(key, average, sum, count, weight)
-					grade += average * weight;
-					console.log(grade)
-					if (average * weight || isRequired) {
-						// перевірка якщо оцінка 0 то не враховувати ваговий в розрахунках
-						// Враховувати завжди якщо вид заняття обовʼязковий
-						currentSumOfWeights += weight;
-					}
+      if (!pairAttributes?.isRequired && !GRADE.length) {
+        continue;
+      }
 
-
-				})
-				console.log(currentSumOfWeights)
-				grade = grade / currentSumOfWeights
-
-				gradesForMonth[i].GRADE = grade.toFixed(2)
-				// console.log(pairsCountByType, sumByType)
-				continue;
-
-			}
-			if (!weights) {
-				weights = data[query.index].weights
-			}
-			const pairAttributes = data[query.index].weights.find(el => el.type === CONTROLSHORTNAME)
-
-			if (!pairAttributes?.isRequired && !GRADE.length) {
-				continue;
-			}
-
-			if (pairsCountByType[CONTROLSHORTNAME]) {
-				pairsCountByType[CONTROLSHORTNAME] = pairsCountByType[CONTROLSHORTNAME] + 1
-			} else {
-					
-				pairsCountByType[CONTROLSHORTNAME] = 1
-			}
-			if (Number(GRADE) < 3) {
-				GRADE = "0"
-			}
-			if (!sumByType[CONTROLSHORTNAME]) {
-				sumByType[CONTROLSHORTNAME] = (Number(GRADE) || 0)
-			} else {
-				sumByType[CONTROLSHORTNAME] += (Number(GRADE) || 0)
-			}
-		}
-		return {
-			name: month,
-			grades: gradesForMonth
-		}
-
-	})
-	return c.json({
-		months: monthsWithGrades,
-		journalName
-	})
-
-})
+      if (pairsCountByType[CONTROLSHORTNAME]) {
+        pairsCountByType[CONTROLSHORTNAME] =
+          pairsCountByType[CONTROLSHORTNAME] + 1;
+      } else {
+        pairsCountByType[CONTROLSHORTNAME] = 1;
+      }
+      if (Number(GRADE) < 3) {
+        GRADE = "0";
+      }
+      if (!sumByType[CONTROLSHORTNAME]) {
+        sumByType[CONTROLSHORTNAME] = Number(GRADE) || 0;
+      } else {
+        sumByType[CONTROLSHORTNAME] += Number(GRADE) || 0;
+      }
+    }
+    return {
+      name: month,
+      grades: gradesForMonth,
+    };
+  });
+  return c.json({
+    months: monthsWithGrades,
+    journalName,
+  });
+});

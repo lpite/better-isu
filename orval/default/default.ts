@@ -4,16 +4,10 @@
  * Capybara
  * OpenAPI spec version: 1.0.0
  */
-import useSwr from 'swr'
-import type {
-  Arguments,
-  Key,
-  SWRConfiguration
-} from 'swr'
-import useSWRMutation from 'swr/mutation'
-import type {
-  SWRMutationConfiguration
-} from 'swr/mutation'
+import useSwr from "swr";
+import type { Arguments, Key, SWRConfiguration } from "swr";
+import useSWRMutation from "swr/mutation";
+import type { SWRMutationConfiguration } from "swr/mutation";
 import type {
   GetAuthSession200,
   GetAuthSession401,
@@ -23,285 +17,334 @@ import type {
   GetUserProfile200,
   GetUserRating200Item,
   GetUserSchedule200Item,
-  GetUserSubjects200Item
-} from '.././model'
-import getUserProfileMutator from '.././custom-client';
-import getUserSubjectsMutator from '.././custom-client';
-import getUserScheduleMutator from '.././custom-client';
-import getUserRatingMutator from '.././custom-client';
-import getJournalGetMutator from '.././custom-client';
-import getGeneralGetTypeOfWeekMutator from '.././custom-client';
-import getAuthSessionMutator from '.././custom-client';
-import postAuthLogoutMutator from '.././custom-client';
+  GetUserSubjects200Item,
+} from ".././model";
+import getUserProfileMutator from ".././custom-client";
+import getUserSubjectsMutator from ".././custom-client";
+import getUserScheduleMutator from ".././custom-client";
+import getUserRatingMutator from ".././custom-client";
+import getJournalGetMutator from ".././custom-client";
+import getGeneralGetTypeOfWeekMutator from ".././custom-client";
+import getAuthSessionMutator from ".././custom-client";
+import postAuthLogoutMutator from ".././custom-client";
 
+export const getUserProfile = () => {
+  return getUserProfileMutator<GetUserProfile200>({
+    url: `/api/hono/openapi/user/profile`,
+    method: "GET",
+  });
+};
 
-  
-  export const getUserProfile = (
-    
- ) => {
-      return getUserProfileMutator<GetUserProfile200>(
-      {url: `/api/hono/user/profile`, method: 'GET'
-    },
-      );
-    }
-  
+export const getGetUserProfileKey = () =>
+  [`/api/hono/openapi/user/profile`] as const;
 
+export type GetUserProfileQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getUserProfile>>
+>;
+export type GetUserProfileQueryError = unknown;
 
-export const getGetUserProfileKey = () => [`/api/hono/user/profile`] as const;
+export const useGetUserProfile = <TError = unknown>(options?: {
+  swr?: SWRConfiguration<Awaited<ReturnType<typeof getUserProfile>>, TError> & {
+    swrKey?: Key;
+    enabled?: boolean;
+  };
+}) => {
+  const { swr: swrOptions } = options ?? {};
 
-
-export type GetUserProfileQueryResult = NonNullable<Awaited<ReturnType<typeof getUserProfile>>>
-export type GetUserProfileQueryError = unknown
-
-export const useGetUserProfile = <TError = unknown>(
-   options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof getUserProfile>>, TError> & { swrKey?: Key, enabled?: boolean },  }
-) => {
-  const {swr: swrOptions} = options ?? {}
-
-  const isEnabled = swrOptions?.enabled !== false
-  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getGetUserProfileKey() : null);
+  const isEnabled = swrOptions?.enabled !== false;
+  const swrKey =
+    swrOptions?.swrKey ?? (() => (isEnabled ? getGetUserProfileKey() : null));
   const swrFn = () => getUserProfile();
 
-  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(
+    swrKey,
+    swrFn,
+    swrOptions,
+  );
 
   return {
     swrKey,
-    ...query
-  }
-}
-export const getUserSubjects = (
-    
- ) => {
-      return getUserSubjectsMutator<GetUserSubjects200Item[]>(
-      {url: `/api/hono/user/subjects`, method: 'GET'
-    },
-      );
-    }
-  
+    ...query,
+  };
+};
+export const getUserSubjects = () => {
+  return getUserSubjectsMutator<GetUserSubjects200Item[]>({
+    url: `/api/hono/openapi/user/subjects`,
+    method: "GET",
+  });
+};
 
+export const getGetUserSubjectsKey = () =>
+  [`/api/hono/openapi/user/subjects`] as const;
 
-export const getGetUserSubjectsKey = () => [`/api/hono/user/subjects`] as const;
+export type GetUserSubjectsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getUserSubjects>>
+>;
+export type GetUserSubjectsQueryError = unknown;
 
+export const useGetUserSubjects = <TError = unknown>(options?: {
+  swr?: SWRConfiguration<
+    Awaited<ReturnType<typeof getUserSubjects>>,
+    TError
+  > & { swrKey?: Key; enabled?: boolean };
+}) => {
+  const { swr: swrOptions } = options ?? {};
 
-export type GetUserSubjectsQueryResult = NonNullable<Awaited<ReturnType<typeof getUserSubjects>>>
-export type GetUserSubjectsQueryError = unknown
-
-export const useGetUserSubjects = <TError = unknown>(
-   options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof getUserSubjects>>, TError> & { swrKey?: Key, enabled?: boolean },  }
-) => {
-  const {swr: swrOptions} = options ?? {}
-
-  const isEnabled = swrOptions?.enabled !== false
-  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getGetUserSubjectsKey() : null);
+  const isEnabled = swrOptions?.enabled !== false;
+  const swrKey =
+    swrOptions?.swrKey ?? (() => (isEnabled ? getGetUserSubjectsKey() : null));
   const swrFn = () => getUserSubjects();
 
-  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(
+    swrKey,
+    swrFn,
+    swrOptions,
+  );
 
   return {
     swrKey,
-    ...query
-  }
-}
-export const getUserSchedule = (
-    
- ) => {
-      return getUserScheduleMutator<GetUserSchedule200Item[]>(
-      {url: `/api/hono/user/schedule`, method: 'GET'
-    },
-      );
-    }
-  
+    ...query,
+  };
+};
+export const getUserSchedule = () => {
+  return getUserScheduleMutator<GetUserSchedule200Item[]>({
+    url: `/api/hono/openapi/user/schedule`,
+    method: "GET",
+  });
+};
 
+export const getGetUserScheduleKey = () =>
+  [`/api/hono/openapi/user/schedule`] as const;
 
-export const getGetUserScheduleKey = () => [`/api/hono/user/schedule`] as const;
+export type GetUserScheduleQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getUserSchedule>>
+>;
+export type GetUserScheduleQueryError = unknown;
 
+export const useGetUserSchedule = <TError = unknown>(options?: {
+  swr?: SWRConfiguration<
+    Awaited<ReturnType<typeof getUserSchedule>>,
+    TError
+  > & { swrKey?: Key; enabled?: boolean };
+}) => {
+  const { swr: swrOptions } = options ?? {};
 
-export type GetUserScheduleQueryResult = NonNullable<Awaited<ReturnType<typeof getUserSchedule>>>
-export type GetUserScheduleQueryError = unknown
-
-export const useGetUserSchedule = <TError = unknown>(
-   options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof getUserSchedule>>, TError> & { swrKey?: Key, enabled?: boolean },  }
-) => {
-  const {swr: swrOptions} = options ?? {}
-
-  const isEnabled = swrOptions?.enabled !== false
-  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getGetUserScheduleKey() : null);
+  const isEnabled = swrOptions?.enabled !== false;
+  const swrKey =
+    swrOptions?.swrKey ?? (() => (isEnabled ? getGetUserScheduleKey() : null));
   const swrFn = () => getUserSchedule();
 
-  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(
+    swrKey,
+    swrFn,
+    swrOptions,
+  );
 
   return {
     swrKey,
-    ...query
-  }
-}
-export const getUserRating = (
-    
- ) => {
-      return getUserRatingMutator<GetUserRating200Item[]>(
-      {url: `/api/hono/user/rating`, method: 'GET'
-    },
-      );
-    }
-  
+    ...query,
+  };
+};
+export const getUserRating = () => {
+  return getUserRatingMutator<GetUserRating200Item[]>({
+    url: `/api/hono/openapi/user/rating`,
+    method: "GET",
+  });
+};
 
+export const getGetUserRatingKey = () =>
+  [`/api/hono/openapi/user/rating`] as const;
 
-export const getGetUserRatingKey = () => [`/api/hono/user/rating`] as const;
+export type GetUserRatingQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getUserRating>>
+>;
+export type GetUserRatingQueryError = unknown;
 
+export const useGetUserRating = <TError = unknown>(options?: {
+  swr?: SWRConfiguration<Awaited<ReturnType<typeof getUserRating>>, TError> & {
+    swrKey?: Key;
+    enabled?: boolean;
+  };
+}) => {
+  const { swr: swrOptions } = options ?? {};
 
-export type GetUserRatingQueryResult = NonNullable<Awaited<ReturnType<typeof getUserRating>>>
-export type GetUserRatingQueryError = unknown
-
-export const useGetUserRating = <TError = unknown>(
-   options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof getUserRating>>, TError> & { swrKey?: Key, enabled?: boolean },  }
-) => {
-  const {swr: swrOptions} = options ?? {}
-
-  const isEnabled = swrOptions?.enabled !== false
-  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getGetUserRatingKey() : null);
+  const isEnabled = swrOptions?.enabled !== false;
+  const swrKey =
+    swrOptions?.swrKey ?? (() => (isEnabled ? getGetUserRatingKey() : null));
   const swrFn = () => getUserRating();
 
-  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(
+    swrKey,
+    swrFn,
+    swrOptions,
+  );
 
   return {
     swrKey,
-    ...query
-  }
-}
-export const getJournalGet = (
-    params: GetJournalGetParams,
- ) => {
-      return getJournalGetMutator<GetJournalGet200>(
-      {url: `/api/hono/journal/get`, method: 'GET',
-        params
-    },
-      );
-    }
-  
+    ...query,
+  };
+};
+export const getJournalGet = (params: GetJournalGetParams) => {
+  return getJournalGetMutator<GetJournalGet200>({
+    url: `/api/hono/openapi/journal/get`,
+    method: "GET",
+    params,
+  });
+};
 
+export const getGetJournalGetKey = (params: GetJournalGetParams) =>
+  [`/api/hono/openapi/journal/get`, ...(params ? [params] : [])] as const;
 
-export const getGetJournalGetKey = (params: GetJournalGetParams,) => [`/api/hono/journal/get`, ...(params ? [params]: [])] as const;
-
-
-export type GetJournalGetQueryResult = NonNullable<Awaited<ReturnType<typeof getJournalGet>>>
-export type GetJournalGetQueryError = unknown
+export type GetJournalGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getJournalGet>>
+>;
+export type GetJournalGetQueryError = unknown;
 
 export const useGetJournalGet = <TError = unknown>(
-  params: GetJournalGetParams, options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof getJournalGet>>, TError> & { swrKey?: Key, enabled?: boolean },  }
+  params: GetJournalGetParams,
+  options?: {
+    swr?: SWRConfiguration<
+      Awaited<ReturnType<typeof getJournalGet>>,
+      TError
+    > & { swrKey?: Key; enabled?: boolean };
+  },
 ) => {
-  const {swr: swrOptions} = options ?? {}
+  const { swr: swrOptions } = options ?? {};
 
-  const isEnabled = swrOptions?.enabled !== false
-  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getGetJournalGetKey(params) : null);
-  const swrFn = () => getJournalGet(params, );
+  const isEnabled = swrOptions?.enabled !== false;
+  const swrKey =
+    swrOptions?.swrKey ??
+    (() => (isEnabled ? getGetJournalGetKey(params) : null));
+  const swrFn = () => getJournalGet(params);
 
-  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(
+    swrKey,
+    swrFn,
+    swrOptions,
+  );
 
   return {
     swrKey,
-    ...query
-  }
-}
-export const getGeneralGetTypeOfWeek = (
-    
- ) => {
-      return getGeneralGetTypeOfWeekMutator<GetGeneralGetTypeOfWeek200>(
-      {url: `/api/hono/general/getTypeOfWeek`, method: 'GET'
-    },
-      );
-    }
-  
+    ...query,
+  };
+};
+export const getGeneralGetTypeOfWeek = () => {
+  return getGeneralGetTypeOfWeekMutator<GetGeneralGetTypeOfWeek200>({
+    url: `/api/hono/openapi/general/getTypeOfWeek`,
+    method: "GET",
+  });
+};
 
+export const getGetGeneralGetTypeOfWeekKey = () =>
+  [`/api/hono/openapi/general/getTypeOfWeek`] as const;
 
-export const getGetGeneralGetTypeOfWeekKey = () => [`/api/hono/general/getTypeOfWeek`] as const;
+export type GetGeneralGetTypeOfWeekQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getGeneralGetTypeOfWeek>>
+>;
+export type GetGeneralGetTypeOfWeekQueryError = unknown;
 
+export const useGetGeneralGetTypeOfWeek = <TError = unknown>(options?: {
+  swr?: SWRConfiguration<
+    Awaited<ReturnType<typeof getGeneralGetTypeOfWeek>>,
+    TError
+  > & { swrKey?: Key; enabled?: boolean };
+}) => {
+  const { swr: swrOptions } = options ?? {};
 
-export type GetGeneralGetTypeOfWeekQueryResult = NonNullable<Awaited<ReturnType<typeof getGeneralGetTypeOfWeek>>>
-export type GetGeneralGetTypeOfWeekQueryError = unknown
-
-export const useGetGeneralGetTypeOfWeek = <TError = unknown>(
-   options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof getGeneralGetTypeOfWeek>>, TError> & { swrKey?: Key, enabled?: boolean },  }
-) => {
-  const {swr: swrOptions} = options ?? {}
-
-  const isEnabled = swrOptions?.enabled !== false
-  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getGetGeneralGetTypeOfWeekKey() : null);
+  const isEnabled = swrOptions?.enabled !== false;
+  const swrKey =
+    swrOptions?.swrKey ??
+    (() => (isEnabled ? getGetGeneralGetTypeOfWeekKey() : null));
   const swrFn = () => getGeneralGetTypeOfWeek();
 
-  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(
+    swrKey,
+    swrFn,
+    swrOptions,
+  );
 
   return {
     swrKey,
-    ...query
-  }
-}
-export const getAuthSession = (
-    
- ) => {
-      return getAuthSessionMutator<GetAuthSession200>(
-      {url: `/api/hono/auth/session`, method: 'GET'
-    },
-      );
-    }
-  
+    ...query,
+  };
+};
+export const getAuthSession = () => {
+  return getAuthSessionMutator<GetAuthSession200>({
+    url: `/api/hono/openapi/auth/session`,
+    method: "GET",
+  });
+};
 
+export const getGetAuthSessionKey = () =>
+  [`/api/hono/openapi/auth/session`] as const;
 
-export const getGetAuthSessionKey = () => [`/api/hono/auth/session`] as const;
+export type GetAuthSessionQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAuthSession>>
+>;
+export type GetAuthSessionQueryError = GetAuthSession401;
 
+export const useGetAuthSession = <TError = GetAuthSession401>(options?: {
+  swr?: SWRConfiguration<Awaited<ReturnType<typeof getAuthSession>>, TError> & {
+    swrKey?: Key;
+    enabled?: boolean;
+  };
+}) => {
+  const { swr: swrOptions } = options ?? {};
 
-export type GetAuthSessionQueryResult = NonNullable<Awaited<ReturnType<typeof getAuthSession>>>
-export type GetAuthSessionQueryError = GetAuthSession401
-
-export const useGetAuthSession = <TError = GetAuthSession401>(
-   options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof getAuthSession>>, TError> & { swrKey?: Key, enabled?: boolean },  }
-) => {
-  const {swr: swrOptions} = options ?? {}
-
-  const isEnabled = swrOptions?.enabled !== false
-  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getGetAuthSessionKey() : null);
+  const isEnabled = swrOptions?.enabled !== false;
+  const swrKey =
+    swrOptions?.swrKey ?? (() => (isEnabled ? getGetAuthSessionKey() : null));
   const swrFn = () => getAuthSession();
 
-  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(
+    swrKey,
+    swrFn,
+    swrOptions,
+  );
 
   return {
     swrKey,
-    ...query
-  }
-}
-export const postAuthLogout = (
-    
- ) => {
-      return postAuthLogoutMutator<void>(
-      {url: `/api/hono/auth/logout`, method: 'POST'
-    },
-      );
-    }
-  
+    ...query,
+  };
+};
+export const postAuthLogout = () => {
+  return postAuthLogoutMutator<void>({
+    url: `/api/hono/openapi/auth/logout`,
+    method: "POST",
+  });
+};
 
-
-export const getPostAuthLogoutMutationFetcher = ( ) => {
+export const getPostAuthLogoutMutationFetcher = () => {
   return (_: string, __: { arg: Arguments }): Promise<void> => {
     return postAuthLogout();
-  }
-}
-export const getPostAuthLogoutMutationKey = () => `/api/hono/auth/logout` as const;
+  };
+};
+export const getPostAuthLogoutMutationKey = () =>
+  `/api/hono/openapi/auth/logout` as const;
 
-export type PostAuthLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthLogout>>>
-export type PostAuthLogoutMutationError = unknown
+export type PostAuthLogoutMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAuthLogout>>
+>;
+export type PostAuthLogoutMutationError = unknown;
 
-export const usePostAuthLogout = <TError = unknown>(
-   options?: { swr?:SWRMutationConfiguration<Awaited<ReturnType<typeof postAuthLogout>>, TError, string, Arguments, Awaited<ReturnType<typeof postAuthLogout>>> & { swrKey?: string },  }
-) => {
-
-  const {swr: swrOptions} = options ?? {}
+export const usePostAuthLogout = <TError = unknown>(options?: {
+  swr?: SWRMutationConfiguration<
+    Awaited<ReturnType<typeof postAuthLogout>>,
+    TError,
+    string,
+    Arguments,
+    Awaited<ReturnType<typeof postAuthLogout>>
+  > & { swrKey?: string };
+}) => {
+  const { swr: swrOptions } = options ?? {};
 
   const swrKey = swrOptions?.swrKey ?? getPostAuthLogoutMutationKey();
   const swrFn = getPostAuthLogoutMutationFetcher();
 
-  const query = useSWRMutation(swrKey, swrFn, swrOptions)
+  const query = useSWRMutation(swrKey, swrFn, swrOptions);
 
   return {
     swrKey,
-    ...query
-  }
-}
+    ...query,
+  };
+};

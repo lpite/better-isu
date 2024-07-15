@@ -5,16 +5,16 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export * from './getAuthSession200';
-export * from './getAuthSession200Data';
-export * from './getAuthSession401';
-export * from './getGeneralGetTypeOfWeek200';
-export * from './getJournalGet200';
-export * from './getJournalGet200MonthsItem';
-export * from './getJournalGet200MonthsItemGradesItem';
-export * from './getJournalGetParams';
-export * from './getUserProfile200';
-export * from './getUserRating200Item';
-export * from './getUserSchedule200Item';
-export * from './getUserSchedule200ItemType';
-export * from './getUserSubjects200Item';
+export * from "./getAuthSession200";
+export * from "./getAuthSession200Data";
+export * from "./getAuthSession401";
+export * from "./getGeneralGetTypeOfWeek200";
+export * from "./getJournalGet200";
+export * from "./getJournalGet200MonthsItem";
+export * from "./getJournalGet200MonthsItemGradesItem";
+export * from "./getJournalGetParams";
+export * from "./getUserProfile200";
+export * from "./getUserRating200Item";
+export * from "./getUserSchedule200Item";
+export * from "./getUserSchedule200ItemType";
+export * from "./getUserSubjects200Item";

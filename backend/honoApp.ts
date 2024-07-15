@@ -1,20 +1,25 @@
-import { OpenAPIHono } from "@hono/zod-openapi"
-import { userRouter } from "./routers/userRouter"
-import { generalRouter } from "./routers/generalRouter"
-import { journalRouter } from "./routers/journalRouter"
-import { authRouter } from "./routers/authRouter"
+import { OpenAPIHono } from "@hono/zod-openapi";
+import { userRouter } from "./routers/userRouter";
+import { generalRouter } from "./routers/generalRouter";
+import { journalRouter } from "./routers/journalRouter";
+import { authRouter } from "./routers/authRouter";
+import { Hono } from "hono";
 
-export const app = new OpenAPIHono().basePath('/api/hono')
+export const openapiApp = new OpenAPIHono();
 
-app.route("/user", userRouter)
-app.route("/journal", journalRouter)
-app.route("/general", generalRouter)
-app.route("/auth", authRouter)
+export const app = new Hono().basePath("/api/hono");
 
-app.doc('/doc', {
-  openapi: '3.0.0',
+openapiApp.route("/user", userRouter);
+openapiApp.route("/journal", journalRouter);
+openapiApp.route("/general", generalRouter);
+openapiApp.route("/auth", authRouter);
+
+openapiApp.doc("/doc", {
+  openapi: "3.0.0",
   info: {
-    version: '1.0.0',
-    title: 'Capybara',
+    version: "1.0.0",
+    title: "Capybara",
   },
-})
+});
+
+app.route("/openapi", openapiApp);

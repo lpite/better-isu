@@ -4,7 +4,7 @@
  * Capybara
  * OpenAPI spec version: 1.0.0
  */
-import type { GetJournalGet200MonthsItem } from './getJournalGet200MonthsItem';
+import type { GetJournalGet200MonthsItem } from "./getJournalGet200MonthsItem";
 
 export type GetJournalGet200 = {
   journalName: string;

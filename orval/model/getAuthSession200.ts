@@ -4,7 +4,7 @@
  * Capybara
  * OpenAPI spec version: 1.0.0
  */
-import type { GetAuthSession200Data } from './getAuthSession200Data';
+import type { GetAuthSession200Data } from "./getAuthSession200Data";
 
 export type GetAuthSession200 = {
   data: GetAuthSession200Data;

@@ -162,8 +162,9 @@ const login = createRoute({
 });
 
 authRouter.openapi(login, async (c) => {
+	// TODO закінчити це
 	const session = await getSession(c);
-	const body = c.req.valid("json");
+	const { login, password } = c.req.valid("json");
 
 	if (!session.error || session.data) {
 		return c.json({
@@ -172,8 +173,8 @@ authRouter.openapi(login, async (c) => {
 	}
 
 	const formData = new FormData();
-	formData.append("login", req.body.login);
-	formData.append("passwd", req.body.password);
+	formData.append("login", login);
+	formData.append("passwd", password);
 	formData.append("btnSubmit", "%D3%E2%B3%E9%F2%E8");
 
 	return c.json({ error: "d" });

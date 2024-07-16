@@ -15,14 +15,13 @@ import { Session } from "types/session";
 
 export async function getSession(ctx: Context): Promise<{
   error?: "unauthorized" | "no session";
-  data: Session | null;
+  data?: Session;
 }> {
   const sessionCookie = getCookie(ctx, "session");
 
   if (!sessionCookie) {
     return {
       error: "unauthorized",
-      data: null,
     };
   }
 
@@ -49,7 +48,6 @@ export async function getSession(ctx: Context): Promise<{
     console.error("no such session db (sessionMiddleware)");
     return {
       error: "unauthorized",
-      data: null,
     };
   }
   const now = new Date().getTime() - new Date().getTimezoneOffset() * 60;
@@ -78,7 +76,6 @@ export async function getSession(ctx: Context): Promise<{
           .execute();
         return {
           error: "unauthorized",
-          data: null,
         };
       }
 

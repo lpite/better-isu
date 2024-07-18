@@ -6,6 +6,7 @@ export default function ServiceWorkerUpdater() {
     if (
       typeof window !== "undefined" &&
       "serviceWorker" in navigator &&
+      //@ts-ignore
       window.workbox !== undefined
     ) {
       //@ts-ignore

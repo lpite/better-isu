@@ -46,21 +46,15 @@ export default function ProfilePage() {
     <main className="flex items-center flex-col justify-center h-full pb-14 px-2">
       <ProtectedRoute />
       <div className="flex flex-col justify-center items-center grow w-full pt-24">
-        {/*<img 
-					src="/icons/apple-touch-icon.png" 
-					className="rounded-full h-24 w-24" 
-				/>*/}
         <span className="text-2xl">
           {user?.name} {user?.surname}
         </span>
         <span>Номер заліковки {user?.recordNumber}</span>
-
         <div className="w-full my-2">
           <Link href="/rating">
             <a className="block w-full p-2 bg-slate-800 rounded-lg">Рейтинг</a>
           </Link>
         </div>
-
         <span className="mt-4 mb-2">Вигляд журналу</span>
         <form className="flex gap-4 w-full px-6">
           <label

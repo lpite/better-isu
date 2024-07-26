@@ -23,6 +23,7 @@ export interface Schedule {
   data: Json;
   group: string;
   id: Generated<number>;
+  updated_at: Generated<Timestamp>;
 }
 
 export interface Session {

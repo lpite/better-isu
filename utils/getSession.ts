@@ -7,6 +7,7 @@ import getScheduleByApi from "./getScheduleByApi";
 import getFacultets from "./getFacultets";
 import getGroups from "./getGroups";
 import refreshSession from "./refreshSession";
+import { refreshSchedule } from "./refreshSchedule";
 
 export default async function getSession(req: NextApiRequest): Promise<{
   error?: "unauthorized" | "no session";
@@ -165,47 +166,4 @@ export async function refreshUserInfo(session: Session) {
     })
     .where("user.id", "=", session.user_id)
     .execute();
-}
-
-export async function refreshSchedule(session: Session) {
-  console.log("REFRESHING SCHEDULE LIST");
-
-  const user = await db
-    .selectFrom("user")
-    .select("group")
-    .where("user.id", "=", session.user_id)
-    .executeTakeFirstOrThrow();
-
-  const schedule = await db
-    .selectFrom("schedule")
-    .selectAll()
-    .where("group", "=", user.group)
-    .executeTakeFirst();
-
-  if (!schedule?.id) {
-    if (!user.group) {
-      throw "no user group";
-    }
-    const scheduleFromApi = await getScheduleByApi(session.user_id);
-
-    await db
-      .insertInto("schedule")
-      .values({
-        group: user.group,
-        data: JSON.stringify(scheduleFromApi),
-      })
-      .executeTakeFirstOrThrow();
-  }
-
-  if (!Object.keys(schedule?.data as any).length) {
-    const scheduleFromApi = await getScheduleByApi(session.user_id);
-
-    await db
-      .updateTable("schedule")
-      .set({
-        data: JSON.stringify(scheduleFromApi),
-      })
-      .where("group", "=", user.group)
-      .executeTakeFirstOrThrow();
-  }
 }

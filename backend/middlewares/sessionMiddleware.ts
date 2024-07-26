@@ -4,14 +4,11 @@ import { getCookie } from "hono/cookie";
 
 import { HTTPException } from "hono/http-exception";
 import { Context } from "hono";
-import {
-  refreshSchedule,
-  refreshSubjectsList,
-  refreshUserInfo,
-} from "utils/getSession";
+import { refreshSubjectsList, refreshUserInfo } from "utils/getSession";
 import refreshSession from "utils/refreshSession";
 import { db } from "utils/db";
 import { Session } from "types/session";
+import { refreshSchedule } from "utils/refreshSchedule";
 
 export async function getSession(ctx: Context): Promise<{
   error?: "unauthorized" | "no session";

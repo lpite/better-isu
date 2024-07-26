@@ -3,10 +3,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "../../utils/db";
 import { encryptText } from "../../utils/encryption";
 import getSession, {
-  refreshSchedule,
   refreshSubjectsList,
   refreshUserInfo,
 } from "../../utils/getSession";
+import { refreshSchedule } from "utils/refreshSchedule";
 
 export type LoginResponse = {
   error: string | null;

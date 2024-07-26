@@ -4,9 +4,10 @@ import { z as zod } from "@hono/zod-openapi";
 import { Session } from "types/session";
 import { sessionMiddleware } from "backend/middlewares/sessionMiddleware";
 import { sql } from "kysely";
-import { refreshSchedule, refreshSubjectsList } from "utils/getSession";
+import { refreshSubjectsList } from "utils/getSession";
 import getRatingPage from "utils/getRatingPage";
 import { getJoeBidenInfo } from "utils/getJoeBidenInfo";
+import { refreshSchedule } from "utils/refreshSchedule";
 
 export const userRouter = new OpenAPIHono<{
   Variables: { session: Session };

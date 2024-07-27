@@ -28,6 +28,9 @@ const profile = createRoute({
             surname: zod.string(),
             recordNumber: zod.string(),
             birthDate: zod.string(),
+            group: zod.string(),
+            course: zod.string(),
+            faculty: zod.string(),
           }),
         },
       },
@@ -49,6 +52,9 @@ userRouter.openapi(profile, async (c) => {
       "surname",
       "record_number as recordNumber",
       "birth_date as birthDate",
+      "group",
+      "faculty",
+      "course",
     ])
     .where("user.id", "=", session.user_id)
     .executeTakeFirstOrThrow();

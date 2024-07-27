@@ -134,6 +134,7 @@ const login = createRoute({
   path: "login",
   method: "post",
   request: {
+    headers: zod.object({}),
     body: {
       content: {
         "application/json": {

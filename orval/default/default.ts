@@ -18,6 +18,8 @@ import type {
   GetUserRating200Item,
   GetUserSchedule200Item,
   GetUserSubjects200Item,
+  PostAuthLogin200,
+  PostAuthLoginBody,
 } from ".././model";
 import getUserProfileMutator from ".././custom-client";
 import getUserSubjectsMutator from ".././custom-client";
@@ -27,6 +29,7 @@ import getJournalGetMutator from ".././custom-client";
 import getGeneralGetTypeOfWeekMutator from ".././custom-client";
 import getAuthSessionMutator from ".././custom-client";
 import postAuthLogoutMutator from ".././custom-client";
+import postAuthLoginMutator from ".././custom-client";
 
 export const getUserProfile = () => {
   return getUserProfileMutator<GetUserProfile200>({
@@ -340,6 +343,51 @@ export const usePostAuthLogout = <TError = unknown>(options?: {
 
   const swrKey = swrOptions?.swrKey ?? getPostAuthLogoutMutationKey();
   const swrFn = getPostAuthLogoutMutationFetcher();
+
+  const query = useSWRMutation(swrKey, swrFn, swrOptions);
+
+  return {
+    swrKey,
+    ...query,
+  };
+};
+export const postAuthLogin = (postAuthLoginBody: PostAuthLoginBody) => {
+  return postAuthLoginMutator<PostAuthLogin200>({
+    url: `/api/hono/openapi/auth/login`,
+    method: "POST",
+    data: postAuthLoginBody,
+  });
+};
+
+export const getPostAuthLoginMutationFetcher = () => {
+  return (
+    _: string,
+    { arg }: { arg: PostAuthLoginBody },
+  ): Promise<PostAuthLogin200> => {
+    return postAuthLogin(arg);
+  };
+};
+export const getPostAuthLoginMutationKey = () =>
+  `/api/hono/openapi/auth/login` as const;
+
+export type PostAuthLoginMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAuthLogin>>
+>;
+export type PostAuthLoginMutationError = unknown;
+
+export const usePostAuthLogin = <TError = unknown>(options?: {
+  swr?: SWRMutationConfiguration<
+    Awaited<ReturnType<typeof postAuthLogin>>,
+    TError,
+    string,
+    PostAuthLoginBody,
+    Awaited<ReturnType<typeof postAuthLogin>>
+  > & { swrKey?: string };
+}) => {
+  const { swr: swrOptions } = options ?? {};
+
+  const swrKey = swrOptions?.swrKey ?? getPostAuthLoginMutationKey();
+  const swrFn = getPostAuthLoginMutationFetcher();
 
   const query = useSWRMutation(swrKey, swrFn, swrOptions);
 

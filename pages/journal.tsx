@@ -87,7 +87,9 @@ export default function JournalPage() {
           return (
             <Fragment key={m.name}>
               <h2 className="w-full text-2xl mb-0.5 mt-3">{m.name}</h2>
-              <div className={`grid grid-cols-3 gap-1`}>
+              <div
+                className={`grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-1`}
+              >
                 {gradesForMonth.map((g, i) => (
                   <Day
                     key={m.name + i}

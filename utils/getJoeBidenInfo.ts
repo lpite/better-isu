@@ -15,6 +15,9 @@ export function getJoeBidenInfo() {
     surname: "Байден",
     birthDate: "20.11.1942",
     recordNumber: "0",
+    group: "група",
+    faculty: "факультет",
+    course: "курс",
   };
 
   const subjects = [

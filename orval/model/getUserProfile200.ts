@@ -7,6 +7,9 @@
 
 export type GetUserProfile200 = {
   birthDate: string;
+  course: string;
+  faculty: string;
+  group: string;
   name: string;
   recordNumber: string;
   surname: string;

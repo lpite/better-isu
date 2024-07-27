@@ -4,7 +4,6 @@ export default async function getGroups(facultyId: number, course: string) {
 
   formDataWithKey.append("course", course);
   formDataWithKey.append("facultyId", facultyId.toString());
-
   const groups = (await fetch(
     "https://isu1.khmnu.edu.ua/isu/pub/api/v1/getGroups.php",
     {

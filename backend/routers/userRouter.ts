@@ -87,7 +87,6 @@ userRouter.openapi(subjects, async (c) => {
   if (session.session_id === "joe_biden_session") {
     return c.json(getJoeBidenInfo().subjects);
   }
-
   const subjects = await db
     .selectFrom("subjects_list")
     .select([sql<{ name: string; link: string }[] | string>`data`.as("data")])

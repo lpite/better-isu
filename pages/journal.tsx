@@ -9,7 +9,7 @@ import ProtectedRoute from "@/components/protected-route";
 export default function JournalPage() {
   const router = useRouter();
   const { data, isLoading, error, mutate } = useGetJournalGet(
-    { index: router.query.index?.toString() || "jopa" },
+    { index: router.query.index?.toString() || "" },
     {
       swr: {
         revalidateIfStale: true,

@@ -1,4 +1,5 @@
 import zod from "zod";
+import { cacheClient } from "./memcached";
 
 export const DaySchema = zod.object({
   RECORDBOOK: zod.string(),
@@ -24,6 +25,23 @@ export default async function getGradesForUser({
   journalId,
   recordNumber,
 }: GetGradesParams): Promise<Day[]> {
+  const cachedGrades = await cacheClient
+    .get<string | undefined>(`grades:${groupId}.${journalId}`)
+    .then((res) => {
+      return res.value;
+    })
+    .catch((err) => {
+      console.error(err);
+      return undefined;
+    });
+
+  if (cachedGrades) {
+    console.log("using cache for grades");
+    return JSON.parse(cachedGrades).filter(
+      (el: Day) => el.RECORDBOOK.trim() === recordNumber,
+    );
+  }
+
   const grades = await fetch(
     "https://isu1.khmnu.edu.ua/isu/dbsupport/students/jrn/jrngrades.php",
     {
@@ -40,5 +58,10 @@ export default async function getGradesForUser({
       console.error(err);
       return [];
     });
+
+  cacheClient.set(`grades:${groupId}.${journalId}`, JSON.stringify(grades), {
+    lifetime: 600,
+  });
+
   return grades.filter((el: Day) => el.RECORDBOOK.trim() === recordNumber);
 }

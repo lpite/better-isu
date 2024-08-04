@@ -58,10 +58,11 @@ export default async function getGradesForUser({
       console.error(err);
       return [];
     });
-
-  cacheClient.set(`grades:${groupId}.${journalId}`, JSON.stringify(grades), {
-    lifetime: 600,
-  });
+  if (grades?.lenght) {
+    cacheClient.set(`grades:${groupId}.${journalId}`, JSON.stringify(grades), {
+      lifetime: 600,
+    });
+  }
 
   return grades.filter((el: Day) => el.RECORDBOOK.trim() === recordNumber);
 }

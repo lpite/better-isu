@@ -28,7 +28,7 @@ const getTypeOfWeek = createRoute({
 
 generalRouter.openapi(getTypeOfWeek, async (c) => {
   const cachedWeekType = await cacheClient.get<string>("week_type").then((res)=>{
-    return res.value
+    return res?.value
   }).catch((err)=>{
     console.error(err)
     return undefined

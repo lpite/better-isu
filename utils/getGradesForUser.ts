@@ -28,7 +28,7 @@ export default async function getGradesForUser({
   const cachedGrades = await cacheClient
     .get<string | undefined>(`grades:${groupId}.${journalId}`)
     .then((res) => {
-      return res.value;
+      return res?.value;
     })
     .catch((err) => {
       console.error(err);

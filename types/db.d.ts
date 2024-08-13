@@ -60,6 +60,7 @@ export interface User {
   login: string;
   name: Generated<string>;
   record_number: Generated<string>;
+  speciality: Generated<string>;
   surname: Generated<string>;
 }
 

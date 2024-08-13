@@ -355,6 +355,7 @@ export const postAuthLogin = (postAuthLoginBody: PostAuthLoginBody) => {
   return postAuthLoginMutator<PostAuthLogin200>({
     url: `/api/hono/openapi/auth/login`,
     method: "POST",
+    headers: { "Content-Type": "application/json" },
     data: postAuthLoginBody,
   });
 };

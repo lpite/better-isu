@@ -18,6 +18,7 @@ export function getJoeBidenInfo() {
     group: "група",
     faculty: "факультет",
     course: "курс",
+    speciality: "якась спеціальність",
   };
 
   const subjects = [

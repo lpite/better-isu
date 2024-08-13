@@ -27,14 +27,17 @@ const getTypeOfWeek = createRoute({
 });
 
 generalRouter.openapi(getTypeOfWeek, async (c) => {
-  const cachedWeekType = await cacheClient.get<string>("week_type").then((res)=>{
-    return res?.value
-  }).catch((err)=>{
-    console.error(err)
-    return undefined
-  })
-  if(cachedWeekType){
-    return c.text(cachedWeekType)
+  const cachedWeekType = await cacheClient
+    .get<string>("week_type")
+    .then((res) => {
+      return res?.value;
+    })
+    .catch((err) => {
+      console.error(err);
+      return undefined;
+    });
+  if (cachedWeekType) {
+    return c.text(cachedWeekType);
   }
 
   const { html } = await fetchAndDecode("https://isu1.khmnu.edu.ua/isu/");

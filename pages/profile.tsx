@@ -54,6 +54,7 @@ export default function ProfilePage() {
           </span>
           <span>Номер заліковки {user?.recordNumber}</span>
           <span>{user?.faculty}</span>
+          <span>Спеціальність {user?.speciality}</span>
           <span>Група {user?.group}</span>
           <span>Курс {user?.course}</span>
 

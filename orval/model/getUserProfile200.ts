@@ -12,5 +12,6 @@ export type GetUserProfile200 = {
   group: string;
   name: string;
   recordNumber: string;
+  speciality: string;
   surname: string;
 };

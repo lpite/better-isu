@@ -132,8 +132,16 @@ export async function refreshSubjectsList(session: Session) {
 }
 
 export async function refreshUserInfo(session: Session) {
-  const { name, surname, faculty, group, recordNumber, course, birthDate } =
-    await getProfilePage(session);
+  const {
+    name,
+    surname,
+    faculty,
+    group,
+    recordNumber,
+    course,
+    birthDate,
+    speciality,
+  } = await getProfilePage(session);
   const facultets = await getFacultets();
 
   const facultyId =
@@ -163,6 +171,7 @@ export async function refreshUserInfo(session: Session) {
       birth_date: birthDate,
       group_id: groupId,
       faculty_id: facultyId,
+      speciality: speciality,
     })
     .where("user.id", "=", session.user_id)
     .execute();

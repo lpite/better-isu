@@ -8,6 +8,8 @@ import { refreshSubjectsList } from "utils/getSession";
 import getRatingPage from "utils/getRatingPage";
 import { getJoeBidenInfo } from "utils/getJoeBidenInfo";
 import { refreshSchedule } from "utils/refreshSchedule";
+import { cacheClient } from "utils/memcached";
+import { cyrb53 } from "utils/hash";
 
 export const userRouter = new OpenAPIHono<{
   Variables: { session: Session };
@@ -31,6 +33,7 @@ const profile = createRoute({
             group: zod.string(),
             course: zod.string(),
             faculty: zod.string(),
+            speciality: zod.string(),
           }),
         },
       },
@@ -55,6 +58,7 @@ userRouter.openapi(profile, async (c) => {
       "group",
       "faculty",
       "course",
+      "speciality",
     ])
     .where("user.id", "=", session.user_id)
     .executeTakeFirstOrThrow();
@@ -194,7 +198,28 @@ userRouter.openapi(rating, async (c) => {
     return c.json(getJoeBidenInfo().rating);
   }
 
+  const user = await db
+    .selectFrom("user")
+    .selectAll()
+    .where("id", "=", session.user_id)
+    .executeTakeFirstOrThrow();
+
+  const cachedRating = await cacheClient.get<string | undefined>(
+    `rating:${user.faculty_id}.${user.course}.${cyrb53(user.speciality)}`,
+  )
+    .then((res) => res?.value)
+    .catch(() => undefined);
+
+  if (cachedRating) {
+    return c.json(JSON.parse(cachedRating));
+  }
+
   const rating = await getRatingPage(session);
   c.header("Cache-Control", "max-age=14400");
+  if (rating.length) {
+    await cacheClient.set(`rating:${user.faculty_id}.${user.course}.${cyrb53(user.speciality)}`, JSON.stringify(rating), {
+      lifetime: 604800
+    })
+  }
   return c.json(rating);
 });

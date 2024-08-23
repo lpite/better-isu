@@ -204,9 +204,10 @@ userRouter.openapi(rating, async (c) => {
     .where("id", "=", session.user_id)
     .executeTakeFirstOrThrow();
 
-  const cachedRating = await cacheClient.get<string | undefined>(
-    `rating:${user.faculty_id}.${user.course}.${cyrb53(user.speciality)}`,
-  )
+  const cachedRating = await cacheClient
+    .get<string | undefined>(
+      `rating:${user.faculty_id}.${user.course}.${cyrb53(user.speciality)}`,
+    )
     .then((res) => res?.value)
     .catch(() => undefined);
 
@@ -217,9 +218,13 @@ userRouter.openapi(rating, async (c) => {
   const rating = await getRatingPage(session);
   c.header("Cache-Control", "max-age=14400");
   if (rating.length) {
-    await cacheClient.set(`rating:${user.faculty_id}.${user.course}.${cyrb53(user.speciality)}`, JSON.stringify(rating), {
-      lifetime: 604800
-    })
+    await cacheClient.set(
+      `rating:${user.faculty_id}.${user.course}.${cyrb53(user.speciality)}`,
+      JSON.stringify(rating),
+      {
+        lifetime: 604800,
+      },
+    );
   }
   return c.json(rating);
 });

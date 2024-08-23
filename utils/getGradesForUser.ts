@@ -40,9 +40,11 @@ export default async function getGradesForUser({
     return JSON.parse(cachedGrades).filter(
       (el: Day) => el.RECORDBOOK.trim() === recordNumber,
     );
+  } else {
+    console.log("updating grades in cache");
   }
 
-  const grades = await fetch(
+  const grades = (await fetch(
     "https://isu1.khmnu.edu.ua/isu/dbsupport/students/jrn/jrngrades.php",
     {
       headers: {
@@ -57,8 +59,8 @@ export default async function getGradesForUser({
     .catch((err) => {
       console.error(err);
       return [];
-    });
-  if (grades?.lenght) {
+    })) as any[];
+  if (grades?.length) {
     cacheClient.set(`grades:${groupId}.${journalId}`, JSON.stringify(grades), {
       lifetime: 600,
     });

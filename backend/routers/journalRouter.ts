@@ -7,6 +7,8 @@ import parse from "node-html-parser";
 import { sessionMiddleware } from "backend/middlewares/sessionMiddleware";
 import { HTTPException } from "hono/http-exception";
 import { getJoeBidenInfo } from "utils/getJoeBidenInfo";
+import { cacheClient } from "utils/memcached";
+import { cyrb53 } from "utils/hash";
 
 const monthList = [
   "Січень",
@@ -63,16 +65,15 @@ journalRouter.openapi(get, async (c) => {
   if (session.session_id === "joe_biden_session") {
     return c.json(getJoeBidenInfo().journal);
   }
-
+  const time = Date.now();
   const { index } = c.req.valid("query");
 
   const query = { index: Number(index) };
   const user = await db
     .selectFrom("user")
-    .select(["record_number", "group_id"])
+    .select(["record_number", "group_id", "course"])
     .where("id", "=", session.user_id)
     .executeTakeFirstOrThrow();
-
   const subjects = await db
     .selectFrom("subjects_list")
     .select(["data"])
@@ -82,8 +83,6 @@ journalRouter.openapi(get, async (c) => {
   const data = subjects.data as {
     link: string;
     name: string;
-    journal_id?: string;
-    weights: { type: string; weight: string; isRequired: boolean }[];
   }[];
 
   if (!data) {
@@ -94,14 +93,34 @@ journalRouter.openapi(get, async (c) => {
     throw "no subjects list in db;";
   }
 
-  let {
-    link: journalLink,
-    journal_id: journalId,
-    name: journalName,
-    weights,
-  } = data[query.index];
+  let { link: journalLink, name: journalName } = data[query.index];
 
-  if (!journalId) {
+  let cachedJournalId = await cacheClient
+    .get<string>(
+      `journal_id:${user.group_id}.${cyrb53(journalName)}.${user.course}`,
+    )
+    .then(({ value }) => {
+      return value;
+    })
+    .catch((err) => {
+      console.error(err);
+      return undefined;
+    });
+
+  let cachedJournalWeights = (await cacheClient
+    .get<string>(
+      `journal_weights:${user.group_id}.${cyrb53(journalName)}.${user.course}`,
+    )
+    .then(({ value }) => {
+      return JSON.parse(value);
+    })
+    .catch((err) => {
+      console.error(err);
+      return undefined;
+    })) as { type: string; weight: string; isRequired: boolean }[] | undefined;
+
+  if (!cachedJournalId || !cachedJournalWeights) {
+    console.log("updating cached values");
     let journalPage = await fetch(
       `https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.php?key=${journalLink}`,
       {
@@ -133,7 +152,7 @@ journalRouter.openapi(get, async (c) => {
     // тег в якому лежать дані про журнал
     const scriptTag = html.querySelectorAll("script")[3].textContent.trim();
 
-    journalId = (scriptTag.match(/journalId:\s*'([^']+)'/) || [])[1];
+    const journalId = (scriptTag.match(/journalId:\s*'([^']+)'/) || [])[1];
 
     if (!journalId || !journalId?.length) {
       console.error("Немає айді журналу");
@@ -159,25 +178,38 @@ journalRouter.openapi(get, async (c) => {
           return { type, weight, isRequired };
         }) || [];
 
-    data[query.index] = {
-      ...data[query.index],
-      journal_id: journalId,
-      weights,
-    };
+    await Promise.all([
+      cacheClient.set(
+        `journal_id:${user.group_id}.${cyrb53(journalName)}.${user.course}`,
+        journalId,
+        {
+          lifetime: 172800, // 2 дні
+        },
+      ),
+      cacheClient.set(
+        `journal_weights:${user.group_id}.${cyrb53(journalName)}.${user.course}`,
+        JSON.stringify(weights),
+        {
+          lifetime: 172800, // 2 дні
+        },
+      ),
+    ]);
 
-    await db
-      .updateTable("subjects_list")
-      .set({
-        data: JSON.stringify(data),
-      })
-      .where("session_id", "=", session.id)
-      .executeTakeFirstOrThrow();
+    cachedJournalId = journalId;
+    cachedJournalWeights = weights;
+    // await db
+    //   .updateTable("subjects_list")
+    //   .set({
+    //     data: JSON.stringify(data),
+    //   })
+    //   .where("session_id", "=", session.id)
+    //   .executeTakeFirstOrThrow();
   }
 
   const grades = await getGradesForUser({
     isu_cookie: session.isu_cookie,
     groupId: user.group_id,
-    journalId: journalId,
+    journalId: cachedJournalId,
     recordNumber: user.record_number,
   });
 
@@ -227,37 +259,40 @@ journalRouter.openapi(get, async (c) => {
         let grade = 0;
         let currentSumOfWeights = 0;
         Object.entries(sumByType).forEach(([key, sum]) => {
-          if (!weights) {
-            weights = data[query.index].weights;
-          }
-          const { weight: weightString, isRequired } = weights.find(
-            (el) => el.type === key,
-          ) || { weight: "0", isRequired: false };
+          // if (!cachedJournalWeights) {
+          //   cachedJournalWeights = data[query.index].weights;
+          // }
+          // console.log(cachedJournalWeights);
+          const { weight: weightString, isRequired } =
+            cachedJournalWeights?.find((el) => el.type === key) || {
+              weight: "0",
+              isRequired: false,
+            };
 
           const weight = Number(weightString);
 
           const count = pairsCountByType[key];
           const average = sum / count;
-          console.log(key, average, sum, count, weight);
+          // console.log(key, average, sum, count, weight);
           grade += average * weight;
-          console.log(grade);
+          // console.log(grade);
           if (average * weight || isRequired) {
             // перевірка якщо оцінка 0 то не враховувати ваговий в розрахунках
             // Враховувати завжди якщо вид заняття обовʼязковий
             currentSumOfWeights += weight;
           }
         });
-        console.log(currentSumOfWeights);
+        // console.log(currentSumOfWeights);
         grade = grade / currentSumOfWeights;
 
         gradesForMonth[i].GRADE = grade.toFixed(2);
         // console.log(pairsCountByType, sumByType)
         continue;
       }
-      if (!weights) {
-        weights = data[query.index].weights;
-      }
-      const pairAttributes = data[query.index].weights.find(
+      // if (!weights) {
+      //   weights = data[query.index].weights;
+      // }
+      const pairAttributes = cachedJournalWeights?.find(
         (el) => el.type === CONTROLSHORTNAME,
       );
 

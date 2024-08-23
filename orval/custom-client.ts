@@ -9,6 +9,7 @@ export const customClient = async <T>({
   url: string;
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   params?: any;
+  headers?: Record<string, string>;
   //@ts-ignore
   data?: BodyType<unknown>;
 

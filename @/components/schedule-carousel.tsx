@@ -193,7 +193,7 @@ export default function ScheduleCarousel({
               );
             }
 
-            const scheduleForDay =
+            let scheduleForDay =
               schedule
                 ?.filter((el) => el.day === day)
                 .filter((subj) => isEnabled(subj.name))
@@ -202,7 +202,7 @@ export default function ScheduleCarousel({
                 )
                 .filter(({ dateFrom, dateTo }) => {
                   return true;
-
+                  // Це вимкнена перевірка закінчення предмету
                   if (!dateFrom || !dateTo) {
                     return true;
                   }
@@ -223,6 +223,51 @@ export default function ScheduleCarousel({
 
                   return false;
                 }) || [];
+
+            if (day === "Пт") {
+              // спеціально для пʼятниці розклад
+              // і так це максимально погано і маскимально криво :))
+
+              const s = [
+                { date: "06.09", type: "up", day: "Пн" },
+                { date: "13.09", type: "up", day: "Вт" },
+                { date: "20.09", type: "up", day: "Ср" },
+                { date: "27.09", type: "up", day: "Чт" },
+                { date: "04.10", type: "bottom", day: "Пн" },
+                { date: "11.10", type: "bottom", day: "Вт" },
+                { date: "18.10", type: "bottom", day: "Ср" },
+                { date: "25.10", type: "bottom", day: "Чт" },
+                { date: "01.11", type: "up", day: "Пн" },
+                { date: "08.11", type: "up", day: "Вт" },
+                { date: "15.11", type: "up", day: "Ср" },
+                { date: "22.11", type: "up", day: "Чт" },
+              ];
+              const currentWeekDay = new Date().getDay();
+              const off = 5 - currentWeekDay;
+              const d = Date.now() + off * 24 * 60 * 60 * 1000;
+              const fridayDate = new Date(d);
+
+              const scheduleForFriday = s.find((el) => {
+                const [d, m] = el.date.split(".");
+                if (
+                  fridayDate.getMonth() + 1 === parseInt(m) &&
+                  fridayDate.getDate() === parseInt(d)
+                ) {
+                  return true;
+                }
+                return false;
+              });
+
+              scheduleForDay =
+                schedule
+                  ?.filter((el) => el.day === scheduleForFriday?.day)
+                  .filter((subj) => isEnabled(subj.name))
+                  .filter(
+                    ({ type }) =>
+                      type === "full" || type === scheduleForFriday?.type,
+                  ) || [];
+            }
+
             if (!scheduleForDay.length && !isLoadingSchedule) {
               return (
                 <CarouselItem className="flex flex-col h-72" key={day}>

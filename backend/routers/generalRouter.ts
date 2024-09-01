@@ -40,11 +40,12 @@ generalRouter.openapi(getTypeOfWeek, async (c) => {
     return c.text(cachedWeekType);
   }
 
-  const { html } = await fetchAndDecode("https://isu1.khmnu.edu.ua/isu/");
+  const { html } = await fetchAndDecode("https://isu1.khmnu.edu.ua/isu/dbsupport/logon.php");
   const typeOfWeek = html
     .querySelector(".logo-time")
-    ?.textContent.split(".")[1]
-    .trim();
+    ?.textContent?.split(".")[1]
+    ?.trim();
+  
   let response: "up" | "bottom" = "up";
   if (typeOfWeek === "Знаменник") {
     response = "bottom";

@@ -170,7 +170,7 @@ export default function ScheduleCarousel({
 
       <Carousel className="relative" setApi={setCarouselApi}>
         <CarouselContent className="mt-8">
-          {["Пн", "Вт", "Ср", "Чт", "Пт"].map((day) => {
+          {["Пн", "Вт", "Ср", "Чт", "Пт","Сб"].map((day) => {
             if (isLoadingSchedule) {
               return (
                 <CarouselItem className="flex flex-col" key={day}>

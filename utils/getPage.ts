@@ -119,7 +119,7 @@ export async function getSubjectsPage(session: Session) {
     }
 
     const currentSemester =
-      secondPageHtml?.querySelector("[color=blue]")?.textContent;
+      secondPageHtml?.querySelectorAll("[color=blue]")[1]?.textContent;
 
     let tabNo = 6;
     let elementInRow = 0;

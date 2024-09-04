@@ -60,7 +60,7 @@ export default function ProfilePage() {
 
           <div className="w-full my-6">
             <Link href="/rating">
-              <a className="block w-full p-2 bg-slate-800 rounded-lg">
+              <a className="block w-full p-2 dark:bg-slate-800 bg-slate-300 rounded-lg">
                 Рейтинг
               </a>
             </Link>

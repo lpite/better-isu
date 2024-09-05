@@ -36,6 +36,10 @@ function MyApp({ Component, pageProps }: AppProps) {
         />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#020817" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
       </Head>
       <LoadableApp>
         <ThemeProvider

@@ -3,6 +3,7 @@ import "../styles/globals.css";
 
 import type { AppProps } from "next/app";
 import dynamic from "next/dynamic";
+import { ThemeProvider } from "next-themes";
 
 const LoadableApp = dynamic(() => import("@/App").then((m) => m.default));
 
@@ -37,7 +38,14 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="theme-color" content="#020817" />
       </Head>
       <LoadableApp>
-        <Component {...pageProps} />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          // disableTransitionOnChange
+        >
+          <Component {...pageProps} />
+        </ThemeProvider>
       </LoadableApp>
     </>
   );

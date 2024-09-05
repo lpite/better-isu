@@ -99,8 +99,8 @@ journalRouter.openapi(get, async (c) => {
     .get<string>(
       `journal_id:${user.group_id}.${cyrb53(journalName)}.${user.course}`,
     )
-    .then(({ value }) => {
-      return value;
+    .then((res) => {
+      return res?.value;
     })
     .catch((err) => {
       console.error(err);

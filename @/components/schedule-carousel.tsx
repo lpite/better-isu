@@ -41,7 +41,7 @@ function generateSubjectsList(schedule?: GetUserScheduleQueryResult) {
       .slice(indexOfFirstDot + 1)
       .trim();
     const indexOfLastSpace = newName.lastIndexOf(" ");
-    setOfName.add(newName.slice(0, indexOfLastSpace));
+    setOfName.add(newName.slice(0, indexOfLastSpace).trim());
   });
   return [...setOfName];
 }

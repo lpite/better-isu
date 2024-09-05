@@ -5,45 +5,38 @@ import encodeParamString from "./encodeParamString";
 import fetchAndDecode from "./fetchAndDecode";
 
 export async function getProfilePage(session: Session) {
-  const decoder = new TextDecoder("windows-1251");
-
-  const eduplansPage = await fetch(
-    "https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php",
-    {
-      headers: {
-        Cookie: `PHPSESSID=${session.isu_cookie}`,
+  const [{ html: eduplansPage }, { html: profileHtml }] = await Promise.all([
+    fetchAndDecode(
+      "https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php",
+      {
+        headers: {
+          Cookie: `PHPSESSID=${session.isu_cookie}`,
+        },
       },
-    },
-  )
-    .then((res) => res.arrayBuffer())
-    .then((res) => decoder.decode(res))
-    .catch((res) => {
-      return "";
-    });
-
-  const tableCells = parse(eduplansPage).querySelectorAll("#TabCell");
-
-  const { html: profileHtml } = await fetchAndDecode(
-    "https://isu1.khmnu.edu.ua/isu/dbsupport/students/personnel.php",
-    {
-      headers: {
-        Cookie: `PHPSESSID=${session.isu_cookie}`,
+    ),
+    fetchAndDecode(
+      "https://isu1.khmnu.edu.ua/isu/dbsupport/students/personnel.php",
+      {
+        headers: {
+          Cookie: `PHPSESSID=${session.isu_cookie}`,
+        },
       },
-    },
-  );
+    ),
+  ]);
 
+  const eduplansCells = eduplansPage.querySelectorAll("#TabCell");
   const profileCells =
     profileHtml?.querySelector("#MainTab")?.querySelectorAll("#TabCell") || [];
 
   const profile = {
-    name: tableCells[2].textContent,
-    surname: tableCells[1].textContent,
-    fathersName: tableCells[3].textContent,
-    recordNumber: tableCells[9].textContent,
-    faculty: tableCells[4].textContent,
-    speciality: tableCells[5].textContent,
-    group: tableCells[7].textContent,
-    course: tableCells[10].textContent,
+    name: eduplansCells[2].textContent,
+    surname: eduplansCells[1].textContent,
+    fathersName: eduplansCells[3].textContent,
+    recordNumber: eduplansCells[9].textContent,
+    faculty: eduplansCells[4].textContent,
+    speciality: eduplansCells[5].textContent,
+    group: eduplansCells[7].textContent,
+    course: eduplansCells[10].textContent,
     birthDate: profileCells[profileCells?.length - 1].textContent,
   };
 

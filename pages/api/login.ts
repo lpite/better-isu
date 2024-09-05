@@ -125,7 +125,7 @@ export default async function handler(
 
     await refreshUserInfo(session);
     // await refreshSubjectsList(session)
-    await refreshSchedule(session);
+    // await refreshSchedule(session);
 
     res.appendHeader(
       "Set-Cookie",
@@ -143,7 +143,7 @@ export default async function handler(
   } catch (err) {
     console.error(err);
     res.send({
-      error: "Натисність ще раз",
+      error: "Спробуйте ще раз",
       data: null,
     });
   }

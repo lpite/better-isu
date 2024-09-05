@@ -27,7 +27,7 @@ export default function RaitingPage() {
       <main className="gap-1 p-2 pt-3 pb-14">
         {rating?.map((row, i) => (
           <div
-            className={`flex p-2  ${i % 2 ? "bg-slate-800" : ""}`}
+            className={`flex p-2  ${i % 2 ? "dark:bg-slate-800 bg-slate-300" : ""}`}
             key={row.surname + row.name + row.rating}
           >
             <span className="w-10 inline-block">{row.number}</span>

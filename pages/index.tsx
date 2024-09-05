@@ -40,6 +40,11 @@ export default function Home() {
     );
 
     setJournalType(journalType);
+
+    if (location.href.includes("localhost")) {
+      // TODO перекидати на хну сервер з верселу....
+      // alert("Перейдіть на хну капібару!")
+    }
   }, []);
 
   const isLoading = isLoadingSubjects;
@@ -78,7 +83,7 @@ export default function Home() {
         {user?.name}
       </h1>
 
-      <h2 className="text-xl text-slate-400">Поточний семестр</h2>
+      <h2 className="text-xl text-slate-400">Поточні журнали</h2>
       <div className="flex flex-wrap gap-2 mb-14">
         {isLoading ? (
           <>
@@ -102,7 +107,7 @@ export default function Home() {
             <Fragment key={el.name + i}>
               {journalType === "new" ? (
                 <Link href={`/journal?index=${i}`}>
-                  <a className="flex w-full border rounded-lg py-5 px-3">
+                  <a className="flex w-full border rounded-lg py-5 px-3 shadow dark:shadow-none">
                     {el.name}
                   </a>
                 </Link>
@@ -110,7 +115,7 @@ export default function Home() {
                 <a
                   href={`/api/journal?index=${i}`}
                   target="_blank"
-                  className="flex w-full border rounded-lg py-5 px-3"
+                  className="flex w-full border rounded-lg py-5 px-3 shadow dark:shadow-none"
                 >
                   {el.name}
                 </a>

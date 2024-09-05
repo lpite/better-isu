@@ -76,6 +76,10 @@ export default async function getScheduleByApi(user_id: number) {
       number: el.pairNum,
       type: pairTypes[el.weekId],
       name: `${studyTypes[el.studyTypeId]} ${el.subjectName} ${el.audName} ${el.teacherShortName}`,
+      auditory: el.audName,
+      subjectName: el.subjectName,
+      // Вказує на те чи є цей предмет вибірковим.
+      isSelectable: el.isSubGroup === "Y" ? true : false,
       dateFrom: el.dateFrom,
       dateTo: el.dateTo,
     };

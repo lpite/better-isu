@@ -10,7 +10,11 @@ import {
 import Link from "next/link";
 import ProtectedRoute from "@/components/protected-route";
 import PageHeader from "@/components/page-header";
+import { useTheme } from "next-themes";
 const journalTypeSchema = zod.enum(["default", "new"]);
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import NoSsr from "@/components/no-ssr";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -23,6 +27,8 @@ export default function ProfilePage() {
   );
 
   const { trigger: logoutTrigger } = usePostAuthLogout();
+
+  const { theme, setTheme } = useTheme();
 
   React.useEffect(() => {
     const journalType = journalTypeSchema.parse(
@@ -42,7 +48,7 @@ export default function ProfilePage() {
     mutateSession();
     router.push("/login");
   }
-
+  console.log(theme);
   return (
     <>
       <PageHeader name="Профіль" />
@@ -65,30 +71,77 @@ export default function ProfilePage() {
               </a>
             </Link>
           </div>
-          <span className="mt-4 mb-2">Вигляд журналу</span>
-          <form className="flex gap-4 w-full px-6">
-            <label
-              className={`flex justify-center p-4 border-2 rounded-xl w-1/2 ${journalType === "default" ? "border-blue-900" : ""}`}
-            >
-              <input
-                type="radio"
-                name="journal_type"
-                className="appearance-none w-0 h-0 absolute"
-                onChange={() => changeJournalType("default")}
-              />
-              Стандартний
-            </label>
-            <label
-              className={`flex justify-center p-4 border-2 rounded-xl w-1/2 ${journalType === "new" ? "border-blue-900" : ""}`}
-            >
-              <input
-                type="radio"
-                name="journal_type"
-                className="appearance-none w-0 h-0 absolute"
-                onChange={() => changeJournalType("new")}
-              />
-              Тестовий
-            </label>
+          <span className="mt-4 mb-2 text-2xl font-medium">
+            Зовнішній вигляд
+          </span>
+          <form className="flex flex-col gap-2 w-full px-2 а">
+            <Label className="flex items-center gap-2 w-full my-5">
+              <div>
+                <span className="text-lg w-full block mb-2">
+                  Використовувати системну тему
+                </span>
+                <span className="font-normal text-slate-600">
+                  Зовнішній вигляд буде автоматично змінюватися при зміні теми
+                  на пристрої
+                </span>
+              </div>
+              <NoSsr>
+                {/* Вимкнення ssr потрібне для того щоб воно показувало правильну тему*/}
+                <Switch
+                  checked={theme === "system"}
+                  onCheckedChange={() =>
+                    theme === "system" ? setTheme("light") : setTheme("system")
+                  }
+                />
+              </NoSsr>
+            </Label>
+            <div className="w-full flex gap-2">
+              <NoSsr>
+                <label
+                  className={`flex justify-center p-4 border-2 rounded-xl w-1/2 ${theme === "light" ? "border-blue-900" : ""}`}
+                >
+                  <input
+                    type="radio"
+                    name="journal_type"
+                    className="appearance-none w-0 h-0 absolute"
+                    onChange={() => setTheme("light")}
+                  />
+                  Світла
+                </label>
+              </NoSsr>
+              <NoSsr>
+                <label
+                  className={`flex justify-center p-4 border-2 rounded-xl w-1/2 ${theme === "dark" ? "border-blue-900" : ""}`}
+                >
+                  <input
+                    type="radio"
+                    name="journal_type"
+                    className="appearance-none w-0 h-0 absolute"
+                    onChange={() => setTheme("dark")}
+                  />
+                  Темна
+                </label>
+              </NoSsr>
+            </div>
+            <Label className="flex items-center gap-2 w-full my-5">
+              <div>
+                <span className="text-lg w-full block mb-2">
+                  Тестовий вигляд журналу
+                </span>
+                <span className="font-normal text-slate-600">
+                  Сторінка журналу буде замінена на тестовий варіант
+                </span>
+              </div>
+              <NoSsr>
+                {/* Вимкнення ssr потрібне для того щоб воно показувало правильну тему*/}
+                <Switch
+                  checked={journalType === "new"}
+                  onCheckedChange={() =>
+                    journalType === "new" ? changeJournalType("default") : changeJournalType("new")
+                  }
+                />
+              </NoSsr>
+            </Label>
           </form>
         </div>
         <button

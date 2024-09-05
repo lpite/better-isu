@@ -11,7 +11,7 @@ export default function AboutPage() {
           </a>
         </Link>
       </div>
-      <div className="dark:bg-black border-2 w-full py-5 px-4 rounded-xl flex flex-col mb-3 bubbles_bg">
+      <div className="dark:bg-black border-2 w-full py-5 px-4 rounded-xl flex flex-col mb-3 dark:bubbles_bg">
         <Link href="https://t.me/lpite">
           <a className="text-xl" target="_blank">
             Знайшли помилку?

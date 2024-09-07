@@ -25,6 +25,7 @@ import getUserProfileMutator from ".././custom-client";
 import getUserSubjectsMutator from ".././custom-client";
 import getUserScheduleMutator from ".././custom-client";
 import getUserRatingMutator from ".././custom-client";
+import getUserIndividualPlanMutator from ".././custom-client";
 import getJournalGetMutator from ".././custom-client";
 import getGeneralGetTypeOfWeekMutator from ".././custom-client";
 import getAuthSessionMutator from ".././custom-client";
@@ -175,6 +176,49 @@ export const useGetUserRating = <TError = unknown>(options?: {
   const swrKey =
     swrOptions?.swrKey ?? (() => (isEnabled ? getGetUserRatingKey() : null));
   const swrFn = () => getUserRating();
+
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(
+    swrKey,
+    swrFn,
+    swrOptions,
+  );
+
+  return {
+    swrKey,
+    ...query,
+  };
+};
+/**
+ * educational individual plan for user with required and selectable subjects
+ */
+export const getUserIndividualPlan = () => {
+  return getUserIndividualPlanMutator<string[]>({
+    url: `/api/hono/openapi/user/individual plan`,
+    method: "GET",
+  });
+};
+
+export const getGetUserIndividualPlanKey = () =>
+  [`/api/hono/openapi/user/individual plan`] as const;
+
+export type GetUserIndividualPlanQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getUserIndividualPlan>>
+>;
+export type GetUserIndividualPlanQueryError = unknown;
+
+export const useGetUserIndividualPlan = <TError = unknown>(options?: {
+  swr?: SWRConfiguration<
+    Awaited<ReturnType<typeof getUserIndividualPlan>>,
+    TError
+  > & { swrKey?: Key; enabled?: boolean };
+}) => {
+  const { swr: swrOptions } = options ?? {};
+
+  const isEnabled = swrOptions?.enabled !== false;
+  const swrKey =
+    swrOptions?.swrKey ??
+    (() => (isEnabled ? getGetUserIndividualPlanKey() : null));
+  const swrFn = () => getUserIndividualPlan();
 
   const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(
     swrKey,

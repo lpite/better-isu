@@ -10,6 +10,8 @@ import { getJoeBidenInfo } from "utils/getJoeBidenInfo";
 import { refreshSchedule } from "utils/refreshSchedule";
 import { cacheClient } from "utils/memcached";
 import { cyrb53 } from "utils/hash";
+import getIndividualPlan from "utils/getIndividualPlan";
+import { getGroup } from "utils/getGroups";
 
 export const userRouter = new OpenAPIHono<{
   Variables: { session: Session };
@@ -230,4 +232,55 @@ userRouter.openapi(rating, async (c) => {
     );
   }
   return c.json(rating);
+});
+
+const individualPlan = createRoute({
+  path: "individual plan",
+  description:
+    "educational individual plan for user with required and selectable subjects ",
+  method: "get",
+  responses: {
+    200: {
+      description: "returns plan for current semester",
+      content: {
+        "application/json": {
+          schema: zod.array(zod.string()),
+        },
+      },
+    },
+  },
+});
+
+userRouter.openapi(individualPlan, async (c) => {
+  const session = c.get("session");
+
+  const user = await db
+    .selectFrom("user")
+    .select(["faculty_id", "group_id", "course"])
+    .where("user.id", "=", session.user_id)
+    .executeTakeFirstOrThrow();
+
+  const userGroup = await getGroup(user.group_id, user.faculty_id, user.course);
+
+  const plan = await getIndividualPlan(session);
+
+  const currentSemensterPlan = plan.find((el) => {
+    const course = el.studyYear[0];
+    const semester = (el?.semester || "")[3];
+    if (course === user.course && semester === userGroup?.currSem.toString()) {
+      return true;
+    }
+    return false;
+  });
+
+  if (!currentSemensterPlan?.required || !currentSemensterPlan.selectable) {
+    return c.json([]);
+  }
+
+  c.header("Cache-Control", "max-age=604800, stale-while-revalidate=86400");
+
+  return c.json([
+    ...currentSemensterPlan?.required,
+    ...currentSemensterPlan?.selectable,
+  ]);
 });

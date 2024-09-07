@@ -7,10 +7,13 @@
 import type { GetUserSchedule200ItemType } from "./getUserSchedule200ItemType";
 
 export type GetUserSchedule200Item = {
+  auditory: string;
   dateFrom: string;
   dateTo: string;
   day: string;
+  isSelectable: boolean;
   name: string;
   number: string;
+  subjectName: string;
   type: GetUserSchedule200ItemType;
 };

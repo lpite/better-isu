@@ -32,16 +32,9 @@ function generateSubjectsList(schedule?: GetUserScheduleQueryResult) {
     return [];
   }
 
-  const teacherRegex = /[А-Яа-яІіЇїЄє]+\s[А-ЯІЇїЄє]\.[А-ЯІіЇїЄє]\./gim;
   const setOfName = new Set<string>();
-  schedule.forEach((el) => {
-    const indexOfFirstDot = el.name.indexOf(".");
-    const newName = el.name
-      .replace(teacherRegex, "")
-      .slice(indexOfFirstDot + 1)
-      .trim();
-    const indexOfLastSpace = newName.lastIndexOf(" ");
-    setOfName.add(newName.slice(0, indexOfLastSpace).trim());
+  schedule.forEach(({ subjectName }) => {
+    setOfName.add(subjectName.trim());
   });
   return [...setOfName];
 }

@@ -10,7 +10,6 @@ import { getJoeBidenInfo } from "utils/getJoeBidenInfo";
 import { refreshSchedule } from "utils/refreshSchedule";
 import { cacheClient } from "utils/memcached";
 import { cyrb53 } from "utils/hash";
-import getIndividualPlan from "utils/getIndividualPlan";
 
 export const userRouter = new OpenAPIHono<{
   Variables: { session: Session };

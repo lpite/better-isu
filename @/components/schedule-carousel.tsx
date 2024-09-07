@@ -25,6 +25,7 @@ import {
   useGetGeneralGetTypeOfWeek,
   GetUserScheduleQueryResult,
   GetUserSubjectsQueryResult,
+  useGetUserIndividualPlan,
 } from "orval/default/default";
 
 function generateSubjectsList(schedule?: GetUserScheduleQueryResult) {
@@ -54,6 +55,9 @@ type ScheduleCarouselProps = {
   subjects?: GetUserSubjectsQueryResult;
 };
 
+// версія
+const ENABLED_SUBJECTS_KEY = "enabledSubjects_v2";
+
 export default function ScheduleCarousel({
   subjects = [],
 }: ScheduleCarouselProps) {
@@ -61,17 +65,20 @@ export default function ScheduleCarousel({
   const [carouselApi, setCarouselApi] = React.useState<CarouselApi>();
 
   const { data: schedule, isLoading: isLoadingSchedule } = useGetUserSchedule();
+  const { data: individualPlan, isLoading: isLoadingPlan } =
+    useGetUserIndividualPlan();
 
   const { data: currentWeekType } = useGetGeneralGetTypeOfWeek();
 
   React.useEffect(() => {
     const storedEnabledSubjects = (JSON.parse(
-      localStorage.getItem("enabledSubjects") || "[]",
+      localStorage.getItem(ENABLED_SUBJECTS_KEY) || "[]",
     ) || []) as string[];
     if (!storedEnabledSubjects.length) {
-      const subjectNames = subjects.map((el) => el.name);
-      localStorage.setItem("enabledSubjects", JSON.stringify(subjectNames));
-      setEnabledSubjects(subjectNames);
+      // це має зробити індивідуальний план
+      // const subjectNames = subjects.map((el) => el.name);
+      // localStorage.setItem(ENABLED_SUBJECTS_KEY, JSON.stringify(subjectNames));
+      // setEnabledSubjects(subjectNames);
     } else {
       if (!enabledSubjects.length) {
         setEnabledSubjects(storedEnabledSubjects);
@@ -108,8 +115,21 @@ export default function ScheduleCarousel({
   }
 
   useEffect(() => {
+    if (individualPlan) {
+      localStorage.setItem(
+        ENABLED_SUBJECTS_KEY,
+        JSON.stringify(individualPlan),
+      );
+      setEnabledSubjects(individualPlan);
+    }
+  }, [individualPlan]);
+
+  useEffect(() => {
     if (enabledSubjects.length) {
-      localStorage.setItem("enabledSubjects", JSON.stringify(enabledSubjects));
+      localStorage.setItem(
+        ENABLED_SUBJECTS_KEY,
+        JSON.stringify(enabledSubjects),
+      );
     }
   }, [enabledSubjects]);
 
@@ -164,7 +184,7 @@ export default function ScheduleCarousel({
       <Carousel className="relative" setApi={setCarouselApi}>
         <CarouselContent className="mt-8">
           {["Пн", "Вт", "Ср", "Чт", "Пт", "Сб"].map((day) => {
-            if (isLoadingSchedule) {
+            if (isLoadingSchedule || isLoadingPlan) {
               return (
                 <CarouselItem className="flex flex-col" key={day}>
                   <span>{day}</span>

@@ -22,6 +22,10 @@ export default async function getGroups(facultyId: number, course: string) {
   return groups;
 }
 
+/**
+ * @description currSem від початку навчання тобто не просто 1, 2
+ */
+
 export async function getGroup(
   groupId: number,
   facultyId: number,

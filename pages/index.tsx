@@ -40,11 +40,6 @@ export default function Home() {
     );
 
     setJournalType(journalType);
-
-    if (location.href.includes("localhost")) {
-      // TODO перекидати на хну сервер з верселу....
-      // alert("Перейдіть на хну капібару!")
-    }
   }, []);
 
   const isLoading = isLoadingSubjects;

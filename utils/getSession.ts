@@ -132,7 +132,7 @@ export async function refreshSubjectsList(session: Session) {
 }
 
 export async function refreshUserInfo(session: Session) {
-  console.log("refreshing user info")
+  console.log("refreshing user info");
   const {
     name,
     surname,

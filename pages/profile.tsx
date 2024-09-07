@@ -137,7 +137,9 @@ export default function ProfilePage() {
                 <Switch
                   checked={journalType === "new"}
                   onCheckedChange={() =>
-                    journalType === "new" ? changeJournalType("default") : changeJournalType("new")
+                    journalType === "new"
+                      ? changeJournalType("default")
+                      : changeJournalType("new")
                   }
                 />
               </NoSsr>

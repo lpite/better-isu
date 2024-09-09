@@ -32,12 +32,13 @@ function generateSubjectsList(schedule?: GetUserScheduleQueryResult) {
   if (!schedule) {
     return [];
   }
-
-  const setOfName = new Set<string>();
-  schedule.forEach(({ subjectName }) => {
-    setOfName.add(subjectName.trim());
+  const arr: { subjectName: string, isSelectable: boolean }[] = [];
+  schedule.forEach(({ subjectName, isSelectable }) => {
+    if (!arr.find(el => el.subjectName === subjectName)) {
+      arr.push({ subjectName: subjectName.trim(), isSelectable })
+    }
   });
-  return [...setOfName];
+  return arr;
 }
 
 const scheduleTimes: Record<string, string> = {
@@ -166,16 +167,22 @@ export default function ScheduleCarousel({
           <SheetHeader className="mb-4">
             <SheetTitle>Предмети які показувати в розкладі</SheetTitle>
           </SheetHeader>
-          {generateSubjectsList(schedule).map((subject) => (
+          {generateSubjectsList(schedule).map(({
+            subjectName,
+            isSelectable
+          }) => (
             <label
-              key={subject}
-              className="flex items-center gap-3 my-1 px-2 py-3 border rounded-lg"
+              key={subjectName}
+              className="flex items-center flex-wrap gap-x-3 my-1 px-2 pb-3 pt-1 border rounded-lg"
             >
+              {isSelectable ? <div className="w-full text-slate-400">
+                Вибірковий предмет
+              </div> : null}
               <Checkbox
-                checked={Boolean(enabledSubjects?.find((el) => el === subject))}
-                onCheckedChange={(state) => toggleSubject(state, subject)}
+                checked={Boolean(enabledSubjects?.find((el) => el === subjectName))}
+                onCheckedChange={(state) => toggleSubject(state, subjectName)}
               />
-              <span>{subject}</span>
+              <span>{subjectName}</span>
             </label>
           ))}
         </SheetContent>

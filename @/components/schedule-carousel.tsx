@@ -173,16 +173,19 @@ export default function ScheduleCarousel({
           }) => (
             <label
               key={subjectName}
-              className="flex items-center flex-wrap gap-x-3 my-1 px-2 pb-3 pt-1 border rounded-lg"
+              className="flex flex-col  my-1 px-2 pb-3 pt-1 border rounded-lg"
             >
               {isSelectable ? <div className="w-full text-slate-400">
                 Вибірковий предмет
               </div> : null}
-              <Checkbox
-                checked={Boolean(enabledSubjects?.find((el) => el === subjectName))}
-                onCheckedChange={(state) => toggleSubject(state, subjectName)}
-              />
-              <span>{subjectName}</span>
+              <div className="flex  gap-x-3 w-full items-center">
+                
+                <Checkbox
+                  checked={Boolean(enabledSubjects?.find((el) => el === subjectName))}
+                  onCheckedChange={(state) => toggleSubject(state, subjectName)}
+                />
+                <span>{subjectName}</span>
+              </div>
             </label>
           ))}
         </SheetContent>

@@ -32,10 +32,10 @@ function generateSubjectsList(schedule?: GetUserScheduleQueryResult) {
   if (!schedule) {
     return [];
   }
-  const arr: { subjectName: string, isSelectable: boolean }[] = [];
+  const arr: { subjectName: string; isSelectable: boolean }[] = [];
   schedule.forEach(({ subjectName, isSelectable }) => {
-    if (!arr.find(el => el.subjectName === subjectName)) {
-      arr.push({ subjectName: subjectName.trim(), isSelectable })
+    if (!arr.find((el) => el.subjectName === subjectName)) {
+      arr.push({ subjectName: subjectName.trim(), isSelectable });
     }
   });
   return arr;
@@ -67,7 +67,12 @@ export default function ScheduleCarousel({
 
   const { data: schedule, isLoading: isLoadingSchedule } = useGetUserSchedule();
   const { data: individualPlan, isLoading: isLoadingPlan } =
-    useGetUserIndividualPlan();
+    useGetUserIndividualPlan({
+      swr: {
+        errorRetryCount: 4,
+        errorRetryInterval: 300,
+      },
+    });
 
   const { data: currentWeekType } = useGetGeneralGetTypeOfWeek();
 
@@ -167,27 +172,31 @@ export default function ScheduleCarousel({
           <SheetHeader className="mb-4">
             <SheetTitle>Предмети які показувати в розкладі</SheetTitle>
           </SheetHeader>
-          {generateSubjectsList(schedule).map(({
-            subjectName,
-            isSelectable
-          }) => (
-            <label
-              key={subjectName}
-              className="flex flex-col  my-1 px-2 pb-3 pt-1 border rounded-lg"
-            >
-              {isSelectable ? <div className="w-full text-slate-400">
-                Вибірковий предмет
-              </div> : null}
-              <div className="flex  gap-x-3 w-full items-center">
-                
-                <Checkbox
-                  checked={Boolean(enabledSubjects?.find((el) => el === subjectName))}
-                  onCheckedChange={(state) => toggleSubject(state, subjectName)}
-                />
-                <span>{subjectName}</span>
-              </div>
-            </label>
-          ))}
+          {generateSubjectsList(schedule).map(
+            ({ subjectName, isSelectable }) => (
+              <label
+                key={subjectName}
+                className="flex flex-col  my-1 px-2 pb-3 pt-1 border rounded-lg"
+              >
+                {isSelectable ? (
+                  <div className="w-full text-slate-400">
+                    Вибірковий предмет
+                  </div>
+                ) : null}
+                <div className="flex  gap-x-3 w-full items-center">
+                  <Checkbox
+                    checked={Boolean(
+                      enabledSubjects?.find((el) => el === subjectName),
+                    )}
+                    onCheckedChange={(state) =>
+                      toggleSubject(state, subjectName)
+                    }
+                  />
+                  <span>{subjectName}</span>
+                </div>
+              </label>
+            ),
+          )}
         </SheetContent>
       </Sheet>
 

@@ -204,9 +204,9 @@ export const getGetUserIndividualPlanKey = () =>
 export type GetUserIndividualPlanQueryResult = NonNullable<
   Awaited<ReturnType<typeof getUserIndividualPlan>>
 >;
-export type GetUserIndividualPlanQueryError = unknown;
+export type GetUserIndividualPlanQueryError = void;
 
-export const useGetUserIndividualPlan = <TError = unknown>(options?: {
+export const useGetUserIndividualPlan = <TError = void>(options?: {
   swr?: SWRConfiguration<
     Awaited<ReturnType<typeof getUserIndividualPlan>>,
     TError

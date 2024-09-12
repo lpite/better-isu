@@ -248,6 +248,9 @@ const individualPlan = createRoute({
         },
       },
     },
+    500: {
+      description: "returns error if no individualPlan",
+    },
   },
 });
 
@@ -274,7 +277,7 @@ userRouter.openapi(individualPlan, async (c) => {
   });
 
   if (!currentSemensterPlan?.required || !currentSemensterPlan.selectable) {
-    return c.json([]);
+    return c.json([], 500);
   }
 
   c.header("Cache-Control", "max-age=604800, stale-while-revalidate=86400");

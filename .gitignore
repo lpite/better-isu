@@ -3,6 +3,7 @@
 public/sw.js*
 public/workbox-*.js*
 test.ts
+public/fallback*
 
 .env
 

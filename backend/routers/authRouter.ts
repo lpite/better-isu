@@ -97,13 +97,13 @@ authRouter.openapi(logout, async (c) => {
     return c.json({});
   }
 
-  const session = await getSession(c);
-
-  if (!session?.data || !session?.data?.id || session.error) {
-    return c.json({});
-  }
-
   if (sessionCookie !== "joe_biden_session") {
+    const session = await getSession(c);
+
+    if (!session?.data || !session?.data?.id || session.error) {
+      return c.json({});
+    }
+
     // Якщо використовувати напряму чомусь undefined
     const data = session.data;
 

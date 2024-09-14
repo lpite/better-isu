@@ -167,7 +167,7 @@ export default function ScheduleCarousel({
     const currentWeekDay = new Date().getDay() - 1;
 
     carouselApi.scrollTo(7 + currentWeekDay);
-  }, [carouselApi]);
+  }, [carouselApi, currentWeekType]);
 
   function toggleSubject(state: boolean | string, subjectName: string) {
     if (state) {

@@ -164,10 +164,13 @@ export default function ScheduleCarousel({
     if (!carouselApi) {
       return;
     }
+    if (isLoadingWeekType || isLoadingSchedule) {
+      return;
+    }
     const currentWeekDay = new Date().getDay() - 1;
 
     carouselApi.scrollTo(7 + currentWeekDay);
-  }, [carouselApi, currentWeekType]);
+  }, [carouselApi, isLoadingWeekType, isLoadingSchedule]);
 
   function toggleSubject(state: boolean | string, subjectName: string) {
     if (state) {

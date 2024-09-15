@@ -62,8 +62,8 @@ function generateDaysList(weekType?: "up" | "bottom") {
   ];
 
   const date = new Date();
-
-  const currentWeekDay = date.getDay();
+  const correctWeekDays = [6, 0, 1, 2, 3, 4, 5];
+  const currentWeekDay = correctWeekDays[date.getDay()];
 
   const list: {
     date: string;
@@ -72,28 +72,27 @@ function generateDaysList(weekType?: "up" | "bottom") {
     type: "up" | "bottom";
   }[] = [];
   let wt = weekType;
+  // if (currentWeekDay !== 0) {
+  // if (wt === "up") {
+  //   wt = "bottom";
+  // } else {
+  //   wt = "up";
+  // }
+  // }
 
-  if (wt === "up") {
-    wt = "bottom";
-  } else {
-    wt = "up";
-  }
-
-  for (let i = -7 - currentWeekDay; i < 8; i++) {
+  for (let i = -currentWeekDay - 1; i < 7; i++) {
     const currentDate = new Date(date.getTime() + i * 24 * 60 * 60 * 1000);
 
-    if (i + currentWeekDay == 0) {
-      wt = weekType;
-    }
-
-    if (i === 7 - currentWeekDay) {
+    if (i == 0) {
+      // wt = weekType;
       if (wt === "up") {
         wt = "bottom";
       } else {
         wt = "up";
       }
     }
-    console.log(`${currentDate.getDate()}.${currentDate.getMonth()}`, `i=${i}`);
+
+    // console.log(`${currentDate.getDate()}.${currentDate.getMonth()}`, `i=${i}`);
     list.push({
       date: `${currentDate.getDate() + 1}`,
       month: `${listOfMonth[currentDate.getMonth()]}`,
@@ -271,10 +270,10 @@ export default function ScheduleCarousel({
       <Carousel className="relative" setApi={setCarouselApi}>
         <CarouselContent className="mt-8">
           {generateDaysList(currentWeekType).map(
-            ({ day, date, month, type }) => {
+            ({ day, date, month, type: currentWeekType }) => {
               if (isLoadingSchedule || isLoadingPlan || isLoadingWeekType) {
                 return (
-                  <CarouselItem className="flex flex-col" key={day}>
+                  <CarouselItem className="flex flex-col" key={date + day}>
                     <span>{day}</span>
                     <div className="flex w-full h-64 items-center justify-center">
                       <div className="border-2 border-blue-600 p-4 rounded-full border-b-transparent animate-spin"></div>
@@ -285,7 +284,7 @@ export default function ScheduleCarousel({
 
               if (!enabledSubjects.length) {
                 return (
-                  <CarouselItem className="flex flex-col" key={day}>
+                  <CarouselItem className="flex flex-col" key={date + day}>
                     <span>{day}</span>
                     <div className="flex w-full h-36 items-center justify-center">
                       Потрібно обрати предмети які показувати в розкладі
@@ -371,9 +370,10 @@ export default function ScheduleCarousel({
 
               if (!scheduleForDay.length && !isLoadingSchedule) {
                 return (
-                  <CarouselItem className="flex flex-col h-72" key={day}>
+                  <CarouselItem className="flex flex-col h-72" key={date + day}>
                     <span>
-                      {day} {date} {month} {type}
+                      {day} {date} {month}{" "}
+                      {currentWeekType === "bottom" ? "Знаменник" : "Чисельник"}
                     </span>
                     <div className="flex w-full h-full items-center justify-center">
                       Вільний день :)
@@ -383,9 +383,10 @@ export default function ScheduleCarousel({
               }
 
               return (
-                <CarouselItem className="flex flex-col" key={day}>
+                <CarouselItem className="flex flex-col" key={date + day}>
                   <span>
-                    {day} {date} {month} {type}
+                    {day} {date}, {month}{" "}
+                    {currentWeekType === "bottom" ? "Знаменник" : "Чисельник"}
                   </span>
                   {scheduleForDay?.map((row, i) => (
                     <div

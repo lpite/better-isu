@@ -40,6 +40,7 @@ function generateSubjectsList(schedule?: GetUserScheduleQueryResult) {
   });
   return arr;
 }
+const correctWeekDays = [6, 0, 1, 2, 3, 4, 5];
 
 function generateDaysList(weekType?: "up" | "bottom") {
   if (!weekType) {
@@ -62,9 +63,8 @@ function generateDaysList(weekType?: "up" | "bottom") {
   ];
 
   const date = new Date();
-  const correctWeekDays = [6, 0, 1, 2, 3, 4, 5];
   const currentWeekDay = correctWeekDays[date.getDay()];
-
+  // ЯКИЙ ЦЕ ЖАХ.
   const list: {
     date: string;
     day: string;
@@ -72,18 +72,12 @@ function generateDaysList(weekType?: "up" | "bottom") {
     type: "up" | "bottom";
   }[] = [];
   let wt = weekType;
-  // if (currentWeekDay !== 0) {
-  // if (wt === "up") {
-  //   wt = "bottom";
-  // } else {
-  //   wt = "up";
-  // }
-  // }
 
-  for (let i = -currentWeekDay - 1; i < 7; i++) {
+  for (let i = -currentWeekDay; i < 14 - currentWeekDay; i++) {
     const currentDate = new Date(date.getTime() + i * 24 * 60 * 60 * 1000);
 
-    if (i == 0) {
+    // console.log(currentDate.toLocaleString());
+    if (currentDate.getDay() === 1 && i !== -currentWeekDay) {
       // wt = weekType;
       if (wt === "up") {
         wt = "bottom";
@@ -94,9 +88,9 @@ function generateDaysList(weekType?: "up" | "bottom") {
 
     // console.log(`${currentDate.getDate()}.${currentDate.getMonth()}`, `i=${i}`);
     list.push({
-      date: `${currentDate.getDate() + 1}`,
+      date: `${currentDate.getDate()}`,
       month: `${listOfMonth[currentDate.getMonth()]}`,
-      day: listOfDays[currentDate.getDay()],
+      day: listOfDays[correctWeekDays[currentDate.getDay()]],
       type: wt,
     });
   }
@@ -166,9 +160,8 @@ export default function ScheduleCarousel({
     if (isLoadingWeekType || isLoadingSchedule) {
       return;
     }
-    const currentWeekDay = new Date().getDay() - 1;
-
-    carouselApi.scrollTo(7 + currentWeekDay);
+    const currentWeekDay = new Date().getDay();
+    carouselApi.scrollTo(correctWeekDays[currentWeekDay]);
   }, [carouselApi, isLoadingWeekType, isLoadingSchedule]);
 
   function toggleSubject(state: boolean | string, subjectName: string) {

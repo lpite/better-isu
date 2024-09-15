@@ -4,16 +4,12 @@
  * Capybara
  * OpenAPI spec version: 1.0.0
  */
-import type { GetUserSchedule200ItemType } from "./getUserSchedule200ItemType";
 
-export type GetUserSchedule200Item = {
+export type GetUserSchedule200ScheduleItemListItem = {
   auditory: string;
   dateFrom: string;
   dateTo: string;
-  day: string;
-  isSelectable: boolean;
   name: string;
   number: string;
   subjectName: string;
-  type: GetUserSchedule200ItemType;
 };

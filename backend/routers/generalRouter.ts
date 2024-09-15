@@ -9,7 +9,6 @@ export const generalRouter = new OpenAPIHono<{
   Variables: { session: Session };
 }>();
 
-
 const getTypeOfWeek = createRoute({
   path: "/getTypeOfWeek",
   method: "get",

@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetJournalGetParams = {
-  index: string;
+export type GetUserSchedule200UniqueListItem = {
+  isSelectable: boolean;
+  subjectName: string;
 };

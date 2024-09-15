@@ -20,3 +20,7 @@ export * from "./getUserSchedule200ItemType";
 export * from "./getUserSubjects200Item";
 export * from "./postAuthLogin200";
 export * from "./postAuthLoginBody";
+export * from "./getUserSchedule200";
+export * from "./getUserSchedule200ScheduleItem";
+export * from "./getUserSchedule200ScheduleItemListItem";
+export * from "./getUserSchedule200UniqueListItem";

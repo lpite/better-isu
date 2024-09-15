@@ -5,12 +5,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetUserSchedule200ItemType = typeof GetUserSchedule200ItemType[keyof typeof GetUserSchedule200ItemType];
-
+export type GetUserSchedule200ItemType =
+  (typeof GetUserSchedule200ItemType)[keyof typeof GetUserSchedule200ItemType];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const GetUserSchedule200ItemType = {
-  up: 'up',
-  bottom: 'bottom',
-  full: 'full',
+  up: "up",
+  bottom: "bottom",
+  full: "full",
 } as const;

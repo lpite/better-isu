@@ -9,7 +9,6 @@ export const generalRouter = new OpenAPIHono<{
   Variables: { session: Session };
 }>();
 
-generalRouter.use(sessionMiddleware);
 
 const getTypeOfWeek = createRoute({
   path: "/getTypeOfWeek",

@@ -12,6 +12,8 @@ import { cacheClient } from "utils/memcached";
 import { cyrb53 } from "utils/hash";
 import getIndividualPlan from "utils/getIndividualPlan";
 import { getGroup } from "utils/getGroups";
+import { getGeneralGetTypeOfWeek } from "orval/default/default";
+import { string } from "zod";
 
 export const userRouter = new OpenAPIHono<{
   Variables: { session: Session };
@@ -122,24 +124,113 @@ const schedule = createRoute({
       description: "schedule for user",
       content: {
         "application/json": {
-          schema: zod.array(
-            zod.object({
-              name: zod.string(),
-              day: zod.string(),
-              number: zod.string(),
-              type: zod.enum(["up", "bottom", "full"]),
-              dateFrom: zod.string(),
-              dateTo: zod.string(),
-              auditory: zod.string(),
-              subjectName: zod.string(),
-              isSelectable: zod.boolean(),
-            }),
-          ),
+          schema: zod.object({
+            uniqueList: zod.array(
+              zod.object({
+                subjectName: zod.string(),
+                isSelectable: zod.boolean(),
+              }),
+            ),
+            schedule: zod.array(
+              zod.object({
+                type: zod.string(),
+                date: zod.string(),
+                month: zod.string(),
+                weekDay: zod.string(),
+                list: zod.array(
+                  zod.object({
+                    name: zod.string(),
+                    number: zod.string(),
+                    dateFrom: zod.string(),
+                    dateTo: zod.string(),
+                    auditory: zod.string(),
+                    subjectName: zod.string(),
+                  }),
+                ),
+              }),
+            ),
+          }),
         },
       },
     },
   },
 });
+function generateDaysList(weekType: "up" | "bottom", schedule: any[]) {
+  const listOfDays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"];
+  const listOfMonth = [
+    "Січня",
+    "Лютого",
+    "Березня",
+    "Квітня",
+    "Травня",
+    "Червня",
+    "Липня",
+    "Серпня",
+    "Вересня",
+    "Жовтня",
+    "Листопада",
+    "Грудня",
+  ];
+
+  const date = new Date();
+
+  const currentWeekDay = date.getDay();
+
+  const list: {
+    date: string;
+    day: string;
+    month: string;
+    type: "up" | "bottom";
+    list: any[];
+  }[] = [];
+  let wt = weekType;
+
+  if (wt === "up") {
+    wt = "bottom";
+  } else {
+    wt = "up";
+  }
+
+  for (let i = -7 - currentWeekDay; i < 8; i++) {
+    const currentDate = new Date(date.getTime() + i * 24 * 60 * 60 * 1000);
+
+    if (i + currentWeekDay == 0) {
+      wt = weekType;
+    }
+
+    if (i === 7 - currentWeekDay) {
+      if (wt === "up") {
+        wt = "bottom";
+      } else {
+        wt = "up";
+      }
+    }
+    list.push({
+      date: `${currentDate.getDate() + 1}`,
+      month: `${listOfMonth[currentDate.getMonth()]}`,
+      day: listOfDays[currentDate.getDay()],
+      type: wt,
+      list: schedule.filter(
+        (el) => el.day === listOfDays[currentDate.getDay()],
+      ),
+    });
+  }
+
+  return list;
+}
+
+function generateUniqueList(schedule: any) {
+  if (!schedule) {
+    return [];
+  }
+  const arr: { subjectName: string; isSelectable: boolean }[] = [];
+  schedule.forEach(({ subjectName, isSelectable }) => {
+    if (!arr.find((el) => el.subjectName === subjectName)) {
+      arr.push({ subjectName: subjectName.trim(), isSelectable });
+    }
+  });
+  return arr;
+}
 
 userRouter.openapi(schedule, async (c) => {
   const session = c.get("session");
@@ -169,7 +260,42 @@ userRouter.openapi(schedule, async (c) => {
       .executeTakeFirstOrThrow();
   }
 
-  return c.json(schedule.data as any);
+  const scheduleTimes: Record<string, string> = {
+    "1": "8:00 - 9:20",
+    "2": "9:35 - 10:55",
+    "3": "11:10 - 12:30",
+    "4": "13:00 - 14:20",
+    "5": "14:35 - 15:55",
+    "6": "16:10 - 17:30",
+    "7": "17:45 - 19:05",
+    "8": "19:20 - 20:40",
+  };
+
+  const currentWeekType = await getGeneralGetTypeOfWeek();
+
+  const list = generateDaysList(currentWeekType, schedule.data as any);
+
+  return c.json({
+    uniqueList: generateUniqueList(schedule.data as any),
+    schedule: [
+      {
+        date: "01",
+        month: "Вересня",
+        type: "Знаменник",
+        weekDay: "Понеділок",
+        list: [
+          {
+            auditory: "",
+            dateFrom: "",
+            dateTo: "",
+            name: "",
+            number: "",
+            subjectName: "",
+          },
+        ],
+      },
+    ],
+  });
 });
 
 const rating = createRoute({

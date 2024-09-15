@@ -6,5 +6,5 @@
  */
 
 export type GetJournalGetParams = {
-  index: string;
+index: string;
 };

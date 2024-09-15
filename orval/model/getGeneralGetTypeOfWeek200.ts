@@ -5,11 +5,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetGeneralGetTypeOfWeek200 =
-  (typeof GetGeneralGetTypeOfWeek200)[keyof typeof GetGeneralGetTypeOfWeek200];
+export type GetGeneralGetTypeOfWeek200 = typeof GetGeneralGetTypeOfWeek200[keyof typeof GetGeneralGetTypeOfWeek200];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const GetGeneralGetTypeOfWeek200 = {
-  up: "up",
-  bottom: "bottom",
+  up: 'up',
+  bottom: 'bottom',
 } as const;

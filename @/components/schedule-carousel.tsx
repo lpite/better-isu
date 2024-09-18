@@ -84,11 +84,15 @@ export default function ScheduleCarousel({
     if (isLoadingSchedule && isLoadingPlan) {
       return;
     }
-    const currentWeekDay = new Date().getDay() - 1;
+    const currentWeekDay =
+      schedule?.schedule.findIndex(
+        (el) => el.date === new Date().getDate().toString(),
+      ) || 0;
 
-    // якого біса треба о це гарне питання.
+    // якого біса треба о це. гарне питання.
     carouselApi.reInit();
-    carouselApi.scrollTo(7 + currentWeekDay);
+
+    carouselApi.scrollTo(currentWeekDay);
   }, [carouselApi, isLoadingSchedule, isLoadingPlan]);
 
   function toggleSubject(state: boolean | string, subjectName: string) {

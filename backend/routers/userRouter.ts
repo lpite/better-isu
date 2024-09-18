@@ -294,7 +294,10 @@ userRouter.openapi(schedule, async (c) => {
   const session = c.get("session");
 
   if (session.session_id === "joe_biden_session") {
-    return c.json(getJoeBidenInfo().schedule);
+    return c.json({
+      schedule: [],
+      uniqueList: [],
+    });
   }
 
   const user = await db

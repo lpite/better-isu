@@ -231,6 +231,7 @@ export default function ScheduleCarousel({
                 <CarouselItem className="flex flex-col" key={date + month}>
                   <span>
                     {weekDay} {date} {month} {type}
+
                   </span>
                   {scheduleForDay?.map((row, i) => (
                     <div

@@ -1,9 +1,9 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { db } from "utils/db";
 import { z as zod } from "@hono/zod-openapi";
 import { Session } from "types/session";
 import { sessionMiddleware } from "backend/middlewares/sessionMiddleware";
 import { sql } from "kysely";
+import { db } from "utils/db";
 import { refreshSubjectsList } from "utils/getSession";
 import getRatingPage from "utils/getRatingPage";
 import { getJoeBidenInfo } from "utils/getJoeBidenInfo";
@@ -13,7 +13,6 @@ import { cyrb53 } from "utils/hash";
 import getIndividualPlan from "utils/getIndividualPlan";
 import { getGroup } from "utils/getGroups";
 import { getGeneralGetTypeOfWeek } from "orval/default/default";
-import { string } from "zod";
 
 export const userRouter = new OpenAPIHono<{
   Variables: { session: Session };
@@ -220,7 +219,6 @@ function generateDaysList(
   for (let i = -currentWeekDay; i < 14 - currentWeekDay; i++) {
     const currentDate = new Date(date.getTime() + i * 24 * 60 * 60 * 1000);
 
-    // console.log(currentDate.toLocaleString());
     if (currentDate.getDay() === 1 && i !== -currentWeekDay) {
       // wt = weekType;
       if (wt === "up") {
@@ -230,20 +228,6 @@ function generateDaysList(
       }
     }
     const types = { up: "Чисельник", bottom: "Знаменник" } as const;
-
-    if (currentDate.getDay() === 5) {
-      // schedule = schedule.filter((el) => el.day === scheduleForFriday?.day);
-    } else {
-      // schedule = schedule.filter((el) => {
-      //   console.log(
-      //     el.day === listOfDays[correctWeekDays[currentDate.getDay()]],
-      //   );
-      //   if (el.day === listOfDays[correctWeekDays[currentDate.getDay()]]) {
-      //     return true;
-      //   }
-      // });
-      // .filter((el) => el.type === wt || el.type === "full");
-    }
 
     list.push({
       date: `${currentDate.getDate()}`,
@@ -264,10 +248,6 @@ function generateDaysList(
               }
               return false;
             });
-            console.log(
-              el.day === scheduleForFriday?.day,
-              el.type === scheduleForFriday?.type || el.type === "full",
-            );
             if (
               el.day === scheduleForFriday?.day &&
               (el.type === scheduleForFriday?.type || el.type === "full")

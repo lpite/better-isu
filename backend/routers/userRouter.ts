@@ -1,9 +1,9 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { db } from "utils/db";
 import { z as zod } from "@hono/zod-openapi";
 import { Session } from "types/session";
 import { sessionMiddleware } from "backend/middlewares/sessionMiddleware";
 import { sql } from "kysely";
+import { db } from "utils/db";
 import { refreshSubjectsList } from "utils/getSession";
 import getRatingPage from "utils/getRatingPage";
 import { getJoeBidenInfo } from "utils/getJoeBidenInfo";
@@ -12,6 +12,7 @@ import { cacheClient } from "utils/memcached";
 import { cyrb53 } from "utils/hash";
 import getIndividualPlan from "utils/getIndividualPlan";
 import { getGroup } from "utils/getGroups";
+import { getGeneralGetTypeOfWeek } from "orval/default/default";
 
 export const userRouter = new OpenAPIHono<{
   Variables: { session: Session };
@@ -122,30 +123,181 @@ const schedule = createRoute({
       description: "schedule for user",
       content: {
         "application/json": {
-          schema: zod.array(
-            zod.object({
-              name: zod.string(),
-              day: zod.string(),
-              number: zod.string(),
-              type: zod.enum(["up", "bottom", "full"]),
-              dateFrom: zod.string(),
-              dateTo: zod.string(),
-              auditory: zod.string(),
-              subjectName: zod.string(),
-              isSelectable: zod.boolean(),
-            }),
-          ),
+          schema: zod.object({
+            uniqueList: zod.array(
+              zod.object({
+                subjectName: zod.string(),
+                isSelectable: zod.boolean(),
+              }),
+            ),
+            schedule: zod.array(
+              zod.object({
+                type: zod.string(),
+                date: zod.string(),
+                month: zod.string(),
+                weekDay: zod.string(),
+                list: zod.array(
+                  zod.object({
+                    name: zod.string(),
+                    number: zod.string(),
+                    dateFrom: zod.string(),
+                    dateTo: zod.string(),
+                    auditory: zod.string(),
+                    subjectName: zod.string(),
+                  }),
+                ),
+              }),
+            ),
+          }),
         },
       },
     },
   },
 });
+const correctWeekDays = [6, 0, 1, 2, 3, 4, 5];
+const scheduleTimes: Record<string, string> = {
+  "1": "8:00 - 9:20",
+  "2": "9:35 - 10:55",
+  "3": "11:10 - 12:30",
+  "4": "13:00 - 14:20",
+  "5": "14:35 - 15:55",
+  "6": "16:10 - 17:30",
+  "7": "17:45 - 19:05",
+  "8": "19:20 - 20:40",
+};
+function generateDaysList(
+  weekType: "up" | "bottom",
+  schedule: Record<string, string>[],
+) {
+  if (!weekType) {
+    return [];
+  }
+  const listOfDays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"];
+  const listOfMonth = [
+    "Січня",
+    "Лютого",
+    "Березня",
+    "Квітня",
+    "Травня",
+    "Червня",
+    "Липня",
+    "Серпня",
+    "Вересня",
+    "Жовтня",
+    "Листопада",
+    "Грудня",
+  ];
+
+  // Список замін для пʼятниці
+  const listForFriday = [
+    { date: "06.09", type: "up", day: "Пн" },
+    { date: "13.09", type: "up", day: "Вт" },
+    { date: "20.09", type: "up", day: "Ср" },
+    { date: "27.09", type: "up", day: "Чт" },
+    { date: "04.10", type: "bottom", day: "Пн" },
+    { date: "11.10", type: "bottom", day: "Вт" },
+    { date: "18.10", type: "bottom", day: "Ср" },
+    { date: "25.10", type: "bottom", day: "Чт" },
+    { date: "01.11", type: "up", day: "Пн" },
+    { date: "08.11", type: "up", day: "Вт" },
+    { date: "15.11", type: "up", day: "Ср" },
+    { date: "22.11", type: "up", day: "Чт" },
+  ];
+
+  const date = new Date();
+  const currentWeekDay = correctWeekDays[date.getDay()];
+  // ЯКИЙ ЦЕ ЖАХ.
+  const list: {
+    date: string;
+    weekDay: string;
+    month: string;
+    type: "Чисельник" | "Знаменник";
+    list: any[];
+  }[] = [];
+  let wt = weekType;
+
+  for (let i = -currentWeekDay; i < 14 - currentWeekDay; i++) {
+    const currentDate = new Date(date.getTime() + i * 24 * 60 * 60 * 1000);
+
+    if (currentDate.getDay() === 1 && i !== -currentWeekDay) {
+      // wt = weekType;
+      if (wt === "up") {
+        wt = "bottom";
+      } else {
+        wt = "up";
+      }
+    }
+    const types = { up: "Чисельник", bottom: "Знаменник" } as const;
+
+    list.push({
+      date: `${currentDate.getDate()}`,
+      month: `${listOfMonth[currentDate.getMonth()]}`,
+      weekDay: listOfDays[correctWeekDays[currentDate.getDay()]],
+      type: types[wt],
+      list: schedule
+        .filter((el) => {
+          if (currentDate.getDay() === 5) {
+            // заміна пʼятниці
+            const scheduleForFriday = listForFriday.find((el) => {
+              const [d, m] = el.date.split(".");
+              if (
+                currentDate.getMonth() + 1 === parseInt(m) &&
+                currentDate.getDate() === parseInt(d)
+              ) {
+                return true;
+              }
+              return false;
+            });
+            if (
+              el.day === scheduleForFriday?.day &&
+              (el.type === scheduleForFriday?.type || el.type === "full")
+            ) {
+              return true;
+            }
+            return false;
+          }
+
+          if (
+            el.day === listOfDays[correctWeekDays[currentDate.getDay()]] &&
+            (el.type === wt || el.type === "full")
+          ) {
+            return true;
+          }
+          return false;
+        })
+        .map((el) => {
+          return {
+            number: `# ${el.number} ${scheduleTimes[el.number]}`,
+            name: el.name,
+          };
+        }),
+    });
+  }
+
+  return list;
+}
+
+function generateUniqueList(schedule: Record<string, any>[]) {
+  if (!schedule) {
+    return [];
+  }
+  const arr: { subjectName: string; isSelectable: boolean }[] = [];
+  schedule.forEach(({ subjectName, isSelectable }) => {
+    if (!arr.find((el) => el.subjectName === subjectName)) {
+      arr.push({ subjectName: subjectName.trim(), isSelectable });
+    }
+  });
+  return arr;
+}
 
 userRouter.openapi(schedule, async (c) => {
   const session = c.get("session");
 
   if (session.session_id === "joe_biden_session") {
-    return c.json(getJoeBidenInfo().schedule);
+    return c.json({
+      schedule: [],
+      uniqueList: [],
+    });
   }
 
   const user = await db
@@ -169,7 +321,12 @@ userRouter.openapi(schedule, async (c) => {
       .executeTakeFirstOrThrow();
   }
 
-  return c.json(schedule.data as any);
+  const currentWeekType = await getGeneralGetTypeOfWeek();
+
+  return c.json({
+    uniqueList: generateUniqueList(schedule.data as any),
+    schedule: generateDaysList(currentWeekType, schedule.data as any),
+  });
 });
 
 const rating = createRoute({

@@ -28,76 +28,6 @@ import {
   useGetUserIndividualPlan,
 } from "orval/default/default";
 
-function generateSubjectsList(schedule?: GetUserScheduleQueryResult) {
-  if (!schedule) {
-    return [];
-  }
-  const arr: { subjectName: string; isSelectable: boolean }[] = [];
-  schedule.forEach(({ subjectName, isSelectable }) => {
-    if (!arr.find((el) => el.subjectName === subjectName)) {
-      arr.push({ subjectName: subjectName.trim(), isSelectable });
-    }
-  });
-  return arr;
-}
-const correctWeekDays = [6, 0, 1, 2, 3, 4, 5];
-
-function generateDaysList(weekType?: "up" | "bottom") {
-  if (!weekType) {
-    return [];
-  }
-  const listOfDays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"];
-  const listOfMonth = [
-    "Січня",
-    "Лютого",
-    "Березня",
-    "Квітня",
-    "Травня",
-    "Червня",
-    "Липня",
-    "Серпня",
-    "Вересня",
-    "Жовтня",
-    "Листопада",
-    "Грудня",
-  ];
-
-  const date = new Date();
-  const currentWeekDay = correctWeekDays[date.getDay()];
-  // ЯКИЙ ЦЕ ЖАХ.
-  const list: {
-    date: string;
-    day: string;
-    month: string;
-    type: "up" | "bottom";
-  }[] = [];
-  let wt = weekType;
-
-  for (let i = -currentWeekDay; i < 14 - currentWeekDay; i++) {
-    const currentDate = new Date(date.getTime() + i * 24 * 60 * 60 * 1000);
-
-    // console.log(currentDate.toLocaleString());
-    if (currentDate.getDay() === 1 && i !== -currentWeekDay) {
-      // wt = weekType;
-      if (wt === "up") {
-        wt = "bottom";
-      } else {
-        wt = "up";
-      }
-    }
-
-    // console.log(`${currentDate.getDate()}.${currentDate.getMonth()}`, `i=${i}`);
-    list.push({
-      date: `${currentDate.getDate()}`,
-      month: `${listOfMonth[currentDate.getMonth()]}`,
-      day: listOfDays[correctWeekDays[currentDate.getDay()]],
-      type: wt,
-    });
-  }
-
-  return list;
-}
-
 const scheduleTimes: Record<string, string> = {
   "1": "8:00 - 9:20",
   "2": "9:35 - 10:55",
@@ -131,9 +61,6 @@ export default function ScheduleCarousel({
       },
     });
 
-  const { data: currentWeekType, isLoading: isLoadingWeekType } =
-    useGetGeneralGetTypeOfWeek();
-
   React.useEffect(() => {
     const storedEnabledSubjects = (JSON.parse(
       localStorage.getItem(ENABLED_SUBJECTS_KEY) || "[]",
@@ -154,15 +81,19 @@ export default function ScheduleCarousel({
     if (!carouselApi) {
       return;
     }
-    if (!carouselApi) {
+    if (isLoadingSchedule && isLoadingPlan) {
       return;
     }
-    if (isLoadingWeekType || isLoadingSchedule) {
-      return;
-    }
-    const currentWeekDay = new Date().getDay();
-    carouselApi.scrollTo(correctWeekDays[currentWeekDay]);
-  }, [carouselApi, isLoadingWeekType, isLoadingSchedule]);
+    const currentWeekDay =
+      schedule?.schedule.findIndex(
+        (el) => el.date === new Date().getDate().toString(),
+      ) || 0;
+
+    // якого біса треба о це. гарне питання.
+    carouselApi.reInit();
+
+    carouselApi.scrollTo(currentWeekDay);
+  }, [carouselApi, isLoadingSchedule, isLoadingPlan]);
 
   function toggleSubject(state: boolean | string, subjectName: string) {
     if (state) {
@@ -232,141 +163,63 @@ export default function ScheduleCarousel({
           <SheetHeader className="mb-4">
             <SheetTitle>Предмети які показувати в розкладі</SheetTitle>
           </SheetHeader>
-          {generateSubjectsList(schedule).map(
-            ({ subjectName, isSelectable }) => (
-              <label
-                key={subjectName}
-                className="flex flex-col  my-1 px-2 pb-3 pt-1 border rounded-lg"
-              >
-                {isSelectable ? (
-                  <div className="w-full text-slate-400">
-                    Вибірковий предмет
-                  </div>
-                ) : null}
-                <div className="flex  gap-x-3 w-full items-center">
-                  <Checkbox
-                    checked={Boolean(
-                      enabledSubjects?.find((el) => el === subjectName),
-                    )}
-                    onCheckedChange={(state) =>
-                      toggleSubject(state, subjectName)
-                    }
-                  />
-                  <span>{subjectName}</span>
-                </div>
-              </label>
-            ),
-          )}
+          {schedule?.uniqueList?.map(({ subjectName, isSelectable }) => (
+            <label
+              key={subjectName}
+              className="flex flex-col  my-1 px-2 pb-3 pt-1 border rounded-lg"
+            >
+              {isSelectable ? (
+                <div className="w-full text-slate-400">Вибірковий предмет</div>
+              ) : null}
+              <div className="flex  gap-x-3 w-full items-center">
+                <Checkbox
+                  checked={Boolean(
+                    enabledSubjects?.find((el) => el === subjectName),
+                  )}
+                  onCheckedChange={(state) => toggleSubject(state, subjectName)}
+                />
+                <span>{subjectName}</span>
+              </div>
+            </label>
+          ))}
         </SheetContent>
       </Sheet>
 
       <Carousel className="relative" setApi={setCarouselApi}>
         <CarouselContent className="mt-8">
-          {generateDaysList(currentWeekType).map(
-            ({ day, date, month, type: currentWeekType }) => {
-              if (isLoadingSchedule || isLoadingPlan || isLoadingWeekType) {
+          {isLoadingSchedule || isLoadingPlan ? (
+            <CarouselItem className="flex flex-col">
+              <span></span>
+              <div className="flex w-full h-64 items-center justify-center">
+                <div className="border-2 border-blue-600 p-4 rounded-full border-b-transparent animate-spin"></div>
+              </div>
+            </CarouselItem>
+          ) : null}
+
+          {!isLoadingSchedule && !isLoadingPlan && !enabledSubjects.length ? (
+            <CarouselItem className="flex flex-col">
+              <span></span>
+              <div className="flex w-full h-36 items-center justify-center">
+                Потрібно обрати предмети які показувати в розкладі
+              </div>
+            </CarouselItem>
+          ) : null}
+
+          {!isLoadingSchedule &&
+            !isLoadingPlan &&
+            schedule?.schedule.map(({ weekDay, date, month, type, list }) => {
+              const scheduleForDay = list.filter((subj) =>
+                isEnabled(subj.name),
+              );
+
+              if (!scheduleForDay.length) {
                 return (
-                  <CarouselItem className="flex flex-col" key={date + day}>
-                    <span>{day}</span>
-                    <div className="flex w-full h-64 items-center justify-center">
-                      <div className="border-2 border-blue-600 p-4 rounded-full border-b-transparent animate-spin"></div>
-                    </div>
-                  </CarouselItem>
-                );
-              }
-
-              if (!enabledSubjects.length) {
-                return (
-                  <CarouselItem className="flex flex-col" key={date + day}>
-                    <span>{day}</span>
-                    <div className="flex w-full h-36 items-center justify-center">
-                      Потрібно обрати предмети які показувати в розкладі
-                    </div>
-                  </CarouselItem>
-                );
-              }
-
-              let scheduleForDay =
-                schedule
-                  ?.filter((el) => el.day === day)
-                  .filter((subj) => isEnabled(subj.name))
-                  .filter(
-                    ({ type }) => type === "full" || type === currentWeekType,
-                  )
-                  .filter(({ dateFrom, dateTo }) => {
-                    return true;
-                    // Це вимкнена перевірка закінчення предмету
-                    if (!dateFrom || !dateTo) {
-                      return true;
-                    }
-                    const currentMonth = new Date().getMonth() + 1;
-                    const currentDay = new Date().getDate();
-
-                    const [fromDay, fromMonth] = dateFrom.split(".");
-                    const [toDay, toMonth] = dateTo.split(".");
-
-                    if (
-                      Number(fromMonth) <= currentMonth &&
-                      Number(fromDay) <= currentDay &&
-                      Number(toMonth) >= currentMonth &&
-                      Number(toDay) >= currentDay
-                    ) {
-                      return true;
-                    }
-
-                    return false;
-                  }) || [];
-
-              if (day === "Пт") {
-                // спеціально для пʼятниці розклад
-                // і так це максимально погано і маскимально криво :))
-
-                const s = [
-                  { date: "06.09", type: "up", day: "Пн" },
-                  { date: "13.09", type: "up", day: "Вт" },
-                  { date: "20.09", type: "up", day: "Ср" },
-                  { date: "27.09", type: "up", day: "Чт" },
-                  { date: "04.10", type: "bottom", day: "Пн" },
-                  { date: "11.10", type: "bottom", day: "Вт" },
-                  { date: "18.10", type: "bottom", day: "Ср" },
-                  { date: "25.10", type: "bottom", day: "Чт" },
-                  { date: "01.11", type: "up", day: "Пн" },
-                  { date: "08.11", type: "up", day: "Вт" },
-                  { date: "15.11", type: "up", day: "Ср" },
-                  { date: "22.11", type: "up", day: "Чт" },
-                ];
-                const currentWeekDay = new Date().getDay();
-                const off = 5 - currentWeekDay;
-                const d = Date.now() + off * 24 * 60 * 60 * 1000;
-                const fridayDate = new Date(d);
-
-                const scheduleForFriday = s.find((el) => {
-                  const [d, m] = el.date.split(".");
-                  if (
-                    fridayDate.getMonth() + 1 === parseInt(m) &&
-                    fridayDate.getDate() === parseInt(d)
-                  ) {
-                    return true;
-                  }
-                  return false;
-                });
-
-                scheduleForDay =
-                  schedule
-                    ?.filter((el) => el.day === scheduleForFriday?.day)
-                    .filter((subj) => isEnabled(subj.name))
-                    .filter(
-                      ({ type }) =>
-                        type === "full" || type === scheduleForFriday?.type,
-                    ) || [];
-              }
-
-              if (!scheduleForDay.length && !isLoadingSchedule) {
-                return (
-                  <CarouselItem className="flex flex-col h-72" key={date + day}>
+                  <CarouselItem
+                    className="flex flex-col h-72"
+                    key={date + month}
+                  >
                     <span>
-                      {day} {date} {month}{" "}
-                      {currentWeekType === "bottom" ? "Знаменник" : "Чисельник"}
+                      {weekDay} {date} {month} {type}
                     </span>
                     <div className="flex w-full h-full items-center justify-center">
                       Вільний день :)
@@ -374,29 +227,25 @@ export default function ScheduleCarousel({
                   </CarouselItem>
                 );
               }
-
               return (
-                <CarouselItem className="flex flex-col" key={date + day}>
+                <CarouselItem className="flex flex-col" key={date + month}>
                   <span>
-                    {day} {date}, {month}{" "}
-                    {currentWeekType === "bottom" ? "Знаменник" : "Чисельник"}
+                    {weekDay} {date} {month} {type}
+
                   </span>
                   {scheduleForDay?.map((row, i) => (
                     <div
-                      key={day + i}
+                      key={date + month + i}
                       className="rounded-lg box-border border pb-3 pt-1 px-2 my-1"
                     >
-                      <span className="text-slate-500">
-                        #{row.number} {scheduleTimes[row.number]}
-                      </span>
+                      <span className="text-slate-500">{row.number}</span>
                       <br />
                       {row.name}
                     </div>
                   ))}
                 </CarouselItem>
               );
-            },
-          )}
+            })}
         </CarouselContent>
         <CarouselPrevious className="absolute top-3 left-0" />
         <CarouselNext className="absolute top-3 left-10" />

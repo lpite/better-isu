@@ -1,4 +1,12 @@
-const baseURL = "";
+let baseURL = "";
+
+if (typeof window === "undefined") {
+  if (process.env.NODE_ENV === "development") {
+    baseURL = "http://localhost:3000";
+  } else {
+    baseURL = "http://localhost:3001";
+  }
+}
 
 export const customClient = async <T>({
   url,
@@ -22,7 +30,6 @@ export const customClient = async <T>({
       ...(data ? { body: JSON.stringify(data) } : {}),
     },
   );
-
   if (!response.ok || response.status !== 200) {
     return undefined as T;
   }

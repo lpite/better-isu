@@ -16,7 +16,7 @@ import type {
   GetJournalGetParams,
   GetUserProfile200,
   GetUserRating200Item,
-  GetUserSchedule200Item,
+  GetUserSchedule200,
   GetUserSubjects200Item,
   PostAuthLogin200,
   PostAuthLoginBody,
@@ -111,7 +111,7 @@ export const useGetUserSubjects = <TError = unknown>(options?: {
   };
 };
 export const getUserSchedule = () => {
-  return getUserScheduleMutator<GetUserSchedule200Item[]>({
+  return getUserScheduleMutator<GetUserSchedule200>({
     url: `/api/hono/openapi/user/schedule`,
     method: "GET",
   });

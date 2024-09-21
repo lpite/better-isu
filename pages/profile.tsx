@@ -76,7 +76,7 @@ export default function ProfilePage() {
           </span>
           <form className="flex flex-col gap-2 w-full px-2 а">
             <Label className="flex items-center gap-2 w-full my-5">
-              <div>
+              <div className="w-full">
                 <span className="text-lg w-full block mb-2">
                   Використовувати системну тему
                 </span>
@@ -124,7 +124,7 @@ export default function ProfilePage() {
               </NoSsr>
             </div>
             <Label className="flex items-center gap-2 w-full my-5">
-              <div>
+              <div className="w-full">
                 <span className="text-lg w-full block mb-2">
                   Тестовий вигляд журналу
                 </span>

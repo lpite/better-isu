@@ -4,6 +4,8 @@ import { generalRouter } from "./routers/generalRouter";
 import { journalRouter } from "./routers/journalRouter";
 import { authRouter } from "./routers/authRouter";
 import { Hono } from "hono";
+import { journalRoute } from "./routes/journal";
+import { jrnRoute } from "./routes/jrn";
 
 export const openapiApp = new OpenAPIHono();
 
@@ -23,3 +25,6 @@ openapiApp.doc("/doc", {
 });
 
 app.route("/openapi", openapiApp);
+app.route("/journal", journalRoute);
+app.route("/jrn", jrnRoute);
+

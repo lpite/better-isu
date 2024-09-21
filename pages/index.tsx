@@ -108,7 +108,7 @@ export default function Home() {
                 </Link>
               ) : (
                 <a
-                  href={`/api/journal?index=${i}`}
+                  href={`/api/hono/journal?index=${i}`}
                   target="_blank"
                   className="flex w-full border rounded-lg py-5 px-3 shadow dark:shadow-none"
                 >

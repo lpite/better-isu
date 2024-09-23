@@ -50,14 +50,14 @@ journalRoute.get("/", async (c) => {
 
 	if (journalPage.includes("Key violation")) {
 		await refreshSubjectsList(session);
-		return c.redirect(`/api/hono/journal/?index=${query.index}&c=${query.c + 1}`);
+		return c.redirect(`/api/hono/journal?index=${query.index}&c=${query.c + 1}`);
 	}
 
 	if (
 		journalPage.includes("http://isu1.khmnu.edu.ua/isu/dbsupport/logon.php")
 	) {
 		return c.redirect(
-			`/api/hono/journal/?index=${query.index}&c=${query.c + 1}`,
+			`/api/hono/journal?index=${query.index}&c=${query.c + 1}`,
 		);
 	}
 

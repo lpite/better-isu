@@ -1,31 +1,19 @@
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
 
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import React from "react";
+import React, { FormEvent } from "react";
 import { useRouter } from "next/router";
 import { Input } from "@/components/ui/input";
 import { LoginResponse } from "./api/login";
 import { useGetAuthSession } from "orval/default/default";
 
-const formSchema = z.object({
-  login: z.string().min(2).max(50),
-  password: z.string().min(2).max(50),
-});
-
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [credentials, setCredentials] = React.useState({
+    login: "",
+    password: "",
+  });
 
   const {
     data: session,
@@ -39,17 +27,13 @@ export default function LoginPage() {
     }
   }, [router, isLoadingSession, isValidatingSession, session]);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {},
-  });
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
     setIsLoading(true);
 
     const res: LoginResponse | undefined = await fetch("/api/login", {
       method: "POST",
-      body: JSON.stringify(values),
+      body: JSON.stringify(credentials),
       headers: {
         "Content-Type": "application/json",
       },
@@ -69,55 +53,55 @@ export default function LoginPage() {
   }
   return (
     <main className="flex justify-center items-center h-full">
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8"
-          style={{ minWidth: 300 }}
+      <form className="space-y-8" style={{ minWidth: 300 }} onSubmit={onSubmit}>
+        {isLoading ? (
+          <div
+            className="fixed inset-x-0 inset-y-0 w-full h-full flex justify-center items-center"
+            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          >
+            <div className="w-3 absolute border-4 border-blue-600 p-4 rounded-full border-b-transparent animate-spin"></div>
+          </div>
+        ) : null}
+        <label>
+          <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            Логін
+          </span>
+          <Input
+            onChange={(e) =>
+              setCredentials((v) => ({ ...v, login: e.target.value }))
+            }
+            placeholder="capybara"
+            type="text"
+            className="text-base"
+            autoComplete="login"
+          />
+        </label>
+        <label className="block">
+          <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            Пароль
+          </span>
+          <Input
+            onChange={(e) =>
+              setCredentials((v) => ({ ...v, password: e.target.value }))
+            }
+            placeholder="********"
+            type="password"
+            className="text-base"
+          />
+        </label>
+        <span className="text-red-400">{error}</span>
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={
+            isLoading ||
+            !credentials.login.length ||
+            !credentials.password.length
+          }
         >
-          <FormField
-            control={form.control}
-            name="login"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Логін</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="shadcn"
-                    type="text"
-                    {...field}
-                    className="text-base"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Пароль</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="**********"
-                    type="password"
-                    {...field}
-                    className="text-base"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <span className="text-red-400">{error}</span>
-
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            Увійти
-          </Button>
-        </form>
-      </Form>
+          Увійти
+        </Button>
+      </form>
     </main>
   );
 }

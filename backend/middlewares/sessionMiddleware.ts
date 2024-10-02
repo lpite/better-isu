@@ -9,6 +9,7 @@ import refreshSession from "utils/refreshSession";
 import { db } from "utils/db";
 import { Session } from "types/session";
 import { refreshSchedule } from "utils/refreshSchedule";
+import { cacheClient } from "utils/memcached";
 
 export async function getSession(ctx: Context): Promise<{
   error?: "unauthorized" | "no session";
@@ -49,19 +50,11 @@ export async function getSession(ctx: Context): Promise<{
   }
   const now = new Date().getTime() - new Date().getTimezoneOffset() * 60;
   if (now - session.created_at.getTime() > 55 * 60 * 1000) {
-    const { numInsertedOrUpdatedRows: isNotUpdating } = await db
-      .insertInto("session_update_state")
-      .values({
-        session: sessionCookie,
-      })
-
-      .executeTakeFirst()
-      .catch(() => {
-        return {
-          insertId: undefined,
-          numInsertedOrUpdatedRows: 0,
-        };
-      });
+    const isNotUpdating = await cacheClient.add(`session_update_state:${sessionCookie}`, "true", {
+      lifetime: 30
+    })
+      .then(() => true)
+      .catch(() => false)
 
     if (isNotUpdating) {
       const newSession = await refreshSession(session, getCookie(ctx));

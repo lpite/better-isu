@@ -27,4 +27,3 @@ openapiApp.doc("/doc", {
 app.route("/openapi", openapiApp);
 app.route("/journal", journalRoute);
 app.route("/jrn", jrnRoute);
-

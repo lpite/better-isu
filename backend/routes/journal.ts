@@ -75,6 +75,8 @@ journalRoute.get("/", async (c) => {
     `<meta name="theme-color" content="#020817" />` +
     journalPage.slice(105);
 
+  c.header("Cache-Control", "max-age=604800, stale-while-revalidate=604800");
+
   return c.html(
     journalPage
       .replaceAll(

@@ -1,9 +1,10 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { z as zod } from "@hono/zod-openapi";
 import { Session } from "types/session";
-import { sessionMiddleware } from "backend/middlewares/sessionMiddleware";
 import fetchAndDecode from "utils/fetchAndDecode";
 import { cacheClient } from "utils/memcached";
+import { db } from "utils/db";
+import { sql } from "kysely";
 
 export const generalRouter = new OpenAPIHono<{
   Variables: { session: Session };
@@ -52,4 +53,40 @@ generalRouter.openapi(getTypeOfWeek, async (c) => {
   }
   cacheClient.set("week_type", response, { lifetime: 60 * 60 });
   return c.text(response);
+});
+
+const getStats = createRoute({
+  path: "stats",
+  method: "get",
+  responses: {
+    200: {
+      description: "stats",
+      content: {
+        "application/json": {
+          schema: zod.object({
+            users: zod.number(),
+            sessionsToday: zod.number(),
+          }),
+        },
+      },
+    },
+  },
+});
+
+generalRouter.openapi(getStats, async (c) => {
+  const users = await db
+    .selectFrom("user")
+    .select((eb) => eb.fn.countAll<string>("user").as("user_count"))
+    .executeTakeFirst();
+
+  const sessionsToday = await db
+    .selectFrom("session")
+    .select((eb) => eb.fn.countAll<string>("session").as("sessions_count"))
+    .where(sql`created_at::date = now()::date` as any)
+    .executeTakeFirst();
+
+  return c.json({
+    users: Number(users?.user_count) || 0,
+    sessionsToday: Number(sessionsToday?.sessions_count) || 0,
+  });
 });

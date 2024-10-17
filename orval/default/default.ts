@@ -12,6 +12,7 @@ import type {
   GetAuthSession200,
   GetAuthSession401,
   GetGeneralGetTypeOfWeek200,
+  GetGeneralStats200,
   GetJournalGet200,
   GetJournalGetParams,
   GetUserProfile200,
@@ -28,6 +29,7 @@ import getUserRatingMutator from ".././custom-client";
 import getUserIndividualPlanMutator from ".././custom-client";
 import getJournalGetMutator from ".././custom-client";
 import getGeneralGetTypeOfWeekMutator from ".././custom-client";
+import getGeneralStatsMutator from ".././custom-client";
 import getAuthSessionMutator from ".././custom-client";
 import postAuthLogoutMutator from ".././custom-client";
 import postAuthLoginMutator from ".././custom-client";
@@ -303,6 +305,45 @@ export const useGetGeneralGetTypeOfWeek = <TError = unknown>(options?: {
     swrOptions?.swrKey ??
     (() => (isEnabled ? getGetGeneralGetTypeOfWeekKey() : null));
   const swrFn = () => getGeneralGetTypeOfWeek();
+
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(
+    swrKey,
+    swrFn,
+    swrOptions,
+  );
+
+  return {
+    swrKey,
+    ...query,
+  };
+};
+export const getGeneralStats = () => {
+  return getGeneralStatsMutator<GetGeneralStats200>({
+    url: `/api/hono/openapi/general/stats`,
+    method: "GET",
+  });
+};
+
+export const getGetGeneralStatsKey = () =>
+  [`/api/hono/openapi/general/stats`] as const;
+
+export type GetGeneralStatsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getGeneralStats>>
+>;
+export type GetGeneralStatsQueryError = unknown;
+
+export const useGetGeneralStats = <TError = unknown>(options?: {
+  swr?: SWRConfiguration<
+    Awaited<ReturnType<typeof getGeneralStats>>,
+    TError
+  > & { swrKey?: Key; enabled?: boolean };
+}) => {
+  const { swr: swrOptions } = options ?? {};
+
+  const isEnabled = swrOptions?.enabled !== false;
+  const swrKey =
+    swrOptions?.swrKey ?? (() => (isEnabled ? getGetGeneralStatsKey() : null));
+  const swrFn = () => getGeneralStats();
 
   const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(
     swrKey,

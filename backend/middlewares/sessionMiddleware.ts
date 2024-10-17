@@ -50,11 +50,12 @@ export async function getSession(ctx: Context): Promise<{
   }
   const now = new Date().getTime() - new Date().getTimezoneOffset() * 60;
   if (now - session.created_at.getTime() > 55 * 60 * 1000) {
-    const isNotUpdating = await cacheClient.add(`session_update_state:${sessionCookie}`, "true", {
-      lifetime: 30
-    })
+    const isNotUpdating = await cacheClient
+      .add(`session_update_state:${sessionCookie}`, "true", {
+        lifetime: 30,
+      })
       .then(() => true)
-      .catch(() => false)
+      .catch(() => false);
 
     if (isNotUpdating) {
       const newSession = await refreshSession(session, getCookie(ctx));

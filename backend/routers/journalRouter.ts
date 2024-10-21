@@ -111,8 +111,11 @@ journalRouter.openapi(get, async (c) => {
     .get<string>(
       `journal_weights:${user.group_id}.${cyrb53(journalName)}.${user.course}`,
     )
-    .then(({ value }) => {
-      return JSON.parse(value);
+    .then((res) => {
+      if (res.value) {
+        return JSON.parse(res?.value);
+      }
+      return undefined;
     })
     .catch((err) => {
       console.error(err);

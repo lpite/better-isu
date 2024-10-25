@@ -22,17 +22,11 @@ export default async function refreshSession(
 
     let credentials: Record<string, string> = {};
 
-    if (session.credentials.length && "session_key" in cookies) {
-      console.log("refreshing in new way");
-      // використання ключа з сесії
-      credentials = JSON.parse(
-        decryptText(session.credentials, cookies.session_key),
-      );
-    } else {
-      credentials = JSON.parse(
-        decryptText(user.credentials, process.env.ENCRYPTION_KEY || ""),
-      );
-    }
+    console.log("refreshing in new way");
+    // використання ключа з сесії
+    credentials = JSON.parse(
+      decryptText(session.credentials, cookies.session_key),
+    );
 
     const formData = new FormData();
     formData.append("login", credentials.login);

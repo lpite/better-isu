@@ -31,7 +31,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    const res: LoginResponse | undefined = await fetch("/api/login", {
+    const res: LoginResponse | undefined = await fetch("/api/hono/login", {
       method: "POST",
       body: JSON.stringify(credentials),
       headers: {

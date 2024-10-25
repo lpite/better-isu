@@ -1,54 +1,35 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { Hono } from "hono";
+import { db } from "utils/db";
+import { encryptText } from "utils/encryption";
+import { refreshUserInfo } from "utils/getSession";
 
-import { db } from "../../utils/db";
-import { encryptText } from "../../utils/encryption";
-import getSession, {
-  refreshSubjectsList,
-  refreshUserInfo,
-} from "../../utils/getSession";
-import { refreshSchedule } from "utils/refreshSchedule";
+export const loginRoute = new Hono();
 
-export type LoginResponse = {
-  error: string | null;
-  data: {} | null;
-};
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<LoginResponse>,
-) {
+loginRoute.post("/", async (c) => {
   try {
-    if (
-      req.body.login === "joe_biden123" &&
-      req.body.password === "joe_biden123"
-    ) {
-      res.appendHeader(
+    const body = await c.req.json();
+    console.log(body)
+    if (body.login === "joe_biden123" && body.password === "joe_biden123") {
+      c.header(
         "Set-Cookie",
         `session=joe_biden_session;Max-Age=2592000000;HttpOnly;Path=/`,
+        { append: true },
       );
-      res.appendHeader(
+      c.header(
         "Set-Cookie",
         `session_key=joe_biden_session_key;Max-Age=2592000000;HttpOnly;Path=/`,
+        { append: true },
       );
 
-      return res.send({
+      return c.json({
         data: {},
         error: null,
       });
     }
 
-    const s = await getSession(req);
-
-    if (s.error !== "unauthorized" && s.error !== "no session") {
-      return res.send({
-        error: "already",
-        data: null,
-      });
-    }
-
     const formData = new FormData();
-    formData.append("login", req.body.login);
-    formData.append("passwd", req.body.password);
+    formData.append("login", body.login);
+    formData.append("passwd", body.password);
     formData.append("btnSubmit", "%D3%E2%B3%E9%F2%E8");
 
     const decoder = new TextDecoder("windows-1251");
@@ -67,21 +48,21 @@ export default async function handler(
       .then((res) => decoder.decode(res));
 
     if (text.includes("Викладач")) {
-      return res.send({
+      return c.json({
         error: "Ви не є студентом (наразі реалізовано тільки для студентів)",
         data: null,
       });
     }
 
     if (text.includes("Аутентифікація не пройшла")) {
-      return res.send({
+      return c.json({
         error: "Неправильний пароль або логін",
         data: null,
       });
     }
 
     if (!text.includes("Вхід користувача")) {
-      return res.send({
+      return c.json({
         error: "Неправильний пароль або логін",
         data: null,
       });
@@ -90,16 +71,14 @@ export default async function handler(
     let user = await db
       .selectFrom("user")
       .select("id")
-      .where("login", "=", req.body.login.trim())
+      .where("login", "=", body.login.toString()?.trim())
       .executeTakeFirst();
 
     if (!user) {
       user = await db
         .insertInto("user")
         .values({
-          login: req.body.login.trim(),
-          // TODO: delete this
-          // credentials: encryptText(JSON.stringify(req.body), process.env.ENCRYPTION_KEY || "")
+          login: body.login.toString()?.trim(),
         })
         .returning("id")
         .executeTakeFirstOrThrow();
@@ -118,7 +97,7 @@ export default async function handler(
           .split(";")[0],
         user_id: user?.id,
         session_id: newSessionId,
-        credentials: encryptText(JSON.stringify(req.body), sessionKey),
+        credentials: encryptText(JSON.stringify(body), sessionKey),
       })
       .returningAll()
       .executeTakeFirstOrThrow();
@@ -127,24 +106,26 @@ export default async function handler(
     // await refreshSubjectsList(session)
     // await refreshSchedule(session);
 
-    res.appendHeader(
+    c.header(
       "Set-Cookie",
       `session=${session.session_id};Max-Age=2592000000;HttpOnly;Path=/`,
+      { append: true },
     );
-    res.appendHeader(
+    c.header(
       "Set-Cookie",
       `session_key=${sessionKey};Max-Age=2592000000;HttpOnly;Path=/`,
+      { append: true },
     );
 
-    res.send({
+    return c.json({
       data: {},
       error: null,
     });
   } catch (err) {
     console.error(err);
-    res.send({
+    return c.json({
       error: "Спробуйте ще раз",
       data: null,
     });
   }
-}
+});

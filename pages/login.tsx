@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import React, { FormEvent } from "react";
 import { useRouter } from "next/router";
 import { Input } from "@/components/ui/input";
-import { LoginResponse } from "./api/login";
 import { useGetAuthSession } from "orval/default/default";
 
 export default function LoginPage() {
@@ -31,7 +30,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    const res: LoginResponse | undefined = await fetch("/api/hono/login", {
+    const res: any | undefined = await fetch("/api/hono/login", {
       method: "POST",
       body: JSON.stringify(credentials),
       headers: {

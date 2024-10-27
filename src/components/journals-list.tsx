@@ -1,5 +1,4 @@
 import { API_URL } from "@/config";
-import { Link } from "react-router-dom";
 
 type JournalsListProps = {
   journals?: { link: string; name: string }[];

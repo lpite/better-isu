@@ -1,12 +1,6 @@
-let baseURL = "";
+import { API_URL } from "@/config";
 
-if (typeof window === "undefined") {
-  if (process.env.NODE_ENV === "development") {
-    baseURL = "http://localhost:3000";
-  } else {
-    baseURL = "http://localhost:3001";
-  }
-}
+let baseURL = API_URL;
 
 export const customClient = async <T>({
   url,
@@ -28,6 +22,7 @@ export const customClient = async <T>({
     {
       method,
       ...(data ? { body: JSON.stringify(data) } : {}),
+      credentials: "include",
     },
   );
   if (!response.ok || response.status !== 200) {

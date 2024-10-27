@@ -1,8 +1,8 @@
-import { sessionMiddleware } from "backend/middlewares/sessionMiddleware";
+import { sessionMiddleware } from "../middlewares/sessionMiddleware";
 import { Hono } from "hono";
-import { Session } from "types/session";
-import { db } from "utils/db";
-import { refreshSubjectsList } from "utils/getSession";
+import { Session } from "../types/session";
+import { db } from "../utils/db";
+import { refreshSubjectsList } from "../utils/getSession";
 import zod from "zod";
 
 export const journalRoute = new Hono<{
@@ -36,10 +36,10 @@ journalRoute.get("/", async (c) => {
     .where("session_id", "=", session.id)
     .executeTakeFirstOrThrow();
 
-  const data = subjects.data as any;
+  const data = JSON.parse((subjects.data as string) || "[]") as any;
 
   const { link: journal_link } = data[query.index];
-
+  console.log(journal_link, session.isu_cookie);
   let journalPage = await fetch(
     `https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.php?key=${journal_link}`,
     {
@@ -49,14 +49,14 @@ journalRoute.get("/", async (c) => {
       },
     },
   ).then((res) => res.text());
-
+  console.log(journalPage);
   if (journalPage.includes("Key violation")) {
-    await refreshSubjectsList(session);
+    // await refreshSubjectsList(session);
     // TODO якось показуавати лоадер коли список предметів не завантажений
     // return c.html(`<div
-    // 					style="width:100vw;height:100vh;display:flex;justify-items:center;align-items:center;">
-    // 				<div style="height:50px;width:50px;border:2px solid gray;border-bottom-color:transparent;"></div>
-    // 				</div>`)
+    //          style="width:100vw;height:100vh;display:flex;justify-items:center;align-items:center;">
+    //        <div style="height:50px;width:50px;border:2px solid gray;border-bottom-color:transparent;"></div>
+    //        </div>`)
     return c.redirect(
       `/api/hono/journal?index=${query.index}&c=${query.c + 1}`,
     );

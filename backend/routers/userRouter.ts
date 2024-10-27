@@ -1,18 +1,18 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { z as zod } from "@hono/zod-openapi";
-import { Session } from "types/session";
-import { sessionMiddleware } from "backend/middlewares/sessionMiddleware";
+import { Session } from "../types/session";
+import { sessionMiddleware } from "../middlewares/sessionMiddleware";
 import { sql } from "kysely";
-import { db } from "utils/db";
-import { refreshSubjectsList } from "utils/getSession";
-import getRatingPage from "utils/getRatingPage";
-import { getJoeBidenInfo } from "utils/getJoeBidenInfo";
-import { refreshSchedule } from "utils/refreshSchedule";
-import { cacheClient } from "utils/memcached";
-import { cyrb53 } from "utils/hash";
-import getIndividualPlan from "utils/getIndividualPlan";
-import { getGroup } from "utils/getGroups";
-import { getGeneralGetTypeOfWeek } from "orval/default/default";
+import { db } from "../utils/db";
+import { refreshSubjectsList } from "../utils/getSession";
+import getRatingPage from "../utils/getRatingPage";
+import { getJoeBidenInfo } from "../utils/getJoeBidenInfo";
+import { refreshSchedule } from "../utils/refreshSchedule";
+import { cacheClient } from "../utils/memcached";
+import { cyrb53 } from "../utils/hash";
+import getIndividualPlan from "../utils/getIndividualPlan";
+import { getGroup } from "../utils/getGroups";
+import { getGeneralGetTypeOfWeek } from "../../orval/default/default";
 
 export const userRouter = new OpenAPIHono<{
   Variables: { session: Session };
@@ -144,6 +144,8 @@ const schedule = createRoute({
                     dateTo: zod.string(),
                     auditory: zod.string(),
                     subjectName: zod.string(),
+                    teacherShortName: zod.string(),
+                    teacherFullName: zod.string(),
                   }),
                 ),
               }),
@@ -282,7 +284,7 @@ function generateUniqueList(schedule: Record<string, any>[]) {
     return [];
   }
   const arr: { subjectName: string; isSelectable: boolean }[] = [];
-  schedule.forEach(({ subjectName, isSelectable }) => {
+  schedule?.forEach(({ subjectName, isSelectable }) => {
     if (!arr.find((el) => el.subjectName === subjectName)) {
       arr.push({ subjectName: subjectName.trim(), isSelectable });
     }
@@ -321,11 +323,14 @@ userRouter.openapi(schedule, async (c) => {
       .executeTakeFirstOrThrow();
   }
 
-  const currentWeekType = await getGeneralGetTypeOfWeek();
+  const data = JSON.parse((schedule?.data as string) || "[]");
 
+  const currentWeekType = await fetch(
+    "http://localhost:3001/api/hono/openapi/general/getTypeOfWeek",
+  ).then((res) => res.text()) as any;
   return c.json({
-    uniqueList: generateUniqueList(schedule.data as any),
-    schedule: generateDaysList(currentWeekType, schedule.data as any),
+    uniqueList: [],
+    schedule: generateDaysList(currentWeekType, data as any),
   });
 });
 

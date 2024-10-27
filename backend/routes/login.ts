@@ -1,14 +1,14 @@
 import { Hono } from "hono";
-import { db } from "utils/db";
-import { encryptText } from "utils/encryption";
-import { refreshUserInfo } from "utils/getSession";
+import { db } from "../utils/db";
+import { encryptText } from "../utils/encryption";
+import { refreshUserInfo } from "../utils/getSession";
 
 export const loginRoute = new Hono();
 
 loginRoute.post("/", async (c) => {
   try {
     const body = await c.req.json();
-    console.log(body)
+    console.log(body);
     if (body.login === "joe_biden123" && body.password === "joe_biden123") {
       c.header(
         "Set-Cookie",

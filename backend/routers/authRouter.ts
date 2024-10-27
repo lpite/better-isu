@@ -1,7 +1,7 @@
 import { OpenAPIHono, createRoute, z as zod } from "@hono/zod-openapi";
-import { getSession } from "backend/middlewares/sessionMiddleware";
+import { getSession } from "../middlewares/sessionMiddleware";
 import { getCookie } from "hono/cookie";
-import { db } from "utils/db";
+import { db } from "../utils/db";
 
 export const authRouter = new OpenAPIHono();
 
@@ -35,7 +35,6 @@ const getSessionRoute = createRoute({
 
 authRouter.openapi(getSessionRoute, async (c) => {
   const sessionCookie = getCookie(c, "session");
-
   if (!sessionCookie) {
     return c.json(
       {

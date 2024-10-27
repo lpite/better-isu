@@ -1,9 +1,9 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { z as zod } from "@hono/zod-openapi";
-import { Session } from "types/session";
-import fetchAndDecode from "utils/fetchAndDecode";
-import { cacheClient } from "utils/memcached";
-import { db } from "utils/db";
+import { Session } from "../types/session";
+import fetchAndDecode from "../utils/fetchAndDecode";
+import { cacheClient } from "../utils/memcached";
+import { db } from "../utils/db";
 import { sql } from "kysely";
 
 export const generalRouter = new OpenAPIHono<{

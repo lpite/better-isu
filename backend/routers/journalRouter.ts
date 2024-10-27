@@ -1,14 +1,14 @@
 import { OpenAPIHono, createRoute, z as zod } from "@hono/zod-openapi";
-import { Session } from "types/session";
-import getGradesForUser, { DaySchema } from "utils/getGradesForUser";
-import { db } from "utils/db";
-import { refreshSubjectsList } from "utils/getSession";
+import { Session } from "../types/session";
+import getGradesForUser, { DaySchema } from "../utils/getGradesForUser";
+import { db } from "../utils/db";
+import { refreshSubjectsList } from "../utils/getSession";
 import parse from "node-html-parser";
-import { sessionMiddleware } from "backend/middlewares/sessionMiddleware";
+import { sessionMiddleware } from "../middlewares/sessionMiddleware";
 import { HTTPException } from "hono/http-exception";
-import { getJoeBidenInfo } from "utils/getJoeBidenInfo";
-import { cacheClient } from "utils/memcached";
-import { cyrb53 } from "utils/hash";
+import { getJoeBidenInfo } from "../utils/getJoeBidenInfo";
+import { cacheClient } from "../utils/memcached";
+import { cyrb53 } from "../utils/hash";
 
 const monthList = [
   "Січень",

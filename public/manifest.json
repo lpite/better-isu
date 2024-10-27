@@ -1,6 +1,8 @@
 {
-  "name": "Capybara",
-  "short_name": "Capybara",
+  "manifest_version": 2,
+  "version": "1",
+  "name": "Agenda",
+  "short_name": "Agenda",
   "icons": [
     {
       "src": "/icons/android-chrome-192x192.png",
@@ -22,7 +24,7 @@
   "theme_color": "#f8fafc",
   "background_color": "#020817",
   "start_url": "/",
-  "scope": "https://better-isu.vercel.app/",
+  "scope": "https://agenda.khmnu.edu.ua/",
   "display": "standalone",
   "orientation": "portrait"
 }

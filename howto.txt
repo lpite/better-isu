@@ -1,6 +1,0 @@
-1. Сворити файл .env на приклад .env.example
-2. Ввести туди дані про підключеня до БД та всяке інше
-3. npm i або yarn або bun i
-4. npm run migrate або yarn migrate або bun run migrate це запуск міграцій
-5. npm run dev або yarn dev або bun run dev
-6. Йдемо на localhost:3000 це все :)

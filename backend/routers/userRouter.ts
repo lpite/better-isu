@@ -271,6 +271,8 @@ function generateDaysList(
           return {
             number: `# ${el.number} ${scheduleTimes[el.number]}`,
             name: el.name,
+            auditory: el.auditory,
+            teacherShortName: el.teacherShortName,
           };
         }),
     });
@@ -325,9 +327,9 @@ userRouter.openapi(schedule, async (c) => {
 
   const data = JSON.parse((schedule?.data as string) || "[]");
 
-  const currentWeekType = await fetch(
+  const currentWeekType = (await fetch(
     "http://localhost:3001/api/hono/openapi/general/getTypeOfWeek",
-  ).then((res) => res.text()) as any;
+  ).then((res) => res.text())) as any;
   return c.json({
     uniqueList: [],
     schedule: generateDaysList(currentWeekType, data as any),

@@ -4,6 +4,8 @@ import { Session } from "../types/session";
 import { db } from "../utils/db";
 import { refreshSubjectsList } from "../utils/getSession";
 import zod from "zod";
+import { cache, cacheClient } from "../utils/memcached";
+import { cyrb53 } from "../utils/hash";
 
 export const journalRoute = new Hono<{
   Variables: { session: Session };
@@ -22,7 +24,6 @@ journalRoute.get("/", async (c) => {
   });
 
   const query = querySchema.parse(c.req.query());
-
   if (query.c > 3) {
     return c.html(
       '<div style="width:100vw;height:100vh;display:flex;justify-items:center;align-items:center;"><h1 style="text-align:center; width:100%;">Спробуйте ще раз</h1></div>',
@@ -38,8 +39,23 @@ journalRoute.get("/", async (c) => {
 
   const data = JSON.parse((subjects.data as string) || "[]") as any;
 
-  const { link: journal_link } = data[query.index];
-  console.log(journal_link, session.isu_cookie);
+  const { link: journal_link, name: journal_name } = data[query.index];
+  const params = new URLSearchParams(journal_link);
+
+  const cachedPage = await cacheClient
+    .get<string | undefined>(
+      `journal_page:${params.get("groupid").split("^")[1]}.${cyrb53(journal_name)}.${params.get("numsem").split("^")[1]}`,
+    )
+    .then((res) => {
+      return res?.value;
+    })
+    .catch((err) => {
+      console.error(err);
+      return undefined;
+    });
+  if (cachedPage) {
+    return c.html(cachedPage)
+  }
   let journalPage = await fetch(
     `https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.php?key=${journal_link}`,
     {
@@ -49,9 +65,8 @@ journalRoute.get("/", async (c) => {
       },
     },
   ).then((res) => res.text());
-  console.log(journalPage);
   if (journalPage.includes("Key violation")) {
-    // await refreshSubjectsList(session);
+    await refreshSubjectsList(session);
     // TODO якось показуавати лоадер коли список предметів не завантажений
     // return c.html(`<div
     //          style="width:100vw;height:100vh;display:flex;justify-items:center;align-items:center;">
@@ -76,28 +91,34 @@ journalRoute.get("/", async (c) => {
     journalPage.slice(105);
 
   c.header("Cache-Control", "max-age=604800, stale-while-revalidate=604800");
+  journalPage = journalPage
+    .replaceAll(
+      "../../js/extjs4/locale/ext-lang-ukr.js",
+      "https://isu1.khmnu.edu.ua/isu/js/extjs4/locale/ext-lang-ukr.js",
+    )
+    .replaceAll(
+      "journals.js",
+      "https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.js",
+    )
+    .replaceAll(
+      "../../js/extjs4/ext.js",
+      "https://isu1.khmnu.edu.ua/isu/js/extjs4/ext.js",
+    )
+    .replaceAll(
+      "../../js/extjs4/resources/css/ext-all.css",
+      "https://isu1.khmnu.edu.ua/isu/js/extjs4/resources/css/ext-all.css",
+    )
+    .replaceAll(
+      "jrn/css/journals.css",
+      "https://isu1.khmnu.edu.ua/isu/dbsupport/students/jrn/css/journals.css",
+    );
 
-  return c.html(
-    journalPage
-      .replaceAll(
-        "../../js/extjs4/locale/ext-lang-ukr.js",
-        "https://isu1.khmnu.edu.ua/isu/js/extjs4/locale/ext-lang-ukr.js",
-      )
-      .replaceAll(
-        "journals.js",
-        "https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.js",
-      )
-      .replaceAll(
-        "../../js/extjs4/ext.js",
-        "https://isu1.khmnu.edu.ua/isu/js/extjs4/ext.js",
-      )
-      .replaceAll(
-        "../../js/extjs4/resources/css/ext-all.css",
-        "https://isu1.khmnu.edu.ua/isu/js/extjs4/resources/css/ext-all.css",
-      )
-      .replaceAll(
-        "jrn/css/journals.css",
-        "https://isu1.khmnu.edu.ua/isu/dbsupport/students/jrn/css/journals.css",
-      ),
+  await cacheClient.set(
+    `journal_page:${params.get("groupid").split("^")[1]}.${cyrb53(journal_name)}.${params.get("numsem").split("^")[1]}`,
+    journalPage,
+    {
+      lifetime: 10 * 24 * 60 * 60, // 10 days
+    },
   );
+  return c.html(journalPage);
 });

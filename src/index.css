@@ -74,6 +74,12 @@ body,
   overflow: hidden;
 }
 
+body {
+  position: fixed;
+  width: 100%;
+  touch-action: none;
+}
+
 * {
   font-family: "Roboto", serif;
 }

@@ -81,7 +81,7 @@ export default function ScheduleCarousel({
   }, [individualPlan]);
 
   return (
-    <Carousel setApi={setApi} className="overflow-auto">
+    <Carousel setApi={setApi} className="overflow-auto mb-14">
       <CarouselContent>
         {schedule?.map(({ date, month, type, list, weekDay }) => (
           <CarouselItem key={date + month + weekDay}>

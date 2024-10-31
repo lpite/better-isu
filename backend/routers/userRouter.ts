@@ -325,7 +325,7 @@ userRouter.openapi(schedule, async (c) => {
       .executeTakeFirstOrThrow();
   }
 
-  const data = JSON.parse((schedule?.data as string) || "[]");
+  const data = schedule?.data;
 
   const currentWeekType = (await fetch(
     "http://localhost:3001/api/hono/openapi/general/getTypeOfWeek",

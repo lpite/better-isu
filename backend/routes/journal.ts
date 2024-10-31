@@ -37,7 +37,7 @@ journalRoute.get("/", async (c) => {
     .where("session_id", "=", session.id)
     .executeTakeFirstOrThrow();
 
-  const data = JSON.parse((subjects.data as string) || "[]") as any;
+  const data = subjects.data as any;
 
   const { link: journal_link, name: journal_name } = data[query.index];
   const params = new URLSearchParams(journal_link);
@@ -54,7 +54,7 @@ journalRoute.get("/", async (c) => {
       return undefined;
     });
   if (cachedPage) {
-    return c.html(cachedPage)
+    return c.html(cachedPage);
   }
   let journalPage = await fetch(
     `https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.php?key=${journal_link}`,

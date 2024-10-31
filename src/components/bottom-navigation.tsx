@@ -4,10 +4,10 @@ import { NavLink } from "react-router-dom";
 export default function BottomNavigation() {
   return (
     <nav
-      className="h-12 flex items-center justify-around w-full fixed bottom-0 py-1.5 border dark:border-transparent border-slate-300 bg-zinc-50 dark:bg-zinc-900"
+      className="h-12 flex items-center justify-around w-full fixed bottom-0 pt-1.5 border dark:border-transparent border-slate-300 bg-zinc-50 dark:bg-zinc-900"
       style={{
         boxShadow: "0px -4px 4px 0px rgba(0, 0, 0, 4%)",
-        paddingBottom: "calc(6px + env(safe-area-inset-bottom))",
+        paddingBottom: "calc(env(safe-area-inset-bottom) + 6px)",
       }}
     >
       <NavLink

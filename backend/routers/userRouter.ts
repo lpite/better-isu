@@ -237,7 +237,7 @@ function generateDaysList(
       weekDay: listOfDays[correctWeekDays[currentDate.getDay()]],
       type: types[wt],
       list: schedule
-        .filter((el) => {
+        ?.filter((el) => {
           if (currentDate.getDay() === 5) {
             // заміна пʼятниці
             const scheduleForFriday = listForFriday.find((el) => {
@@ -330,6 +330,7 @@ userRouter.openapi(schedule, async (c) => {
   const currentWeekType = (await fetch(
     "http://localhost:3001/api/hono/openapi/general/getTypeOfWeek",
   ).then((res) => res.text())) as any;
+
   return c.json({
     uniqueList: [],
     schedule: generateDaysList(currentWeekType, data as any),

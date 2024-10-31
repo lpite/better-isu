@@ -24,6 +24,10 @@ export async function refreshSchedule(session: Session) {
     }
     const scheduleFromApi = await getScheduleByApi(session.user_id);
 
+    if (!scheduleFromApi.length) {
+      throw "no schedule returned from api";
+    }
+
     await db
       .insertInto("schedule")
       .values({
@@ -33,9 +37,11 @@ export async function refreshSchedule(session: Session) {
       .executeTakeFirstOrThrow();
   }
 
-  if (!Object.keys(schedule?.data as any || {}).length) {
+  if (!Object.keys((schedule?.data as any) || {}).length) {
     const scheduleFromApi = await getScheduleByApi(session.user_id);
-
+    if (!scheduleFromApi.length) {
+      throw "no schedule returned from api";
+    }
     await db
       .updateTable("schedule")
       .set({

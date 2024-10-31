@@ -145,7 +145,7 @@ export async function refreshUserInfo(session: Session) {
   const facultets = await getFacultets();
 
   const facultyId =
-    facultets.find((el) => el.facultyName === faculty)?.facultyId || 0;
+    facultets.find((el) => el.facultyName === faculty)?.facultyId;
 
   const groups = await getGroups(facultyId, course);
   let groupId = groups.find((el) => el.groupName === group)?.groupId;

@@ -18,7 +18,6 @@ export default async function getGroups(facultyId: number, course: string) {
     studYear: number;
     currSem: number;
   }[];
-
   return groups;
 }
 

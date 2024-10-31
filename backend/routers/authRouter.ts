@@ -106,7 +106,7 @@ authRouter.openapi(logout, async (c) => {
     // Якщо використовувати напряму чомусь undefined
     const data = session.data;
 
-    db.transaction().execute(async (trx) => {
+    await db.transaction().execute(async (trx) => {
       await trx
         .deleteFrom("subjects_list")
         .where("session_id", "=", data.id)

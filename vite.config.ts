@@ -54,18 +54,7 @@ export default defineConfig({
                 maxEntries: 64,
                 maxAgeSeconds: 24 * 60 * 60, // 24 hours
               },
-            },
-          },
-          {
-            urlPattern: /\.(?:mp3|wav|ogg)$/i,
-            handler: "CacheFirst",
-            options: {
-              rangeRequests: true,
-              cacheName: "static-audio-assets",
-              expiration: {
-                maxEntries: 32,
-                maxAgeSeconds: 24 * 60 * 60, // 24 hours
-              },
+              networkTimeoutSeconds: 5
             },
           },
           {
@@ -89,6 +78,7 @@ export default defineConfig({
                 maxEntries: 32,
                 maxAgeSeconds: 24 * 60 * 60, // 24 hours
               },
+              networkTimeoutSeconds: 5
             },
           },
           {
@@ -100,6 +90,7 @@ export default defineConfig({
                 maxEntries: 32,
                 maxAgeSeconds: 24 * 60 * 60, // 24 hours
               },
+              networkTimeoutSeconds: 5
             },
           },
           {
@@ -111,6 +102,7 @@ export default defineConfig({
                 maxEntries: 32,
                 maxAgeSeconds: 24 * 60 * 60, // 24 hours
               },
+              networkTimeoutSeconds: 5
             },
           },
           {
@@ -133,7 +125,7 @@ export default defineConfig({
                 maxEntries: 16,
                 maxAgeSeconds: 24 * 60 * 60, // 24 hours
               },
-              networkTimeoutSeconds: 10, // fall back to cache if api does not response within 10 seconds
+              networkTimeoutSeconds: 5, // fall back to cache if api does not response within 10 seconds
             },
           },
           {
@@ -151,7 +143,7 @@ export default defineConfig({
                 maxEntries: 32,
                 maxAgeSeconds: 24 * 60 * 60, // 24 hours
               },
-              networkTimeoutSeconds: 10,
+              networkTimeoutSeconds: 5,
             },
           },
           {
@@ -166,7 +158,7 @@ export default defineConfig({
                 maxEntries: 32,
                 maxAgeSeconds: 60 * 60, // 1 hour
               },
-              networkTimeoutSeconds: 10,
+              networkTimeoutSeconds: 5,
             },
           },
         ],

@@ -69,7 +69,7 @@ export async function getSession(ctx: Context): Promise<{
       await Promise.all([
         refreshUserInfo(newSession),
         refreshSubjectsList(newSession),
-        refreshSchedule(newSession),
+        // refreshSchedule(newSession),
       ]);
 
       return {

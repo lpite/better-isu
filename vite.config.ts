@@ -10,7 +10,7 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       workbox: {
-        navigateFallbackDenylist: [/^\/api\//],
+        navigateFallbackDenylist: [/\/api\/hono\/journal/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.(?:gstatic)\.com\/.*/i,

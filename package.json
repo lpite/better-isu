@@ -7,7 +7,7 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "server": "tsx backend/server.ts",
+    "server": "ts-node backend/server.ts",
     "server-dev": "tsx --watch ./backend/server.ts",
     "generate-openapi": "orval",
     "gen-db-types": "kysely-codegen --out-file ./types/db.d.ts --include-pattern public.\\* --exclude-pattern pg_\\*",

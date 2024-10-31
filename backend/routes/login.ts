@@ -37,7 +37,6 @@ loginRoute.post("/", async (c) => {
       {
         method: "POST",
         body: formData,
-        cache: "no-cache",
         credentials: "include",
         redirect: "manual",
       },

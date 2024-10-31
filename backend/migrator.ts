@@ -8,18 +8,9 @@ import { promises as fs } from "fs";
 import * as path from "path";
 
 import "dotenv/config";
-// import { Pool } from "pg";
-import pg from 'pg';
-import { fileURLToPath } from "url";
-import { dirname } from "path";
-// import * as pg from 'pg'
-// const { Pool } = pg
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import pg from "pg";
 
 async function migrate() {
-
   const db = new Kysely<any>({
     dialect: new PostgresDialect({
       pool: new pg.Pool({
@@ -53,6 +44,9 @@ async function migrate() {
     console.error("failed to migrate");
     console.error(error);
     process.exit(1);
+  }
+  if (!results.length) {
+    console.log("no new files or no files in migrations folder")
   }
 
   await db.destroy();

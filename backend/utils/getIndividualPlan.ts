@@ -1,4 +1,4 @@
-import { Session } from "types/session";
+import { Session } from "../types/session";
 import fetchAndDecode from "./fetchAndDecode";
 
 export default async function getIndividualPlan(session: Session) {

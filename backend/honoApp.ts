@@ -43,5 +43,5 @@ app.get(
 );
 
 app.notFound((c) => {
-  return c.html(fs.readFileSync("./dist/index.html"));
+  return c.html(fs.readFileSync("./dist/index.html").toString());
 });

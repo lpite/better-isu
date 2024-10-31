@@ -1,5 +1,5 @@
 import { parse } from "node-html-parser";
-import { Session } from "types/session";
+import { Session } from "../types/session";
 import { db } from "./db";
 import encodeParamString from "./encodeParamString";
 import fetchAndDecode from "./fetchAndDecode";

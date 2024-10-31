@@ -1,4 +1,3 @@
-import { NextApiRequest } from "next";
 import { db } from "./db";
 import { Session } from "../types/session";
 import { sql } from "kysely";
@@ -9,98 +8,98 @@ import getGroups from "./getGroups";
 import refreshSession from "./refreshSession";
 import { refreshSchedule } from "./refreshSchedule";
 
-export default async function getSession(req: NextApiRequest): Promise<{
-  error?: "unauthorized" | "no session";
-  data: Session | null;
-}> {
-  const sessionCookie = req.cookies?.session;
-  if (!sessionCookie) {
-    return {
-      error: "unauthorized",
-      data: null,
-    };
-  }
+// export default async function getSession(req: NextApiRequest): Promise<{
+//   error?: "unauthorized" | "no session";
+//   data: Session | null;
+// }> {
+//   const sessionCookie = req.cookies?.session;
+//   if (!sessionCookie) {
+//     return {
+//       error: "unauthorized",
+//       data: null,
+//     };
+//   }
 
-  if (sessionCookie === "joe_biden_session") {
-    return {
-      data: {
-        id: 0,
-        user_id: 0,
-        created_at: new Date(),
-        credentials: "",
-        isu_cookie: "",
-        session_id: "joe_biden_session",
-      },
-    };
-  }
+//   if (sessionCookie === "joe_biden_session") {
+//     return {
+//       data: {
+//         id: 0,
+//         user_id: 0,
+//         created_at: new Date(),
+//         credentials: "",
+//         isu_cookie: "",
+//         session_id: "joe_biden_session",
+//       },
+//     };
+//   }
 
-  const session = await db
-    .selectFrom("session")
-    .selectAll()
-    .where("session_id", "=", sessionCookie)
-    .executeTakeFirst();
+//   const session = await db
+//     .selectFrom("session")
+//     .selectAll()
+//     .where("session_id", "=", sessionCookie)
+//     .executeTakeFirst();
 
-  if (!session) {
-    return {
-      error: "no session",
-      data: null,
-    };
-  }
+//   if (!session) {
+//     return {
+//       error: "no session",
+//       data: null,
+//     };
+//   }
 
-  await db
-    .deleteFrom("session_update_state")
-    .where((eb) =>
-      eb.and([
-        eb("session", "=", session?.session_id),
-        eb("created_at", "<", sql<any>`now() - INTERVAL '1 minutes'`),
-      ]),
-    )
-    .execute();
+//   await db
+//     .deleteFrom("session_update_state")
+//     .where((eb) =>
+//       eb.and([
+//         eb("session", "=", session?.session_id),
+//         eb("created_at", "<", sql<any>`now() - INTERVAL '1 minutes'`),
+//       ]),
+//     )
+//     .execute();
 
-  const now = new Date().getTime() - new Date().getTimezoneOffset() * 60;
-  if (now - session.created_at.getTime() > 55 * 60 * 1000) {
-    const { numInsertedOrUpdatedRows: isNotUpdating } = await db
-      .insertInto("session_update_state")
-      .values({
-        session: sessionCookie,
-      })
+//   const now = new Date().getTime() - new Date().getTimezoneOffset() * 60;
+//   if (now - session.created_at.getTime() > 55 * 60 * 1000) {
+//     const { numInsertedOrUpdatedRows: isNotUpdating } = await db
+//       .insertInto("session_update_state")
+//       .values({
+//         session: sessionCookie,
+//       })
 
-      .executeTakeFirst()
-      .catch(() => {
-        return {
-          insertId: undefined,
-          numInsertedOrUpdatedRows: 0,
-        };
-      });
+//       .executeTakeFirst()
+//       .catch(() => {
+//         return {
+//           insertId: undefined,
+//           numInsertedOrUpdatedRows: 0,
+//         };
+//       });
 
-    if (isNotUpdating) {
-      const newSession = await refreshSession(session, req.cookies as any);
-      if (!newSession) {
-        return {
-          error: "unauthorized",
-          data: null,
-        };
-      }
+//     if (isNotUpdating) {
+//       const newSession = await refreshSession(session, req.cookies as any);
+//       if (!newSession) {
+//         return {
+//           error: "unauthorized",
+//           data: null,
+//         };
+//       }
 
-      await Promise.all([
-        refreshUserInfo(newSession),
-        refreshSubjectsList(newSession),
-        refreshSchedule(newSession),
-        db
-          .deleteFrom("session_update_state")
-          .where("session", "=", sessionCookie)
-          .execute(),
-      ]);
+//       await Promise.all([
+//         refreshUserInfo(newSession),
+//         refreshSubjectsList(newSession),
+//         refreshSchedule(newSession),
+//         db
+//           .deleteFrom("session_update_state")
+//           .where("session", "=", sessionCookie)
+//           .execute(),
+//       ]);
 
-      return {
-        data: newSession,
-      };
-    }
-  }
-  return {
-    data: session,
-  };
-}
+//       return {
+//         data: newSession,
+//       };
+//     }
+//   }
+//   return {
+//     data: session,
+//   };
+// }
 
 export async function refreshSubjectsList(session: Session) {
   const subjects = await getSubjectsPage(session);

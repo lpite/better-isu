@@ -1,4 +1,4 @@
-import { Session } from "types/session";
+import { Session } from "../types/session";
 import { decryptText } from "./encryption";
 import { db } from "./db";
 import { sql } from "kysely";
@@ -38,7 +38,6 @@ export default async function refreshSession(
       {
         method: "POST",
         body: formData,
-        cache: "no-cache",
         credentials: "include",
         redirect: "manual",
       },

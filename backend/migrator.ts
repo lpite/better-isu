@@ -8,12 +8,21 @@ import { promises as fs } from "fs";
 import * as path from "path";
 
 import "dotenv/config";
-import { Pool } from "pg";
+// import { Pool } from "pg";
+import pg from 'pg';
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+// import * as pg from 'pg'
+// const { Pool } = pg
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 async function migrate() {
+
   const db = new Kysely<any>({
     dialect: new PostgresDialect({
-      pool: new Pool({
+      pool: new pg.Pool({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,

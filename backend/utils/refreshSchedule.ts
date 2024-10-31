@@ -1,4 +1,4 @@
-import { Session } from "types/session";
+import { Session } from "../types/session";
 import { db } from "./db";
 import getScheduleByApi from "./getScheduleByApi";
 import { sql } from "kysely";
@@ -33,7 +33,7 @@ export async function refreshSchedule(session: Session) {
       .executeTakeFirstOrThrow();
   }
 
-  if (!Object.keys(schedule?.data as any).length) {
+  if (!Object.keys(schedule?.data as any || {}).length) {
     const scheduleFromApi = await getScheduleByApi(session.user_id);
 
     await db
@@ -45,7 +45,7 @@ export async function refreshSchedule(session: Session) {
       .where("group", "=", user.group)
       .executeTakeFirstOrThrow();
   }
-  const lastScheduleUpdate = schedule?.updated_at.getTime();
+  const lastScheduleUpdate = schedule?.updated_at.getTime() || 0;
   const now = new Date().getTime() - new Date().getTimezoneOffset() * 60;
 
   if (lastScheduleUpdate && now - lastScheduleUpdate > 12 * 60 * 60 * 1000) {

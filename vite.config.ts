@@ -54,7 +54,6 @@ export default defineConfig({
                 maxEntries: 64,
                 maxAgeSeconds: 24 * 60 * 60, // 24 hours
               },
-              networkTimeoutSeconds: 5
             },
           },
           {
@@ -78,7 +77,6 @@ export default defineConfig({
                 maxEntries: 32,
                 maxAgeSeconds: 24 * 60 * 60, // 24 hours
               },
-              networkTimeoutSeconds: 5
             },
           },
           {
@@ -90,7 +88,6 @@ export default defineConfig({
                 maxEntries: 32,
                 maxAgeSeconds: 24 * 60 * 60, // 24 hours
               },
-              networkTimeoutSeconds: 5
             },
           },
           {

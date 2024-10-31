@@ -11,7 +11,8 @@
     "server": "tsx backend/server.ts",
     "server-dev": "tsx --watch ./backend/server.ts",
     "generate-openapi": "orval",
-    "gen-db-types": "kysely-codegen --out-file ./types/db.d.ts --include-pattern public.\\* --exclude-pattern pg_\\*"
+    "gen-db-types": "kysely-codegen --out-file ./types/db.d.ts --include-pattern public.\\* --exclude-pattern pg_\\*",
+    "migrate":"tsx ./backend/migrator.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",

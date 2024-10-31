@@ -12,7 +12,7 @@
     "server-dev": "tsx --watch ./backend/server.ts",
     "generate-openapi": "orval",
     "gen-db-types": "kysely-codegen --out-file ./types/db.d.ts --include-pattern public.\\* --exclude-pattern pg_\\*",
-    "migrate":"tsx ./backend/migrator.ts"
+    "migrate": "tsx ./backend/migrator.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
@@ -33,7 +33,6 @@
     "memcache-client": "^1.0.5",
     "node-html-parser": "^6.1.13",
     "pg": "^8.13.1",
-    "postgres": "^3.4.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.27.0",

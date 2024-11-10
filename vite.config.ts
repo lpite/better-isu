@@ -99,7 +99,7 @@ export default defineConfig({
                 maxEntries: 32,
                 maxAgeSeconds: 24 * 60 * 60, // 24 hours
               },
-              networkTimeoutSeconds: 5
+              networkTimeoutSeconds: 5,
             },
           },
           {

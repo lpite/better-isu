@@ -6,6 +6,7 @@ export const DaySchema = zod.object({
   MONTHSTR: zod.string(),
   DAYNUM: zod.string(),
   CONTROLSHORTNAME: zod.string(),
+  CONTROLNAME: zod.string(),
   GRADE: zod.string(),
   LFP: zod.string(),
 });

@@ -9,6 +9,7 @@ import { HTTPException } from "hono/http-exception";
 import { getJoeBidenInfo } from "../utils/getJoeBidenInfo";
 import { cacheClient } from "../utils/memcached";
 import { cyrb53 } from "../utils/hash";
+import { sql } from "kysely";
 
 const monthList = [
   "Січень",
@@ -326,5 +327,121 @@ journalRouter.openapi(get, async (c) => {
   return c.json({
     months: monthsWithGrades,
     journalName,
+  });
+});
+
+const grades = createRoute({
+  path: "/grades",
+  method: "get",
+  request: {
+    query: zod.object({
+      index: zod.string(),
+    }),
+  },
+  responses: {
+    200: {
+      description: "returns grades for user",
+      content: {
+        "application/json": {
+          schema: zod.object({
+            journalName: zod.string(),
+            grades: zod.array(DaySchema),
+            controls: zod.array(
+              zod.object({
+                ID: zod.number(),
+                NAME: zod.string(),
+                WEIGHT: zod.string(),
+                REQUIRED: zod.string(),
+                MINCOUNT: zod.number(),
+                COUNTPERPOINT: zod.string(),
+              }),
+            ),
+          }),
+        },
+      },
+    },
+  },
+});
+
+journalRouter.openapi(grades, async (c) => {
+  const session = c.get("session");
+
+  const user = await db
+    .selectFrom("user")
+    .select(["group_id", "record_number"])
+    .where("id", "=", session.user_id)
+    .executeTakeFirstOrThrow();
+
+  const { data: journal } = (await db
+    .selectFrom("subjects_list")
+    .select(sql`data[${c.req.valid("query").index}]`.as("data"))
+    .where("session_id", "=", session.id)
+    .executeTakeFirstOrThrow()) as any;
+
+  const params = new URLSearchParams(journal.link);
+
+  const cachedJournalPage = await cacheClient
+    .get<string | undefined>(
+      `journal_page:${user.group_id}.${cyrb53(journal.link)}.${params.get("numsem").split("^")[1]}`,
+    )
+    .then((res) => {
+      return res?.value;
+    })
+    .catch((err) => {
+      console.error(err);
+      return undefined;
+    });
+
+  let journalId: string;
+
+  if (cachedJournalPage) {
+    const scriptTag = cachedJournalPage
+      .querySelectorAll("script")[3]
+      .textContent.trim();
+    journalId = (scriptTag.match(/journalId:\s*'([^']+)'/) || [])[1];
+  } else {
+    // TODO: може все такий колись вже почати зберігати журналі в БД щоб о це не гратися...
+    const journalPage = await fetch(
+      `https://isu1.khmnu.edu.ua/isu/dbsupport/students/journals.php?key=${journal.link}`,
+      {
+        headers: {
+          Cookie: `PHPSESSID=${session.isu_cookie}`,
+        },
+      },
+    ).then((res) => res.text());
+    const scriptTag = parse(journalPage)
+      .querySelectorAll("script")[3]
+      .textContent.trim();
+    journalId = (scriptTag.match(/journalId:\s*'([^']+)'/) || [])[1];
+  }
+
+  const grades = await getGradesForUser({
+    isu_cookie: session.isu_cookie,
+    groupId: user.group_id,
+    journalId: journalId,
+    recordNumber: user.record_number,
+  });
+
+  const jrnControls = await fetch(
+    "https://isu1.khmnu.edu.ua/isu/dbsupport/students/jrn/jrncontrols.php",
+    {
+      method: "POST",
+      headers: {
+        Cookie: `PHPSESSID=${session.isu_cookie}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `jrnId=${journalId}&page=1&start=0&limit=25`,
+    },
+  )
+    .then((res) => res.json())
+    .catch((err) => {
+      console.error(err);
+      return [];
+    });
+
+  return c.json({
+    journalName: journal.name,
+    controls: jrnControls,
+    grades: grades,
   });
 });

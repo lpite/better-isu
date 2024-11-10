@@ -5,7 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetJournalGet200MonthsItemGradesItem = {
+export type GetJournalGrades200GradesItem = {
   CONTROLNAME: string;
   CONTROLSHORTNAME: string;
   DAYNUM: string;

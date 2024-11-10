@@ -15,6 +15,8 @@ import type {
   GetGeneralStats200,
   GetJournalGet200,
   GetJournalGetParams,
+  GetJournalGrades200,
+  GetJournalGradesParams,
   GetUserProfile200,
   GetUserRating200Item,
   GetUserSchedule200,
@@ -28,6 +30,7 @@ import getUserScheduleMutator from ".././custom-client";
 import getUserRatingMutator from ".././custom-client";
 import getUserIndividualPlanMutator from ".././custom-client";
 import getJournalGetMutator from ".././custom-client";
+import getJournalGradesMutator from ".././custom-client";
 import getGeneralGetTypeOfWeekMutator from ".././custom-client";
 import getGeneralStatsMutator from ".././custom-client";
 import getAuthSessionMutator from ".././custom-client";
@@ -265,6 +268,50 @@ export const useGetJournalGet = <TError = unknown>(
     swrOptions?.swrKey ??
     (() => (isEnabled ? getGetJournalGetKey(params) : null));
   const swrFn = () => getJournalGet(params);
+
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(
+    swrKey,
+    swrFn,
+    swrOptions,
+  );
+
+  return {
+    swrKey,
+    ...query,
+  };
+};
+export const getJournalGrades = (params: GetJournalGradesParams) => {
+  return getJournalGradesMutator<GetJournalGrades200>({
+    url: `/api/hono/openapi/journal/grades`,
+    method: "GET",
+    params,
+  });
+};
+
+export const getGetJournalGradesKey = (params: GetJournalGradesParams) =>
+  [`/api/hono/openapi/journal/grades`, ...(params ? [params] : [])] as const;
+
+export type GetJournalGradesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getJournalGrades>>
+>;
+export type GetJournalGradesQueryError = unknown;
+
+export const useGetJournalGrades = <TError = unknown>(
+  params: GetJournalGradesParams,
+  options?: {
+    swr?: SWRConfiguration<
+      Awaited<ReturnType<typeof getJournalGrades>>,
+      TError
+    > & { swrKey?: Key; enabled?: boolean };
+  },
+) => {
+  const { swr: swrOptions } = options ?? {};
+
+  const isEnabled = swrOptions?.enabled !== false;
+  const swrKey =
+    swrOptions?.swrKey ??
+    (() => (isEnabled ? getGetJournalGradesKey(params) : null));
+  const swrFn = () => getJournalGrades(params);
 
   const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(
     swrKey,

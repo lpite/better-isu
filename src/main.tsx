@@ -10,6 +10,7 @@ import AboutPage from "./pages/about.tsx";
 import RatingPage from "./pages/rating.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import LoginPage from "./pages/login.tsx";
+import JournalPage from "./pages/journal.tsx";
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/journal/:index",
+    element: <JournalPage />,
   },
 ]);
 

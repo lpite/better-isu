@@ -60,7 +60,6 @@ export default function ScheduleCarousel({
   }
 
   useEffect(() => {
-    console.log(localStorage.getItem("ENABLED_SUBJECTS_KEY"));
     const saved = (JSON.parse(
       localStorage.getItem("ENABLED_SUBJECTS_KEY") || "[]",
     ) || []) as string[];

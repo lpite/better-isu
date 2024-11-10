@@ -46,7 +46,7 @@ async function migrate() {
     process.exit(1);
   }
   if (!results.length) {
-    console.log("no new files or no files in migrations folder")
+    console.log("no new files or no files in migrations folder");
   }
 
   await db.destroy();

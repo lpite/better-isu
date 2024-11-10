@@ -25,3 +25,7 @@ export * from "./getUserSchedule200UniqueListItem";
 export * from "./getUserSubjects200Item";
 export * from "./postAuthLogin200";
 export * from "./postAuthLoginBody";
+export * from "./getJournalGrades200";
+export * from "./getJournalGrades200ControlsItem";
+export * from "./getJournalGrades200GradesItem";
+export * from "./getJournalGradesParams";

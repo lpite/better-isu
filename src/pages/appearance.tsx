@@ -3,9 +3,25 @@ import HeaderWithLabel from "@/components/header-with-label";
 import { Switch } from "@/components/ui/switch";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "@/components/theme-provider";
+import { useEffect, useState } from "react";
 
 export default function AppearancePage() {
   const { setTheme, theme } = useTheme();
+  const [testJournal, setTestJournal] = useState(false);
+
+  useEffect(() => {
+    setTestJournal(Boolean(localStorage.getItem("test_journal")));
+  }, []);
+
+  function toggleTestJournal() {
+    if (testJournal) {
+      localStorage.removeItem("test_journal");
+      setTestJournal(false);
+    } else {
+      localStorage.setItem("test_journal", "true");
+      setTestJournal(true);
+    }
+  }
 
   return (
     <>
@@ -44,6 +60,15 @@ export default function AppearancePage() {
             <span>Темна</span>
           </ColorThemeToggle>
         </div>
+        <label className="flex mt-5">
+          <div className="flex flex-col">
+            <span className="font-medium">Тестовий вигляд журналу</span>
+            <span className="text-xs w-4/5">
+              Сторінка журналу з оцінками буде замінена на тестовий варіант
+            </span>
+          </div>
+          <Switch checked={testJournal} onCheckedChange={toggleTestJournal} />
+        </label>
       </main>
     </>
   );

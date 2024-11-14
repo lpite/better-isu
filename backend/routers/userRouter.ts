@@ -12,7 +12,7 @@ import { cacheClient } from "../utils/memcached";
 import { cyrb53 } from "../utils/hash";
 import getIndividualPlan from "../utils/getIndividualPlan";
 import { getGroup } from "../utils/getGroups";
-import { getGeneralGetTypeOfWeek } from "../../orval/default/default";
+import { getTimeToEndOfWeek } from "../utils/getTimeToEndOfWeek";
 
 export const userRouter = new OpenAPIHono<{
   Variables: { session: Session };
@@ -330,10 +330,15 @@ userRouter.openapi(schedule, async (c) => {
   const currentWeekType = (await fetch(
     "http://localhost:3001/api/hono/openapi/general/getTypeOfWeek",
   ).then((res) => res.text())) as any;
+  const scheduleResponse = generateDaysList(currentWeekType, data as any);
+
+  if (scheduleResponse.length) {
+    c.header("Cache-Control", `max-age=${getTimeToEndOfWeek()}`);
+  }
 
   return c.json({
     uniqueList: [],
-    schedule: generateDaysList(currentWeekType, data as any),
+    schedule: scheduleResponse,
   });
 });
 

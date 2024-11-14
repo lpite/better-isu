@@ -5,6 +5,7 @@ import fetchAndDecode from "../utils/fetchAndDecode";
 import { cacheClient } from "../utils/memcached";
 import { db } from "../utils/db";
 import { sql } from "kysely";
+import { getTimeToEndOfWeek } from "../utils/getTimeToEndOfWeek";
 
 export const generalRouter = new OpenAPIHono<{
   Variables: { session: Session };
@@ -52,6 +53,7 @@ generalRouter.openapi(getTypeOfWeek, async (c) => {
     response = "bottom";
   }
   cacheClient.set("week_type", response, { lifetime: 60 * 60 });
+  c.header("Cache-Control", `max-age=${getTimeToEndOfWeek()}`);
   return c.text(response);
 });
 

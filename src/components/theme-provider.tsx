@@ -48,6 +48,29 @@ export function ThemeProvider({
     root.classList.add(theme);
   }, [theme]);
 
+  function themeListener() {
+    if (theme === "system") {
+      const root = window.document.documentElement;
+
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+        .matches
+        ? "dark"
+        : "light";
+      root.classList.remove("light", "dark");
+      root.classList.add(systemTheme);
+    }
+  }
+
+  useEffect(() => {
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", themeListener);
+    return () =>
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .removeEventListener("change", themeListener);
+  }, []);
+
   const value = {
     theme,
     setTheme: (theme: Theme) => {

@@ -204,6 +204,7 @@ function generateDaysList(
     { date: "08.11", type: "up", day: "Вт" },
     { date: "15.11", type: "up", day: "Ср" },
     { date: "22.11", type: "up", day: "Чт" },
+    { date: "29.11", type: "bottom", day: "Пн" },
   ];
 
   const date = new Date();

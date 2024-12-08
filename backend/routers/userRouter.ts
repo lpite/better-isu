@@ -274,6 +274,7 @@ function generateDaysList(
             name: el.name,
             auditory: el.auditory,
             teacherShortName: el.teacherShortName,
+            teacherFullName: el.teacherFullName,
           };
         }),
     });

@@ -9,7 +9,10 @@ import {
   ArrowLongRightIcon,
 } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
-import { GetUserSchedule200 } from "../../orval/model";
+import {
+  GetUserSchedule200,
+  GetUserSchedule200ScheduleItemListItem,
+} from "../../orval/model";
 import { GetUserIndividualPlanQueryResult } from "../../orval/default/default";
 
 type ScheduleCarouselProps = {
@@ -99,22 +102,37 @@ export default function ScheduleCarousel({
             </div>
             {list
               ?.filter(({ name }) => isEnabled(name))
-              .map(({ name, auditory, number, teacherShortName }) => (
-                <div
-                  key={date + number + name}
-                  className="border border-solid border-slate-300 dark:border-slate-600 p-2 rounded-lg mb-1.5"
-                >
-                  <div className="flex justify-between text-slate-300">
-                    <span>{number}</span>
-                    <span>{auditory}</span>
-                  </div>
-                  <div className="text-slate-950 dark:text-white">{name}</div>
-                  <div>{teacherShortName}</div>
-                </div>
-              ))}
+              .map((item) => <ScheduleItem {...item} date={date} />)}
           </CarouselItem>
         ))}
       </CarouselContent>
     </Carousel>
+  );
+}
+
+function ScheduleItem({
+  name,
+  auditory,
+  number,
+  teacherShortName,
+  teacherFullName,
+  date,
+}: GetUserSchedule200ScheduleItemListItem & { date: string }) {
+  const [showFullName, setShowFullName] = useState(false);
+
+  return (
+    <div
+      key={date + number + name}
+      className="border border-solid border-slate-300 dark:border-slate-600 p-2 rounded-lg mb-1.5"
+    >
+      <div className="flex justify-between text-slate-300">
+        <span>{number}</span>
+        <span>{auditory}</span>
+      </div>
+      <div className="text-slate-950 dark:text-white">{name}</div>
+      <div onClick={() => setShowFullName(!showFullName)}>
+        {showFullName ? teacherFullName : teacherShortName}
+      </div>
+    </div>
   );
 }

@@ -167,7 +167,7 @@ const scheduleTimes: Record<string, string> = {
   "7": "17:45 - 19:05",
   "8": "19:20 - 20:40",
 };
-function generateDaysList(
+export function generateDaysList(
   weekType: "up" | "bottom",
   schedule: Record<string, string>[],
 ) {

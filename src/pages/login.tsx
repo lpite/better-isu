@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { API_URL } from "@/config";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetAuthSession } from "../../orval/default/default";
+import loginPageParser from "@/data/loginPageParser";
+import { useAppStore } from "@/stores/useAppStore";
 
 export default function LoginPage() {
   const router = useNavigate();
@@ -13,50 +13,46 @@ export default function LoginPage() {
     login: "",
     password: "",
   });
-  const {
-    data: session,
-    isLoading: isLoadingSession,
-    isValidating: isValidatingSession,
-  } = useGetAuthSession({
-    swr: {
-      dedupingInterval: 0,
-    },
-  });
-
-  useEffect(() => {
-    if (!isLoadingSession && !isValidatingSession && session?.data) {
-      console.log(session.data);
-      router("/");
-    }
-  }, [router, isLoadingSession, isValidatingSession, session]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setIsLoading(true);
 
-    const res: any | undefined = await fetch(API_URL + "/api/hono/login", {
-      method: "POST",
-      body: JSON.stringify(credentials),
-      headers: {
-        "Content-Type": "application/json",
+    const res = await fetch(
+      "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/logon.php",
+      {
+        method: "POST",
+        body: `login=${credentials.login}&passwd=${credentials.password}&btnSubmit=%D3%E2%B3%E9%F2%E8`,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       },
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .finally(() => {
-        setIsLoading(false);
-      });
+    ).finally(() => {
+      setIsLoading(false);
+    });
 
-    if (res?.error) {
-      setError(res.error);
-    }
-
-    if (res?.data || res?.error === "already") {
+    const result = await loginPageParser(res);
+    const cookie = document.cookie
+      .split(";")
+      .find((el) => el.startsWith("isu_cookie"))
+      ?.replace("isu_cookie=", "");
+    if (result.success && cookie) {
+      useAppStore.setState((state) => ({
+        ...state,
+        session: {
+          token: cookie.toString(),
+          created_at: new Date(),
+        },
+        user: {
+          login: credentials.login,
+          password: credentials.password,
+        },
+      }));
       router("/");
+      return;
     }
+    setError(result.error || "");
   }
-
-  useEffect(() => {}, [session]);
 
   return (
     <main className="flex justify-center items-center h-full">

@@ -1,4 +1,3 @@
-import { db } from "./db";
 import { getGroup } from "./getGroups";
 
 type ScheduleItem = {
@@ -28,17 +27,15 @@ type ScheduleItem = {
   isSubGroup: string;
 };
 
-export default async function getScheduleByApi(user_id: number) {
-  const user = await db
-    .selectFrom("user")
-    .select(["group_id", "faculty_id", "course"])
-    .where("user.id", "=", user_id)
-    .executeTakeFirstOrThrow();
-
+export default async function getScheduleByApi(
+  group_id: number,
+  faculty_id: number,
+  course: string,
+) {
   const formDataWithKey = new FormData();
   formDataWithKey.append("schedAppKey", process.env.ISU_API_KEY || "");
 
-  const group = await getGroup(user.group_id, user.faculty_id, user.course);
+  const group = await getGroup(group_id, faculty_id, course);
 
   if (!group) {
     console.error("can`t find user group");
@@ -48,7 +45,7 @@ export default async function getScheduleByApi(user_id: number) {
   let studYear = new Date().getFullYear();
   let currentSemester = "1";
 
-  if (group.currSem % 2 === 0) {
+  if (group.currSem % 2 !== 0) {
     studYear--;
     currentSemester = "2";
   }
@@ -56,7 +53,7 @@ export default async function getScheduleByApi(user_id: number) {
   formDataWithKey.append("groupId", group.groupId.toString());
   formDataWithKey.append("studyYear", studYear.toString());
   formDataWithKey.append("semester", currentSemester);
-
+  console.log(formDataWithKey)
   const schedule = (await fetch(
     "https://isu1.khmnu.edu.ua/isu/pub/api/v1/getScheduleForGroup.php",
     {
@@ -65,7 +62,10 @@ export default async function getScheduleByApi(user_id: number) {
     },
   )
     .then((res) => res.json())
-    .catch((_) => [])) as ScheduleItem[];
+    .catch((err) => {
+      console.error(err);
+      return [];
+    })) as ScheduleItem[];
 
   const pairTypes = ["full", "up", "bottom"];
   const studyTypes = ["", "лекц.", "пр.", "лаб."];

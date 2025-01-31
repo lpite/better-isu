@@ -6,22 +6,19 @@ import BottomNavigation from "@/components/bottom-navigation";
 import ScheduleCarousel from "@/components/schedule-carousel";
 import JournalsList from "@/components/journals-list";
 import ProtectedRoute from "@/components/protected-route";
-import {
-  useGetUserIndividualPlan,
-  useGetUserProfile,
-  useGetUserSchedule,
-  useGetUserSubjects,
-} from "../../orval/default/default";
+
+import { useAppStore } from "@/stores/useAppStore";
+import { useProfile } from "@/hooks/useProfile";
+import { useSchedule } from "@/hooks/useSchedule";
+import { useIndividualPlan } from "@/hooks/useIndividualPlan";
 
 export default function MainPage() {
   const [page, setPage] = useState<"schedule" | "journals">("schedule");
-
-  const { data: profile } = useGetUserProfile();
-  const { data: schedule, isLoading: isLoadingSchedule } = useGetUserSchedule();
-  const { data: subjects } = useGetUserSubjects();
-  const { data: individualPlan, isLoading: isLoadingIndividualPlan } =
-    useGetUserIndividualPlan();
-
+  const { subjects } = useAppStore();
+  const { data: schedule, isLoading: isLoadingSchedule } = useSchedule();
+  const { data: individualPlan, mutate,isLoading:isLoadingIndividualPlan } = useIndividualPlan();
+  const { data: profile } = useProfile();
+  console.log(schedule);
   return (
     <>
       <ProtectedRoute />
@@ -30,6 +27,7 @@ export default function MainPage() {
         <h1 className="font-semibold text-3xl text-slate-950 dark:text-white">
           Привіт, {profile?.name}!
         </h1>
+        <button onClick={() => mutate()}>1231231</button>
         <div className="flex pt-2.5 gap-1.5">
           <button
             onMouseDown={() => setPage("schedule")}

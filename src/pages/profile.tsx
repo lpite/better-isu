@@ -2,10 +2,13 @@ import BottomNavigation from "@/components/bottom-navigation";
 import HeaderWithBurger from "@/components/header-with-burger";
 import { AcademicCapIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
-import { useGetUserProfile } from "../../orval/default/default";
+import { useProfile } from "@/hooks/useProfile";
+import { useGroup } from "@/hooks/useGroup";
 
 export default function ProfilePage() {
-  const { data: profile } = useGetUserProfile();
+  const { data: profile } = useProfile();
+  const { data: group } = useGroup({groupName:profile?.group,course:profile?.course,facultyName:profile?.faculty});
+
   return (
     <>
       <HeaderWithBurger />
@@ -17,7 +20,7 @@ export default function ProfilePage() {
         <span>{profile?.faculty}</span>
         <span>{profile?.speciality}</span>
         <span>Група: {profile?.group}</span>
-        <span>Куратор: -</span>
+        <span>Куратор: {group.curatorName}</span>
         <span>Курс: {profile?.course}</span>
 
         <Link

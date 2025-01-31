@@ -1,5 +1,5 @@
 export const config = {
-  // runtime: "edge",
+  runtime: "edge",
   api: {
     bodyParser: false,
   },
@@ -97,6 +97,7 @@ app.get("/proxy", async (c) => {
     },
     credentials: "include",
     redirect: "manual",
+    mode:"no-cors"
   })
     .then((r) => r.arrayBuffer())
     .then((r) => decoder.decode(r))
@@ -127,6 +128,7 @@ app.post("/proxy", async (c) => {
     },
     credentials: "include",
     redirect: "manual",
+    mode:"no-cors"
   });
 
   const pageText = await response

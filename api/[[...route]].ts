@@ -91,13 +91,12 @@ app.get("/proxy", async (c) => {
   if (!url) {
     return c.text("");
   }
-  const r = await fetch(url, {
+  const r = await fetch(url.replace("https","http"), {
     headers: {
       Cookie: auth ? "PHPSESSID=" + auth : "",
     },
     credentials: "include",
     redirect: "manual",
-    mode:"no-cors"
   })
     .then((r) => r.arrayBuffer())
     .then((r) => decoder.decode(r))
@@ -118,7 +117,7 @@ app.post("/proxy", async (c) => {
 
   const body = await c.req.formData();
 
-  const response = fetch(url, {
+  const response = fetch(url.replace("https","http"), {
     method: "POST",
     //@ts-ignore
     body: new URLSearchParams(body).toString(),
@@ -128,7 +127,6 @@ app.post("/proxy", async (c) => {
     },
     credentials: "include",
     redirect: "manual",
-    mode:"no-cors"
   });
 
   const pageText = await response

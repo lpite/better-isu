@@ -1,9 +1,10 @@
 export const config = {
-  runtime: "edge",
+  // runtime: "edge",
   api: {
     bodyParser: false,
   },
 };
+console.log(process.env)
 const decoder = new TextDecoder("windows-1251");
 import getScheduleByApi from "../backend/utils/getScheduleByApi";
 import getFacultets from "../backend/utils/getFacultets";

@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { useGetAuthSession } from "../../orval/default/default";
 import { useEffect } from "react";
 import { useAppStore } from "@/stores/useAppStore";
 

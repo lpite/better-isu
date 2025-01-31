@@ -22,7 +22,7 @@ interface Store {
 
 export const useAppStore = create<Store>()(
 	persist(
-		devtools((...args) => ({
+		devtools(() => ({
 			user: undefined,
 			session: undefined,
 		})),

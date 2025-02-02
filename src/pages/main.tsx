@@ -14,20 +14,36 @@ import { useIndividualPlan } from "@/hooks/useIndividualPlan";
 
 export default function MainPage() {
   const [page, setPage] = useState<"schedule" | "journals">("schedule");
-  const { subjects } = useAppStore();
+  const { subjects, session } = useAppStore();
   const { data: schedule, isLoading: isLoadingSchedule } = useSchedule();
-  const { data: individualPlan, mutate,isLoading:isLoadingIndividualPlan } = useIndividualPlan();
+  const {
+    data: individualPlan,
+    mutate,
+    isLoading: isLoadingIndividualPlan,
+  } = useIndividualPlan();
   const { data: profile } = useProfile();
-  console.log(schedule);
   return (
     <>
       <ProtectedRoute />
       <HeaderWithBurger />
       <main className="px-4 pt-20 h-full overflow-hidden flex flex-col">
+        <div>
+          <button onClick={() => mutate()} className="border-2 px-4 py-2 m-2">
+            ind plan
+          </button>
+          <button
+            onClick={() =>
+              useAppStore.setState({ user: undefined, session: undefined })
+            }
+            className="border-2 px-4 py-2 m-2"
+          >
+            reset
+          </button>
+          <span>session created {session?.created_at?.toLocaleString()}</span>
+        </div>
         <h1 className="font-semibold text-3xl text-slate-950 dark:text-white">
           Привіт, {profile?.name}!
         </h1>
-        <button onClick={() => mutate()}>1231231</button>
         <div className="flex pt-2.5 gap-1.5">
           <button
             onMouseDown={() => setPage("schedule")}
@@ -44,7 +60,7 @@ export default function MainPage() {
         </div>
         {page === "schedule" ? (
           <ScheduleCarousel
-            schedule={schedule?.schedule}
+            schedule={schedule || []}
             isLoadingSchedule={isLoadingSchedule}
             individualPlan={individualPlan}
             isLoadingIndividualPlan={isLoadingIndividualPlan}

@@ -3,14 +3,14 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import MainPage from "./pages/main.tsx";
-import ProfilePage from "./pages/profile.tsx";
-import AppearancePage from "./pages/appearance.tsx";
-import AboutPage from "./pages/about.tsx";
-import RatingPage from "./pages/rating.tsx";
-import { ThemeProvider } from "./components/theme-provider.tsx";
-import LoginPage from "./pages/login.tsx";
-import JournalPage from "./pages/journal.tsx";
+import MainPage from "./pages/main";
+import ProfilePage from "./pages/profile";
+import AppearancePage from "./pages/appearance";
+import AboutPage from "./pages/about";
+import RatingPage from "./pages/rating";
+import { ThemeProvider } from "./components/theme-provider";
+import LoginPage from "./pages/login";
+import JournalPage from "./pages/journal";
 import { SWRConfig } from "swr";
 
 const router = createBrowserRouter([

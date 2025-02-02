@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
-    "@hono/node-server": "^1.13.2",
+    "@hono/node-server": "^1.13.8",
     "@hono/zod-openapi": "^0.16.4",
     "@hono/zod-validator": "^0.4.2",
     "@radix-ui/react-dialog": "^1.1.2",
@@ -26,7 +26,8 @@
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
     "embla-carousel-react": "^8.3.0",
-    "hono": "^4.6.7",
+    "hono": "^4.6.20",
+    "http-proxy": "^1.18.1",
     "kysely": "^0.27.4",
     "kysely-postgres-js": "^2.0.0",
     "memcache-client": "^1.0.5",
@@ -44,12 +45,14 @@
     "zustand": "^5.0.2"
   },
   "devDependencies": {
+    "@types/http-proxy": "^1.17.15",
     "@types/node": "^22.7.8",
     "@types/pg": "^8.11.10",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
+    "@vercel/node": "^5.1.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "ajv": "^8.17.1",
     "autoprefixer": "^10.4.20",

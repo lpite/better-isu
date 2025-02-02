@@ -81,30 +81,30 @@ export default function ScheduleCarousel({
       );
     }
   }, [individualPlan]);
-
   return (
     <Carousel setApi={setApi} className="overflow-auto mb-14">
       <CarouselContent>
-        {schedule?.map(({ date, month, type, list, weekDay }) => (
-          <CarouselItem key={date + month + weekDay}>
-            <div className="flex items-center justify-between pt-3.5 pb-2.5 text-blue-900 dark:text-blue-300">
-              <span>
-                {date} {month} {weekDay} ({type})
-              </span>
-              <div className="flex gap-5 ">
-                <button onMouseDown={() => api?.scrollPrev()}>
-                  <ArrowLongLeftIcon width={24} />
-                </button>
-                <button onMouseDown={() => api?.scrollNext()}>
-                  <ArrowLongRightIcon width={24} />
-                </button>
+        {schedule &&
+          schedule?.map(({ date, month, type, list, weekDay }) => (
+            <CarouselItem key={date + month + weekDay}>
+              <div className="flex items-center justify-between pt-3.5 pb-2.5 text-blue-900 dark:text-blue-300">
+                <span>
+                  {date} {month} {weekDay} ({type})
+                </span>
+                <div className="flex gap-5 ">
+                  <button onMouseDown={() => api?.scrollPrev()}>
+                    <ArrowLongLeftIcon width={24} />
+                  </button>
+                  <button onMouseDown={() => api?.scrollNext()}>
+                    <ArrowLongRightIcon width={24} />
+                  </button>
+                </div>
               </div>
-            </div>
-            {list
-              ?.filter(({ name }) => isEnabled(name))
-              .map((item) => <ScheduleItem {...item} date={date} />)}
-          </CarouselItem>
-        ))}
+              {list
+                ?.filter(({ name }) => isEnabled(name))
+                .map((item) => <ScheduleItem {...item} date={date} />)}
+            </CarouselItem>
+          ))}
       </CarouselContent>
     </Carousel>
   );

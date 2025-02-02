@@ -1,17 +1,17 @@
 import HeaderWithLabel from "@/components/header-with-label";
-import {
-  useGetUserProfile,
-  useGetUserRating,
-} from "../../orval/default/default";
+// import {
+//   useGetUserProfile,
+//   useGetUserRating,
+// } from "../../orval/default/default";
 
 export default function RatingPage() {
-  const { data: rating } = useGetUserRating();
-  const { data: profile } = useGetUserProfile();
+  // const { data: rating } = useGetUserRating();
+  // const { data: profile } = useGetUserProfile();
 
   return (
     <>
       <HeaderWithLabel pageName="Рейтинг" />
-      <main className="px-4 mt-8 pb-24 h-full overflow-auto">
+      {/* <main className="px-4 mt-8 pb-24 h-full overflow-auto">
         {rating?.map(({ name, surname }, i) => (
           <div
             key={i}
@@ -20,7 +20,7 @@ export default function RatingPage() {
             {i + 1}. {name} {surname}
           </div>
         ))}
-      </main>
+      </main> */}
     </>
   );
 }

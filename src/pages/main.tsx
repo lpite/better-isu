@@ -27,7 +27,7 @@ export default function MainPage() {
       <ProtectedRoute />
       <HeaderWithBurger />
       <main className="px-4 pt-20 h-full overflow-hidden flex flex-col">
-        <div>
+        <div className="fixed top-2">
           <button onClick={() => mutate()} className="border-2 px-4 py-2 m-2">
             ind plan
           </button>

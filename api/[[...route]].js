@@ -264,6 +264,7 @@ module.exports = async (req, res) => {
     }
     const groups = await getGroups(faculty.facultyId, course);
     const group = groups.find((el) => el.groupName === groupName);
+    group.currSem = group.currSem + 1;
     return res.send(JSON.stringify(group));
   }
 

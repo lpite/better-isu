@@ -49,9 +49,10 @@ const router = createBrowserRouter([
 ]);
 
 function localStorageProvider() {
+  const cacheVersion = "1.0";
   // When initializing, we restore the data from `localStorage` into a map.
   const map = new Map<any, any>(
-    JSON.parse(localStorage.getItem("app-cache") || "[]"),
+    JSON.parse(localStorage.getItem("app-cache_" + cacheVersion) || "[]"),
   );
 
   // Before unloading the app, we write back all the data into `localStorage`.

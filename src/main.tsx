@@ -50,15 +50,16 @@ const router = createBrowserRouter([
 
 function localStorageProvider() {
   const cacheVersion = "1.0";
+  const cacheKey = "app-cache_" + cacheVersion;
   // When initializing, we restore the data from `localStorage` into a map.
   const map = new Map<any, any>(
-    JSON.parse(localStorage.getItem("app-cache_" + cacheVersion) || "[]"),
+    JSON.parse(localStorage.getItem(cacheKey) || "[]"),
   );
 
   // Before unloading the app, we write back all the data into `localStorage`.
   window.addEventListener("beforeunload", () => {
     const appCache = JSON.stringify(Array.from(map.entries()));
-    localStorage.setItem("app-cache", appCache);
+    localStorage.setItem(cacheKey, appCache);
   });
 
   // We still use the map for write & read for performance.

@@ -7,7 +7,11 @@ import { useGroup } from "@/hooks/useGroup";
 
 export default function ProfilePage() {
   const { data: profile } = useProfile();
-  const { data: group } = useGroup({groupName:profile?.group,course:profile?.course,facultyName:profile?.faculty});
+  const { data: group } = useGroup({
+    groupName: profile?.group,
+    course: profile?.course,
+    facultyName: profile?.faculty,
+  });
 
   return (
     <>
@@ -20,7 +24,7 @@ export default function ProfilePage() {
         <span>{profile?.faculty}</span>
         <span>{profile?.speciality}</span>
         <span>Група: {profile?.group}</span>
-        <span>Куратор: {group.curatorName}</span>
+        <span>Куратор: {group?.curatorName}</span>
         <span>Курс: {profile?.course}</span>
 
         <Link

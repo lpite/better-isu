@@ -4,7 +4,7 @@ import useSWR from "swr";
 
 export function useProfile() {
 	const { session } = useAppStore();
-	return useSWR("/profile/", () => getProfilePage(session?.token || ""), {
+	return useSWR("profile", () => getProfilePage(session?.token || ""), {
 		revalidateOnFocus: false,
 		revalidateIfStale: false,
 	});

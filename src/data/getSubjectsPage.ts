@@ -75,7 +75,7 @@ export async function getSubjectsPage(token: string = "") {
     let elementInRow = 0;
     let currentRow: Record<string, string> = {};
 
-    tableElements.forEach((el, i) => {
+    tableElements.forEach((el) => {
       if (elementInRow === 6) {
         const date = new Date();
         let currentYearString = `${date.getFullYear()}-${date.getFullYear() + 1}`;

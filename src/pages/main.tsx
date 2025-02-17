@@ -11,6 +11,7 @@ import { useAppStore } from "@/stores/useAppStore";
 import { useProfile } from "@/hooks/useProfile";
 import { useSchedule } from "@/hooks/useSchedule";
 import { useIndividualPlan } from "@/hooks/useIndividualPlan";
+import { useSession } from "@/hooks/useSession";
 
 export default function MainPage() {
   const [page, setPage] = useState<"schedule" | "journals">("schedule");
@@ -22,6 +23,7 @@ export default function MainPage() {
     isLoading: isLoadingIndividualPlan,
   } = useIndividualPlan();
   const { data: profile } = useProfile();
+  const _ = useSession()
   return (
     <>
       <ProtectedRoute />

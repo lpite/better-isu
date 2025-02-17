@@ -11,10 +11,11 @@ import { useAppStore } from "@/stores/useAppStore";
 import { useProfile } from "@/hooks/useProfile";
 import { useSchedule } from "@/hooks/useSchedule";
 import { useIndividualPlan } from "@/hooks/useIndividualPlan";
+import { useSubjects } from "@/hooks/useSubjects";
 
 export default function MainPage() {
   const [page, setPage] = useState<"schedule" | "journals">("schedule");
-  const { subjects, session } = useAppStore();
+  const { session } = useAppStore();
   const { data: schedule, isLoading: isLoadingSchedule } = useSchedule();
   const {
     data: individualPlan,
@@ -22,15 +23,14 @@ export default function MainPage() {
     isLoading: isLoadingIndividualPlan,
   } = useIndividualPlan();
   const { data: profile } = useProfile();
+  // const { data: subjects } = useSubjects();
+
   return (
     <>
       <ProtectedRoute />
       <HeaderWithBurger />
       <main className="px-4 pt-20 h-full overflow-hidden flex flex-col">
         <div className="fixed top-2">
-          <button onClick={() => mutate()} className="border-2 px-4 py-2 m-2">
-            ind plan
-          </button>
           <button
             onClick={() =>
               useAppStore.setState({ user: undefined, session: undefined })
@@ -39,7 +39,6 @@ export default function MainPage() {
           >
             reset
           </button>
-          <span>session created {session?.created_at?.toLocaleString()}</span>
         </div>
         <h1 className="font-semibold text-3xl text-slate-950 dark:text-white">
           Привіт, {profile?.name}!
@@ -66,7 +65,10 @@ export default function MainPage() {
             isLoadingIndividualPlan={isLoadingIndividualPlan}
           />
         ) : null}
-        {page === "journals" ? <JournalsList journals={subjects} /> : null}
+        {page === "journals" ? (
+          <div>meow meow</div>
+        ) : // <JournalsList journals={subjects || []} />
+        null}
       </main>
       <BottomNavigation />
     </>

@@ -16,23 +16,38 @@ import { useSession } from "@/hooks/useSession";
 export default function MainPage() {
   const [page, setPage] = useState<"schedule" | "journals">("schedule");
   const { subjects, session } = useAppStore();
-  const { data: schedule, isLoading: isLoadingSchedule } = useSchedule();
+  const {
+    data: schedule,
+    isLoading: isLoadingSchedule,
+    isValidating: isValidatingSchedule,
+  } = useSchedule();
   const {
     data: individualPlan,
     mutate,
     isLoading: isLoadingIndividualPlan,
   } = useIndividualPlan();
   const { data: profile } = useProfile();
-  const _ = useSession()
+  const _ = useSession();
+  console.log(isLoadingSchedule);
   return (
     <>
       <ProtectedRoute />
       <HeaderWithBurger />
+      {isLoadingSchedule ? (
+        <div className="absolute w-full h-full flex items-center justify-center bg-black bg-opacity-70 z-10 opacity-0 fade-in-with-delay">
+          <video
+            autoPlay
+            muted
+            src="/balamute.mp4"
+            className="h-3/6  z-10 rounded-xl  "
+          ></video>
+          <span className="absolute z-10 w-32 text-center text-lg">
+            Відбувається завантаження
+          </span>
+        </div>
+      ) : null}
       <main className="px-4 pt-20 h-full overflow-hidden flex flex-col">
         <div className="fixed top-2">
-          <button onClick={() => mutate()} className="border-2 px-4 py-2 m-2">
-            ind plan
-          </button>
           <button
             onClick={() =>
               useAppStore.setState({ user: undefined, session: undefined })
@@ -63,7 +78,8 @@ export default function MainPage() {
         {page === "schedule" ? (
           <ScheduleCarousel
             schedule={schedule || []}
-            isLoadingSchedule={isLoadingSchedule}
+            // isLoadingSchedule={isLoadingSchedule || isValidatingSchedule}
+            isLoadingSchedule={true}
             individualPlan={individualPlan}
             isLoadingIndividualPlan={isLoadingIndividualPlan}
           />

@@ -17,7 +17,7 @@ export function useSchedule() {
     {
       revalidateIfStale: true,
       revalidateOnFocus: true,
-      // revalidateOnMount: false,
+      revalidateOnMount: true,
       onError: () => {},
     },
   );

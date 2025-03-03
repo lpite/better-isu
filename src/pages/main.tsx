@@ -11,6 +11,7 @@ import { useAppStore } from "@/stores/useAppStore";
 import { useProfile } from "@/hooks/useProfile";
 import { useSchedule } from "@/hooks/useSchedule";
 import { useIndividualPlan } from "@/hooks/useIndividualPlan";
+
 import { useSession } from "@/hooks/useSession";
 
 export default function MainPage() {
@@ -21,14 +22,17 @@ export default function MainPage() {
     isLoading: isLoadingSchedule,
     isValidating: isValidatingSchedule,
   } = useSchedule();
+
   const {
     data: individualPlan,
     mutate,
     isLoading: isLoadingIndividualPlan,
   } = useIndividualPlan();
   const { data: profile } = useProfile();
+
   const _ = useSession();
   console.log(isLoadingSchedule);
+
   return (
     <>
       <ProtectedRoute />
@@ -56,7 +60,6 @@ export default function MainPage() {
           >
             reset
           </button>
-          <span>session created {session?.created_at?.toLocaleString()}</span>
         </div>
         <h1 className="font-semibold text-3xl text-slate-950 dark:text-white">
           Привіт, {profile?.name}!
@@ -84,7 +87,10 @@ export default function MainPage() {
             isLoadingIndividualPlan={isLoadingIndividualPlan}
           />
         ) : null}
-        {page === "journals" ? <JournalsList journals={subjects} /> : null}
+        {page === "journals" ? (
+          <div>meow meow</div>
+        ) : // <JournalsList journals={subjects || []} />
+        null}
       </main>
       <BottomNavigation />
     </>

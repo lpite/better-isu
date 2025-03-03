@@ -12,6 +12,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import LoginPage from "./pages/login";
 import JournalPage from "./pages/journal";
 import { SWRConfig } from "swr";
+import LoadingIndicators from "./components/loading-indicators";
 
 const router = createBrowserRouter([
   {
@@ -70,6 +71,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <SWRConfig value={{ provider: localStorageProvider }}>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+          <LoadingIndicators/>
         <RouterProvider router={router} />
       </ThemeProvider>
     </SWRConfig>

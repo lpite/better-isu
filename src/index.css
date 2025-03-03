@@ -87,3 +87,19 @@ body {
 * {
   font-family: "Roboto", serif;
 }
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.fade-in-with-delay {
+  animation-name: fade-in;
+  animation-delay: 300ms;
+  animation-duration: 1000ms;
+  animation-fill-mode: forwards;
+}

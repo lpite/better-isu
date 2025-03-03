@@ -11,24 +11,45 @@ import { useAppStore } from "@/stores/useAppStore";
 import { useProfile } from "@/hooks/useProfile";
 import { useSchedule } from "@/hooks/useSchedule";
 import { useIndividualPlan } from "@/hooks/useIndividualPlan";
-import { useSubjects } from "@/hooks/useSubjects";
+
+import { useSession } from "@/hooks/useSession";
 
 export default function MainPage() {
   const [page, setPage] = useState<"schedule" | "journals">("schedule");
-  const { session } = useAppStore();
-  const { data: schedule, isLoading: isLoadingSchedule } = useSchedule();
+  const { subjects, session } = useAppStore();
+  const {
+    data: schedule,
+    isLoading: isLoadingSchedule,
+    isValidating: isValidatingSchedule,
+  } = useSchedule();
+
   const {
     data: individualPlan,
     mutate,
     isLoading: isLoadingIndividualPlan,
   } = useIndividualPlan();
   const { data: profile } = useProfile();
-  // const { data: subjects } = useSubjects();
+
+  const _ = useSession();
+  console.log(isLoadingSchedule);
 
   return (
     <>
       <ProtectedRoute />
       <HeaderWithBurger />
+      {isLoadingSchedule ? (
+        <div className="absolute w-full h-full flex items-center justify-center bg-black bg-opacity-70 z-10 opacity-0 fade-in-with-delay">
+          <video
+            autoPlay
+            muted
+            src="/balamute.mp4"
+            className="h-3/6  z-10 rounded-xl  "
+          ></video>
+          <span className="absolute z-10 w-32 text-center text-lg">
+            Відбувається завантаження
+          </span>
+        </div>
+      ) : null}
       <main className="px-4 pt-20 h-full overflow-hidden flex flex-col">
         <div className="fixed top-2">
           <button
@@ -60,7 +81,8 @@ export default function MainPage() {
         {page === "schedule" ? (
           <ScheduleCarousel
             schedule={schedule || []}
-            isLoadingSchedule={isLoadingSchedule}
+            // isLoadingSchedule={isLoadingSchedule || isValidatingSchedule}
+            isLoadingSchedule={true}
             individualPlan={individualPlan}
             isLoadingIndividualPlan={isLoadingIndividualPlan}
           />

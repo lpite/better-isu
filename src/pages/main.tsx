@@ -13,10 +13,11 @@ import { useSchedule } from "@/hooks/useSchedule";
 import { useIndividualPlan } from "@/hooks/useIndividualPlan";
 
 import { useSession } from "@/hooks/useSession";
+import { useSubjects } from "@/hooks/useSubjects";
 
 export default function MainPage() {
   const [page, setPage] = useState<"schedule" | "journals">("schedule");
-  const { subjects, session } = useAppStore();
+  const { session } = useAppStore();
   const {
     data: schedule,
     isLoading: isLoadingSchedule,
@@ -32,7 +33,7 @@ export default function MainPage() {
 
   const _ = useSession();
   console.log(isLoadingSchedule);
-
+  const { data: subjects } = useSubjects();
   return (
     <>
       <ProtectedRoute />
@@ -88,9 +89,8 @@ export default function MainPage() {
           />
         ) : null}
         {page === "journals" ? (
-          <div>meow meow</div>
-        ) : // <JournalsList journals={subjects || []} />
-        null}
+          <JournalsList journals={subjects || []} />
+        ) : null}
       </main>
       <BottomNavigation />
     </>

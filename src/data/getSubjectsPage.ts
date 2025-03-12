@@ -36,9 +36,8 @@ export async function getSubjectsPage(token: string = "") {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       },
-    )
-      .then((res) => res.arrayBuffer())
-      .then((res) => decoder.decode(res));
+    ).then((res) => res.text());
+    // .then((res) => decoder.decode(res));
 
     if (!secondPage) {
       console.error("no eduplans page 2");
@@ -67,14 +66,12 @@ export async function getSubjectsPage(token: string = "") {
 
       return [];
     }
-
     const currentSemester =
-      secondPageHtml?.querySelectorAll("[color=blue]")[1]?.textContent;
+      secondPageHtml?.querySelectorAll("[color=blue]")[0]?.textContent;
 
     let tabNo = 6;
     let elementInRow = 0;
     let currentRow: Record<string, string> = {};
-
     tableElements.forEach((el) => {
       if (elementInRow === 6) {
         const date = new Date();
@@ -189,10 +186,10 @@ export async function getSubjectsPage(token: string = "") {
       }
     }
     let thirdPageBody = `mode=SubTable&key=${tableKey}&ref=&sort=&FieldChoice=&TabNo=${tabNo}&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=20&RecsDeleted=0&RecsCount=4&KeyStr=${keyStr}&TabStr=0%7C%7E%7C2&PgNoStr=1%7C%7E%7C&PgSzStr=200%7C%7E%7C&FilterStr=%7C%7E%7C&FieldChoiceStr=%7C%7E%7C&SortStr=%7C%7E%7C&ModeStr=%7C%7E%7CSubTable&FieldStr=&ChildStr=&ParamStr=${paramStr}`;
-    // thirdPageBody = thirdPageBody.replaceAll("^", "%5E");
-    // thirdPageBody = thirdPageBody.replaceAll("|", "%7C");
-    // thirdPageBody = thirdPageBody.replaceAll("@", "%40");
-    // thirdPageBody = thirdPageBody.replaceAll("~", "%7E");
+    thirdPageBody = thirdPageBody.replaceAll("^", "%5E");
+    thirdPageBody = thirdPageBody.replaceAll("|", "%7C");
+    //thirdPageBody = thirdPageBody.replaceAll("@", "%40");
+    thirdPageBody = thirdPageBody.replaceAll("~", "%7E");
     const thirdPage = await fetch(
       "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php",
       {
@@ -203,9 +200,7 @@ export async function getSubjectsPage(token: string = "") {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       },
-    )
-      .then((res) => res.arrayBuffer())
-      .then((res) => decoder.decode(res));
+    ).then((res) => res.text());
 
     const thirdPageHtml = parse(thirdPage);
     const subjects = Array.from(

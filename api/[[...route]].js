@@ -74,11 +74,12 @@ async function getScheduleByApi(groupId, currSem, faculty_id, course) {
   let studYear = new Date().getFullYear();
   let currentSemester = "1";
 
-  if (currSem % 2 !== 0) {
+  /* про що я думав це цирк ??*/
+  if (currSem % 2 === 0) {
     studYear--;
     currentSemester = "2";
   }
-
+  
   formDataWithKey.append("groupId", groupId.toString());
   formDataWithKey.append("studyYear", studYear.toString());
   formDataWithKey.append("semester", currentSemester);

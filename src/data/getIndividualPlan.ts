@@ -1,6 +1,10 @@
 import parse from "node-html-parser";
 
-export default async function getIndividualPlan(token: string,course:string,semester:string) {
+export default async function getIndividualPlan(
+  token: string,
+  course: string,
+  semester: string,
+) {
   const firstPageResponse = await fetch(
     "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php",
     {
@@ -102,7 +106,7 @@ export default async function getIndividualPlan(token: string,course:string,seme
     }
   }
   // return arr;
-    console.log(arr,course,semester)
+  console.log(arr, course, semester);
 
   const currentSemensterPlan = arr.find((el) => {
     const _course = el.studyYear[0];
@@ -113,12 +117,12 @@ export default async function getIndividualPlan(token: string,course:string,seme
     return false;
   });
 
-  if(!currentSemensterPlan?.required || !currentSemensterPlan.selectable){
-    console.error("no currentSemensterPlan")
-    return []
+  if (!currentSemensterPlan?.required || !currentSemensterPlan.selectable) {
+    console.error("no currentSemensterPlan");
+    return [];
   }
   return [
     ...currentSemensterPlan?.required,
     ...currentSemensterPlan?.selectable,
-  ]
+  ];
 }

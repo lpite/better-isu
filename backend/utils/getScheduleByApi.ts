@@ -53,7 +53,7 @@ export default async function getScheduleByApi(
   formDataWithKey.append("groupId", group.groupId.toString());
   formDataWithKey.append("studyYear", studYear.toString());
   formDataWithKey.append("semester", currentSemester);
-  console.log(formDataWithKey)
+  console.log(formDataWithKey);
   const schedule = (await fetch(
     "https://isu1.khmnu.edu.ua/isu/pub/api/v1/getScheduleForGroup.php",
     {

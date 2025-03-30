@@ -9,5 +9,6 @@ export function useRating() {
     onError: (err) => {
       console.error(err);
     },
+    use: [laggy],
   });
 }

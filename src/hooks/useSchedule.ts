@@ -1,5 +1,6 @@
 import useSWR from "swr";
 import { useProfile } from "./useProfile";
+import { laggy } from "@/utils/laggySwr";
 
 export function useSchedule() {
   const { data: profile } = useProfile();

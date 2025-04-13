@@ -79,7 +79,7 @@ async function getScheduleByApi(groupId, currSem, faculty_id, course) {
     studYear--;
     currentSemester = "2";
   }
-  
+
   formDataWithKey.append("groupId", groupId.toString());
   formDataWithKey.append("studyYear", studYear.toString());
   formDataWithKey.append("semester", currentSemester);

@@ -42,13 +42,19 @@ export default function LoadingIndicators() {
       isEverything: state?.isLoading || state?.isValidating || false,
     };
   });
-  const isUpdatingSchedule = loadingStates.filter(el=>el.isEverything).length;
+  const isUpdatingSchedule = loadingStates.filter(
+    (el) => el.isEverything,
+  ).length;
   return (
     <div className="fixed top-6 left-1/2 -translate-x-1/2">
       {isUpdatingSchedule ? (
         <div className="flex gap-2 mt-2 bg-gray-900 px-4 ">
           <div className="h-1 w-1 border-2 border-blue-600 p-2 rounded-full border-b-transparent animate-spin"></div>
-          {loadingStates.filter(el=>el.isEverything).map((state) => getNotificationText(state.key))[0]}
+          {
+            loadingStates
+              .filter((el) => el.isEverything)
+              .map((state) => getNotificationText(state.key))[0]
+          }
         </div>
       ) : null}
     </div>

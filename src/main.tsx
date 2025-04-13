@@ -71,7 +71,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <SWRConfig>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <LoadingIndicators/>
+        <LoadingIndicators />
         <RouterProvider router={router} />
       </ThemeProvider>
     </SWRConfig>

@@ -33,7 +33,6 @@ export default defineConfig({
             options: {
               cacheName: "everything-cache",
               expiration: {
-                maxAgeSeconds: 3600,
               },
               cacheableResponse: {
                 statuses: [0, 200],

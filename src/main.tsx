@@ -69,7 +69,7 @@ function localStorageProvider() {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <SWRConfig value={{ provider: localStorageProvider }}>
+    <SWRConfig>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <LoadingIndicators/>
         <RouterProvider router={router} />

@@ -38,7 +38,7 @@ export default function MainPage() {
     <>
       <ProtectedRoute />
       <HeaderWithBurger />
-      {isLoadingSchedule ? (
+    {/*  {isLoadingSchedule ? (
         <div className="absolute w-full h-full flex items-center justify-center bg-black bg-opacity-70 z-10 opacity-0 fade-in-with-delay">
           <video
             autoPlay
@@ -50,7 +50,7 @@ export default function MainPage() {
             Відбувається завантаження
           </span>
         </div>
-      ) : null}
+      ) : null}*/}
       <main className="px-4 pt-20 h-full overflow-hidden flex flex-col">
         <div className="fixed top-2">
           <button

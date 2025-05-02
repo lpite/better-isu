@@ -39,16 +39,6 @@ export default function MainPage() {
       <ProtectedRoute />
       <HeaderWithBurger />
       <main className="px-4 pt-20 h-full overflow-hidden flex flex-col">
-        <div className="fixed top-2">
-          <button
-            onClick={() =>
-              useAppStore.setState({ user: undefined, session: undefined })
-            }
-            className="border-2 px-4 py-2 m-2"
-          >
-            reset
-          </button>
-        </div>
         <h1 className="font-semibold text-3xl text-slate-950 dark:text-white">
           Привіт, {profile?.name}!
         </h1>

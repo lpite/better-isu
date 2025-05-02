@@ -81,6 +81,15 @@ export default function ScheduleCarousel({
       );
     }
   }, [individualPlan]);
+
+  if (isLoadingSchedule) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="h-8 w-8 mx-2 border border-blue-700 border-t-transparent animate-spin rounded-full inline-block"></div>
+      </div>
+    );
+  }
+
   return (
     <Carousel setApi={setApi} className="overflow-auto mb-14">
       <CarouselContent>
@@ -103,6 +112,9 @@ export default function ScheduleCarousel({
               {list
                 ?.filter(({ name }) => isEnabled(name))
                 .map((item) => <ScheduleItem {...item} date={date} />)}
+              {!list?.filter(({ name }) => isEnabled(name)).length ? (
+                <div className="h-full flex items-center justify-center text-xl">Вихідний :)</div>
+              ) : null}
             </CarouselItem>
           ))}
       </CarouselContent>

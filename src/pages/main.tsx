@@ -24,12 +24,9 @@ export default function MainPage() {
     isValidating: isValidatingSchedule,
   } = useSchedule();
 
-  const {
-    data: individualPlan,
-    mutate,
-    isLoading: isLoadingIndividualPlan,
-  } = useIndividualPlan();
-  const { data: profile } = useProfile();
+  const { data: individualPlan, isLoading: isLoadingIndividualPlan } =
+    useIndividualPlan();
+  const { data: profile, isLoading: isLoadingProfile } = useProfile();
 
   const _ = useSession();
   console.log(isLoadingSchedule);
@@ -39,8 +36,13 @@ export default function MainPage() {
       <ProtectedRoute />
       <HeaderWithBurger />
       <main className="px-4 pt-20 h-full overflow-hidden flex flex-col">
-        <h1 className="font-semibold text-3xl text-slate-950 dark:text-white">
-          Привіт, {profile?.name}!
+        <h1 className="font-semibold text-3xl text-slate-950 dark:text-white flex items-center">
+          Привіт, {profile?.name}
+          {isLoadingProfile ? (
+            <div className="h-8 w-8 mx-2 border border-blue-700 border-t-transparent animate-spin rounded-full inline-block"></div>
+          ) : (
+            "!"
+          )}
         </h1>
         <div className="flex pt-2.5 gap-1.5">
           <button

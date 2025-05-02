@@ -32,8 +32,7 @@ export default defineConfig({
             handler: "StaleWhileRevalidate",
             options: {
               cacheName: "everything-cache",
-              expiration: {
-              },
+              expiration: {},
               cacheableResponse: {
                 statuses: [0, 200],
               },

@@ -34,7 +34,7 @@ export default function LoginPage() {
     const result = await loginPageParser(res);
     const cookie = document.cookie
       .split(";")
-      .find((el) => el.startsWith("isu_cookie"))
+      .find((el) => el.trim().startsWith("isu_cookie"))
       ?.replace("isu_cookie=", "");
     if (result.success && cookie) {
       useAppStore.setState((state) => ({

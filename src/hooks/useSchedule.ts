@@ -19,8 +19,10 @@ export function useSchedule() {
       revalidateIfStale: true,
       revalidateOnFocus: true,
       revalidateOnMount: true,
-      onError: () => {},
-      use: [laggy],
+      onError: (err) => {
+        console.error(err);
+        return [];
+      },
     },
   );
 }

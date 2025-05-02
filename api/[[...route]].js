@@ -274,7 +274,7 @@ module.exports = async (req, res) => {
     if (!faculty) {
       console.error("no faculty");
 
-      return res.send(JSON.stringify({}));
+      return res.send(JSON.stringify([]));
     }
     const groups = await getGroups(faculty.facultyId, course);
     const group = groups.find((el) => el.groupName === groupName);

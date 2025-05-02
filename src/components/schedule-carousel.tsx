@@ -113,7 +113,9 @@ export default function ScheduleCarousel({
                 ?.filter(({ name }) => isEnabled(name))
                 .map((item) => <ScheduleItem {...item} date={date} />)}
               {!list?.filter(({ name }) => isEnabled(name)).length ? (
-                <div className="h-full flex items-center justify-center text-xl">Вихідний :)</div>
+                <div className="h-full flex items-center justify-center text-xl">
+                  Вихідний :)
+                </div>
               ) : null}
             </CarouselItem>
           ))}

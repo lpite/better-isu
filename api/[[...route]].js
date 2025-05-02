@@ -312,14 +312,16 @@ module.exports = async (req, res) => {
     }
     //c.header(k, v.replace("PHPSESSID", "isu_cookie").replace("HttpOnly", ""));
   });
-  const json = await (await response)
+  const json = await (
+    await response
+  )
     .clone()
     .json()
     .catch((err) => {
       return null;
     });
-    
-  if(json){
+
+  if (json) {
     return res.send(json);
   }
 

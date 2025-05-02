@@ -8,6 +8,7 @@ import { useJournal } from "@/hooks/useJournal";
 export default function JournalPage() {
   const params = useParams();
   const { data, isLoading } = useJournal(parseInt(params.index || "0"));
+
   const [selected, setSelected] = useState(0);
 
   return (
@@ -40,7 +41,7 @@ export default function JournalPage() {
             {data?.grades
               .filter((el) => el.CONTROLNAME === data.controls[selected].NAME)
               .map((el, i) => (
-                <div className="flex py-2 border-t border-blue-50">
+                <div className="flex py-2 border-t border-gray-200">
                   <span className="block grow text-center">{i + 1}</span>
                   <span className="block grow text-center">
                     {el.GRADE || "-"}

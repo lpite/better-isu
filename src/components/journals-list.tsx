@@ -11,7 +11,7 @@ export default function JournalsList({ journals }: JournalsListProps) {
   console.log(testJournal);
   return (
     <div className="mt-5 mb-12 overflow-auto grow">
-      {journals?.map(({ name,link }, i) => (
+      {journals?.map(({ name, link }, i) => (
         <Fragment key={name}>
           {!testJournal ? (
             <a

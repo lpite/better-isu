@@ -7,13 +7,11 @@ type JournalsListProps = {
 };
 
 export default function JournalsList({ journals }: JournalsListProps) {
-  const [testJournal, _] = useState(
-    Boolean(localStorage.getItem("test_journal")),
-  );
+  const [testJournal, _] = useState(true);
   console.log(testJournal);
   return (
     <div className="mt-5 mb-12 overflow-auto grow">
-      {journals?.map(({ name }, i) => (
+      {journals?.map(({ name,link }, i) => (
         <Fragment key={name}>
           {!testJournal ? (
             <a

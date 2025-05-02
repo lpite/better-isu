@@ -312,6 +312,17 @@ module.exports = async (req, res) => {
     }
     //c.header(k, v.replace("PHPSESSID", "isu_cookie").replace("HttpOnly", ""));
   });
+  const json = await (await response)
+    .clone()
+    .json()
+    .catch((err) => {
+      return null;
+    });
+    
+  if(json){
+    return res.send(json);
+  }
+
   const responseText = await response
     .then((r) => r.arrayBuffer())
     .then((buf) => decoder.decode(buf))

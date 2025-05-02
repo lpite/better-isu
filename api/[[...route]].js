@@ -9,8 +9,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const decoder = new TextDecoder("windows-1251");
 const htmlParser = require("node-html-parser");
 const { parse } = htmlParser;
-const httpProxy = require("http-proxy");
-const proxy = httpProxy.createProxyServer({});
 
 async function getFacultets() {
   const formDataWithKey = new FormData();

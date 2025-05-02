@@ -38,19 +38,6 @@ export default function MainPage() {
     <>
       <ProtectedRoute />
       <HeaderWithBurger />
-    {/*  {isLoadingSchedule ? (
-        <div className="absolute w-full h-full flex items-center justify-center bg-black bg-opacity-70 z-10 opacity-0 fade-in-with-delay">
-          <video
-            autoPlay
-            muted
-            src="/balamute.mp4"
-            className="h-3/6  z-10 rounded-xl  "
-          ></video>
-          <span className="absolute z-10 w-32 text-center text-lg">
-            Відбувається завантаження
-          </span>
-        </div>
-      ) : null}*/}
       <main className="px-4 pt-20 h-full overflow-hidden flex flex-col">
         <div className="fixed top-2">
           <button

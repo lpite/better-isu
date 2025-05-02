@@ -27,7 +27,6 @@
     "dotenv": "^16.4.5",
     "embla-carousel-react": "^8.3.0",
     "hono": "^4.6.20",
-    "http-proxy": "^1.18.1",
     "kysely": "^0.27.4",
     "kysely-postgres-js": "^2.0.0",
     "memcache-client": "^1.0.5",
@@ -46,7 +45,6 @@
     "zustand": "^5.0.2"
   },
   "devDependencies": {
-    "@types/http-proxy": "^1.17.15",
     "@types/node": "^22.7.8",
     "@types/pg": "^8.11.10",
     "@types/react": "^18.2.66",

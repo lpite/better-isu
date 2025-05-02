@@ -259,7 +259,7 @@ module.exports = async (req, res) => {
     if (!faculty) {
       console.error("no faculty");
 
-      return c.json({});
+      return res.send(JSON.stringify({}));
     }
     const groups = await getGroups(faculty.facultyId, course);
     const group = groups.find((el) => el.groupName === groupName);
@@ -274,7 +274,7 @@ module.exports = async (req, res) => {
     if (!faculty) {
       console.error("no faculty");
 
-      return c.json({});
+      return res.send(JSON.stringify({}));
     }
     const groups = await getGroups(faculty.facultyId, course);
     const group = groups.find((el) => el.groupName === groupName);

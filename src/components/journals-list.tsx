@@ -4,14 +4,21 @@ import { Link } from "react-router-dom";
 
 type JournalsListProps = {
   journals?: { link?: string; name: string }[];
+  isLoading: boolean;
 };
 
-export default function JournalsList({ journals }: JournalsListProps) {
+export default function JournalsList({
+  journals,
+  isLoading,
+}: JournalsListProps) {
   const [testJournal, _] = useState(true);
   console.log(testJournal);
   return (
     <div className="mt-5 mb-12 overflow-auto grow">
-      {journals?.map(({ name, link }, i) => (
+      {isLoading ? (
+        <div className="h-8 w-8 mx-2 border border-blue-700 border-t-transparent animate-spin rounded-full inline-block"></div>
+      ) : null}
+      {journals?.map(({ name }, i) => (
         <Fragment key={name}>
           {!testJournal ? (
             <a

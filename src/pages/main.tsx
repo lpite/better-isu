@@ -14,7 +14,6 @@ import { useIndividualPlan } from "@/hooks/useIndividualPlan";
 
 import { useSession } from "@/hooks/useSession";
 import { useSubjects } from "@/hooks/useSubjects";
-import { useJournal } from "@/hooks/useJournal";
 
 export default function MainPage() {
   const [page, setPage] = useState<"schedule" | "journals">("schedule");
@@ -30,7 +29,7 @@ export default function MainPage() {
   const { data: profile, isLoading: isLoadingProfile } = useProfile();
 
   const _ = useSession();
-  const { data: subjects } = useSubjects();
+  const { data: subjects, isLoading: isLoadingSubjects } = useSubjects();
   return (
     <>
       <ProtectedRoute />
@@ -67,7 +66,10 @@ export default function MainPage() {
           />
         ) : null}
         {page === "journals" ? (
-          <JournalsList journals={subjects || []} />
+          <JournalsList
+            journals={subjects || []}
+            isLoading={isLoadingSubjects}
+          />
         ) : null}
       </main>
       <BottomNavigation />

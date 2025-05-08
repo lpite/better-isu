@@ -5,6 +5,47 @@ interface GetJournal {
   journalName: string;
 }
 
+interface Grade {
+  ID: string;
+  ROWID: string;
+  STID: string;
+  PID: string;
+  LFP: string;
+  RECORDBOOK: string;
+  INFO: string;
+  GROUPID: string;
+  GROUPNAME: string;
+  COLID: string;
+  CONTROLID: string;
+  CONTROLNAME: string;
+  CONTROLSHORTNAME: string;
+  SORTORDER: string;
+  REQUIRED: string;
+  WEIGHT: string;
+  MINCOUNT: string;
+  COUNTPERPOINT: string;
+  STUDYDATE: string;
+  YEARNUM: string;
+  MONTHNUM: string;
+  MONTHSTR: string;
+  DAYNUM: string;
+  GRADEROWID: string;
+  GRADECOLID: string;
+  GRADE: string;
+  PREVS: string;
+  RECTIME: string;
+  UID: string;
+}
+
+interface Control {
+  ID: number;
+  NAME: string;
+  WEIGHT: string;
+  REQUIRED: string;
+  MINCOUNT: number;
+  COUNTPERPOINT: string;
+}
+
 export async function getJournal({
   token,
   key,
@@ -22,7 +63,7 @@ export async function getJournal({
     {
       headers: {
         Authorization: token,
-        // 			"Content-Type": "application/x-www-form-urlencoded",
+        //      "Content-Type": "application/x-www-form-urlencoded",
       },
     },
   )
@@ -55,9 +96,9 @@ export async function getJournal({
       },
       body: `jrnId=${journalId}&page=1&start=0&limit=25`,
     },
-  ).then((r) => r.json());
+  ).then((r) => r.json()) as Control[]
 
-  const journalGrades = await fetch(
+  const journalGrades = (await fetch(
     "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/jrn/jrngrades.php",
     {
       headers: {
@@ -67,14 +108,11 @@ export async function getJournal({
       method: "POST",
       body: `grp=${groupId}&jrn=${journalId}&page=1&start=0&limit=25`,
     },
-  ).then((res) => res.json());
+  ).then((res) => res.json())) as Grade[];
 
-  console.log(journalGrades);
   return {
-    grades: journalGrades.filter(
-      (el: any) => el.RECORDBOOK.trim() === recordNumber,
-    ) as any[],
-    controls: journalControls as any[],
+    grades: journalGrades.filter((el) => el.RECORDBOOK.trim() === recordNumber),
+    controls: journalControls,
     journalName: journalName,
   };
 }

@@ -1,14 +1,4 @@
-// export const config = {
-//   api: {
-//     bodyParser: false,
-//   },
-
-// };
-
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const decoder = new TextDecoder("windows-1251");
-const htmlParser = require("node-html-parser");
-const { parse } = htmlParser;
 
 async function getFacultets() {
   const formDataWithKey = new FormData();
@@ -43,26 +33,6 @@ async function getGroups(facultyId, course) {
     .then((res) => res.json())
     .catch((_) => []);
   return groups;
-}
-/**
- * @description currSem від початку навчання тобто не просто 1, 2
- */
-
-async function getGroup(groupId, facultyId, course) {
-  const groups = await getGroups(facultyId, course);
-
-  const group = groups.find((gr) => gr.groupId === groupId);
-
-  if (!group) {
-    const groups = await getGroups(
-      facultyId,
-      (parseInt(course) - 1).toString(),
-    );
-    const group = groups.find((el) => el.groupId === groupId);
-    return group;
-  }
-
-  return group;
 }
 
 async function getScheduleByApi(groupId, currSem, faculty_id, course) {
@@ -246,31 +216,44 @@ function generateDaysList(weekType, schedule) {
   return list;
 }
 
-module.exports = async (req, res) => {
-  const { url, facultyName, course, groupName } = req.query;
-  if (req.url.includes("/group")) {
+export const handler = async (event, context) => {
+  const { url, facultyName, course, groupName } =
+    event?.queryStringParameters || {};
+  const requestUrl = event["rawPath"];
+
+  if (requestUrl.includes("/group")) {
     const facultets = await getFacultets();
 
     const faculty = facultets.find((el) => el.facultyName === facultyName);
     if (!faculty) {
       console.error("no faculty");
 
-      return res.send(JSON.stringify({}));
+      return {
+        status: 500,
+        body: JSON.stringify({}),
+      };
     }
     const groups = await getGroups(faculty.facultyId, course);
     const group = groups.find((el) => el.groupName === groupName);
     group.currSem = group.currSem;
-    return res.send(JSON.stringify(group));
+    return {
+      statusCode: 200,
+      headers: { "Cache-Control": "max-age=10800, stale-while-revalidate" },
+      body: JSON.stringify(group),
+    };
   }
 
-  if (req.url.includes("/schedule")) {
+  if (requestUrl.includes("/schedule")) {
     const facultets = await getFacultets();
 
     const faculty = facultets.find((el) => el.facultyName === facultyName);
     if (!faculty) {
       console.error("no faculty");
 
-      return res.send(JSON.stringify([]));
+      return {
+        status: 500,
+        body: JSON.stringify([]),
+      };
     }
     const groups = await getGroups(faculty.facultyId, course);
     const group = groups.find((el) => el.groupName === groupName);
@@ -282,51 +265,17 @@ module.exports = async (req, res) => {
       course,
     );
     const currentWeekType = await getTypeOfWeek();
-    return res.send(generateDaysList(currentWeekType, schedule));
+    return {
+      statusCode: 200,
+      body: JSON.stringify(generateDaysList(currentWeekType, schedule)),
+    };
   }
 
-  const auth = req.headers["authorization"];
-  const response = fetch(url, {
-    method: req.method,
-    body:
-      req.method !== "GET" && req.method !== "HEAD"
-        ? new URLSearchParams(req.body).toString()
-        : undefined,
-    headers: {
-      Cookie: auth ? "PHPSESSID=" + auth : "",
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    credentials: "include",
-    redirect: "manual",
-  });
-  (await response).headers.forEach((v, k) => {
-    if (k === "set-cookie") {
-      res.setHeader(
-        k,
-        v.replace("PHPSESSID", "isu_cookie").replace("HttpOnly", ""),
-      );
-    }
-    //c.header(k, v.replace("PHPSESSID", "isu_cookie").replace("HttpOnly", ""));
-  });
-  const json = await (
-    await response
-  )
-    .clone()
-    .json()
-    .catch((err) => {
-      return null;
-    });
-
-  if (json) {
-    return res.send(json);
-  }
-
-  const responseText = await response
-    .then((r) => r.arrayBuffer())
-    .then((buf) => decoder.decode(buf))
-    .catch((err) => {
-      console.error(err);
-      return "";
-    });
-  res.send(responseText);
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      requestUrl: requestUrl,
+      query: event.queryStringParameters,
+    }),
+  };
 };

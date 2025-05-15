@@ -1,10 +1,11 @@
+import { API_URL } from "@/config";
 import encodeParamString from "@/utils/encodeParamString";
 import parse from "node-html-parser";
 
 export async function getRatingPage(token: string) {
   console.log(token);
   const firstPage = await fetch(
-    "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/rating.php",
+    `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/rating.php`,
     {
       headers: {
         Authorization: token,
@@ -22,7 +23,7 @@ export async function getRatingPage(token: string) {
   const semsetersBody = `mode=SubTable&key=${href}&ref=&sort=&FieldChoice=&TabNo=1&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=200&RecsDeleted=&RecsCount=1&KeyStr=&TabStr=0&PgNoStr=&PgSzStr=&FilterStr=&FieldChoiceStr=&SortStr=&ModeStr=&FieldStr=&ChildStr=&ParamStr=`;
 
   const semsetersPage = await fetch(
-    "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/rating.php",
+    `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/rating.php`,
     {
       method: "POST",
       headers: {
@@ -51,7 +52,7 @@ export async function getRatingPage(token: string) {
 
   const ratingBody = `mode=SubTable&key=${lastSemesterLink?.replaceAll("^", "%5E")}&ref=&sort=&FieldChoice=&TabNo=5&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=200&RecsDeleted=0&RecsCount=4&KeyStr=${encodeParamString(keyStr)}&TabStr=0%7C%7E%7C1&PgNoStr=1%7C%7E%7C&PgSzStr=200%7C%7E%7C&FilterStr=%7C%7E%7C&FieldChoiceStr=%7C%7E%7C&SortStr=%7C%7E%7C&ModeStr=%7C%7E%7CSubTable&FieldStr=&ChildStr=&ParamStr=${encodeParamString(paramStr)}`;
   const ratingPage = await fetch(
-    "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/rating.php",
+    `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/rating.php`,
     {
       method: "POST",
       headers: {

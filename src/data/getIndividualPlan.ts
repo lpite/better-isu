@@ -1,3 +1,4 @@
+import { API_URL } from "@/config";
 import parse from "node-html-parser";
 
 export default async function getIndividualPlan(
@@ -6,7 +7,7 @@ export default async function getIndividualPlan(
   semester: string,
 ) {
   const firstPageResponse = await fetch(
-    "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php",
+    `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php`,
     {
       headers: {
         Authorization: token,
@@ -26,7 +27,7 @@ export default async function getIndividualPlan(
   }
 
   const individualPlanReponse = await fetch(
-    "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php",
+    `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php`,
     {
       headers: {
         Authorization: token,

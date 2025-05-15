@@ -1,9 +1,10 @@
+import { API_URL } from "@/config";
 import { parse } from "node-html-parser";
 
 export async function getProfilePage(token: string) {
   const [eduplansPage, profileHtml] = await Promise.all([
     fetch(
-      "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php",
+      `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php`,
       {
         headers: {
           Authorization: token,
@@ -13,7 +14,7 @@ export async function getProfilePage(token: string) {
       .then((r) => r.text())
       .then((p) => parse(p)),
     fetch(
-      "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/personnel.php",
+      `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/personnel.php`,
       {
         headers: {
           Authorization: token,

@@ -1,3 +1,4 @@
+import { API_URL } from "@/config";
 import parse from "node-html-parser";
 
 export async function getSubjectsPage(token: string = "") {
@@ -5,7 +6,7 @@ export async function getSubjectsPage(token: string = "") {
     const decoder = new TextDecoder("windows-1251");
 
     const firstPage = await fetch(
-      "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php",
+      `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php`,
       {
         headers: {
           Authorization: token,
@@ -27,7 +28,7 @@ export async function getSubjectsPage(token: string = "") {
       ?.split("'")[1];
 
     const secondPage = await fetch(
-      "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php",
+      `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php`,
       {
         method: "POST",
         body: `mode=SubTable&key=${firstPageKey}&ref=&sort=&FieldChoice=&TabNo=2&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=200&RecsDeleted=&RecsCount=1&KeyStr=&TabStr=0&PgNoStr=&PgSzStr=&FilterStr=&FieldChoiceStr=&SortStr=&ModeStr=&FieldStr=&ChildStr=&ParamStr=`,
@@ -191,7 +192,7 @@ export async function getSubjectsPage(token: string = "") {
     //thirdPageBody = thirdPageBody.replaceAll("@", "%40");
     thirdPageBody = thirdPageBody.replaceAll("~", "%7E");
     const thirdPage = await fetch(
-      "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php",
+      `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php`,
       {
         method: "POST",
         body: thirdPageBody,

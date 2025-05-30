@@ -93,7 +93,7 @@ export async function getJournal({
       method: "POST",
       headers: {
         Authorization: token,
-        "Content-Type": "application/x-www-form-urlencoded",
+        // "Content-Type": "application/x-www-form-urlencoded",
       },
       body: `jrnId=${journalId}&page=1&start=0&limit=25`,
     },
@@ -104,7 +104,7 @@ export async function getJournal({
     {
       headers: {
         Authorization: token,
-        "Content-Type": "application/x-www-form-urlencoded",
+        // "Content-Type": "application/x-www-form-urlencoded",
       },
       method: "POST",
       body: `grp=${groupId}&jrn=${journalId}&page=1&start=0&limit=25`,

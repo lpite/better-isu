@@ -34,7 +34,7 @@ export async function getSubjectsPage(token: string = "") {
         body: `mode=SubTable&key=${firstPageKey}&ref=&sort=&FieldChoice=&TabNo=2&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=200&RecsDeleted=&RecsCount=1&KeyStr=&TabStr=0&PgNoStr=&PgSzStr=&FilterStr=&FieldChoiceStr=&SortStr=&ModeStr=&FieldStr=&ChildStr=&ParamStr=`,
         headers: {
           Authorization: token,
-          "Content-Type": "application/x-www-form-urlencoded",
+          // "Content-Type": "application/x-www-form-urlencoded",
         },
       },
     ).then((res) => res.text());
@@ -198,7 +198,7 @@ export async function getSubjectsPage(token: string = "") {
         body: thirdPageBody,
         headers: {
           Authorization: token,
-          "Content-Type": "application/x-www-form-urlencoded",
+          // "Content-Type": "application/x-www-form-urlencoded",
         },
       },
     ).then((res) => res.text());

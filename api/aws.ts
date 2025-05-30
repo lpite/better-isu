@@ -149,7 +149,7 @@ function generateDaysList(weekType, schedule) {
   const date = new Date();
   const currentWeekDay = correctWeekDays[date.getDay()];
   // ЯКИЙ ЦЕ ЖАХ.
-  const list = [];
+  const list: any[] = [];
   let wt = weekType;
 
   for (let i = -currentWeekDay; i < 14 - currentWeekDay; i++) {
@@ -238,7 +238,10 @@ export const handler = async (event, context) => {
     group.currSem = group.currSem;
     return {
       statusCode: 200,
-      headers: { "Cache-Control": "max-age=10800, stale-while-revalidate" },
+      headers: {
+        "Cache-Control": "max-age=10800, stale-while-revalidate",
+        "Access-Control-Allow-Origin": "*",
+      },
       body: JSON.stringify(group),
     };
   }
@@ -252,6 +255,7 @@ export const handler = async (event, context) => {
 
       return {
         status: 500,
+        headers: { "Access-Control-Allow-Origin": "*" },
         body: JSON.stringify([]),
       };
     }
@@ -267,6 +271,7 @@ export const handler = async (event, context) => {
     const currentWeekType = await getTypeOfWeek();
     return {
       statusCode: 200,
+      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify(generateDaysList(currentWeekType, schedule)),
     };
   }
@@ -278,7 +283,7 @@ export const handler = async (event, context) => {
     method: httpMethod,
     body:
       httpMethod !== "GET" && httpMethod !== "HEAD"
-        ? new URLSearchParams(event.body).toString()
+        ? event?.body || ""
         : undefined,
     headers: {
       Cookie: auth ? "PHPSESSID=" + auth : "",
@@ -290,17 +295,17 @@ export const handler = async (event, context) => {
 
   response.headers.forEach((v, k) => {
     if (k === "set-cookie") {
-      responseHeaders[k] = v
+      responseHeaders["cookie"] = v
         .replace("PHPSESSID", "isu_cookie")
         .replace("HttpOnly", "");
-      // res.setHeader(
-      //   k,
-      //   v.replace("PHPSESSID", "isu_cookie").replace("HttpOnly", ""),
-      // );
     }
   });
+  responseHeaders["Access-Control-Allow-Origin"] = "*";
+  responseHeaders["Access-Control-Expose-Headers"] = "*";
+  responseHeaders["Access-Control-Allow-Headers"] =
+    "Origin, Content-Type, Accept, Authorization";
 
-  const json = response
+  const json = await response
     .clone()
     .json()
     .catch((err) => {
@@ -310,11 +315,11 @@ export const handler = async (event, context) => {
 
   if (json) {
     return {
+      headers: responseHeaders,
       statusCode: 200,
       body: JSON.stringify(json),
     };
   }
-  
   const responseText = await response
     .arrayBuffer()
     .then((buf) => decoder.decode(buf))

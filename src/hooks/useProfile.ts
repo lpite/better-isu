@@ -1,8 +1,13 @@
 import { getProfilePage } from "@/data/getProfilePage";
-import { useAppStore } from "@/stores/useAppStore";
 import useSWR from "swr";
+import { useSession } from "./useSession";
 
 export function useProfile() {
-  const { session } = useAppStore();
-  return useSWR("profile", () => getProfilePage(session?.token || ""), {});
+  const { status, session } = useSession();
+
+  return useSWR(
+    status === "loading" || status === "unauthorised" ? null : "profile",
+    () => getProfilePage(session?.token || ""),
+    {},
+  );
 }

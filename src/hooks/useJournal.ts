@@ -3,13 +3,21 @@ import { useAppStore } from "@/stores/useAppStore";
 import useSWR from "swr";
 import { useProfile } from "./useProfile";
 import { useSubjects } from "./useSubjects";
+import { useSession } from "./useSession";
 
 export function useJournal(journalIndex: number) {
-  const { session } = useAppStore();
-  const { data: profile, isLoading: isLoadingProfile } = useProfile();
-  const { data: subjects } = useSubjects();
+  const { session, status } = useSession();
 
-  return useSWR(`journal/${journalIndex}`, () =>
+  const { data: profile, isLoading: isLoadingProfile } = useProfile();
+  const { data: subjects, isLoading: isLoadingSubjects } = useSubjects();
+
+  const canFetchJournal =
+    status !== "loading" &&
+    status !== "unauthorised" &&
+    !isLoadingProfile &&
+    !isLoadingSubjects;
+
+  return useSWR(canFetchJournal ? `journal/${journalIndex}` : null, () =>
     getJournal({
       token: session?.token,
       recordNumber: profile?.recordNumber,

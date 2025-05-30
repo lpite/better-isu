@@ -1,12 +1,14 @@
 import loginPageParser from "@/data/loginPageParser";
 import { useAppStore } from "@/stores/useAppStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function useSession() {
   const { session, user } = useAppStore();
+  const [status, setStatus] = useState<"loading" | "unauthorised" | "authorised">("loading");
   useEffect(() => {
     const now = new Date();
     if (!session || !user) {
+      setStatus("unauthorised");
       return;
     }
     if (typeof session?.created_at === "string") {
@@ -15,25 +17,33 @@ export function useSession() {
       const date = new Date(session?.created_at);
       //@ts-expect-error так треба
       if (now - date > 3600000) {
+        setStatus("loading");
         console.log("passed");
         updateSession(user?.login, user?.password).catch((err) => {
           console.error(err);
         });
       } else {
+        setStatus("authorised");
+
+        // консол лог дуже важливий його не можна забирати))
         console.log("meow");
       }
     } else {
       //@ts-expect-error так треба
       if (now - session?.created_at > 3600000) {
+        setStatus("loading");
         console.log("passed");
         updateSession(user?.login, user?.password).catch((err) => {
           console.error(err);
         });
       } else {
+        setStatus("authorised");
+
         console.log("meow");
       }
     }
   }, [session]);
+  return { status, session }
 }
 
 async function updateSession(login: string, password: string) {

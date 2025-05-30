@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import loginPageParser from "@/data/loginPageParser";
 import { useAppStore } from "@/stores/useAppStore";
+import { API_URL } from "@/config";
 
 export default function LoginPage() {
   const router = useNavigate();
@@ -19,12 +20,17 @@ export default function LoginPage() {
     setIsLoading(true);
 
     const res = await fetch(
-      "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/logon.php",
+      `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/logon.php`,
       {
         method: "POST",
-        body: `login=${credentials.login}&passwd=${credentials.password}&btnSubmit=%D3%E2%B3%E9%F2%E8`,
+        body: JSON.stringify({
+          login: credentials.login,
+          passwd: credentials.password,
+          btnSubmit: "%D3%E2%B3%E9%F2%E8",
+        }),
+        // body: `login=${credentials.login}&passwd=${credentials.password}&btnSubmit=%D3%E2%B3%E9%F2%E8`,
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
         },
       },
     ).finally(() => {
@@ -32,8 +38,9 @@ export default function LoginPage() {
     });
 
     const result = await loginPageParser(res);
-    const cookie = document.cookie
-      .split(";")
+    const cookie = res.headers
+      .get("cookie")
+      ?.split(";")
       .find((el) => el.trim().startsWith("isu_cookie"))
       ?.replace("isu_cookie=", "");
     if (result.success && cookie) {

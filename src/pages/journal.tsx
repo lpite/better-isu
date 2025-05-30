@@ -11,7 +11,7 @@ export default function JournalPage() {
   const { data, isLoading } = useJournal(parseInt(params.index || "0"));
 
   const [selected, setSelected] = useState(0);
-
+  console.log(isLoading)
   return (
     <>
       <HeaderWithLabel pageName="Тестовий журнал" />
@@ -23,6 +23,7 @@ export default function JournalPage() {
             <label
               className={`${i === selected ? "bg-blue-900 dark:bg-blue-600 border-transparent" : "border-blue-50 dark:border-slate-600"} border rounded-lg py-2.5 px-6 block`}
               onChange={() => setSelected(i)}
+              key={e.ID}
             >
               {
                 // TODO: ПЕРЕПИСАТИ НА ЩОСЬ НОРМАЛЬНЕ ВСЯ ЦЯ СТОРІНКА І ЛОГІКА РОБОТИ З НЕЮ ПРОСТО ЖАХ

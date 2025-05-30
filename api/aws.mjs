@@ -271,11 +271,61 @@ export const handler = async (event, context) => {
     };
   }
 
+  const auth = event.headers["authorization"];
+  const httpMethod = event.requestContext.http.method;
+  const responseHeaders = {};
+  const response = await fetch(url, {
+    method: httpMethod,
+    body:
+      httpMethod !== "GET" && httpMethod !== "HEAD"
+        ? new URLSearchParams(event.body).toString()
+        : undefined,
+    headers: {
+      Cookie: auth ? "PHPSESSID=" + auth : "",
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    credentials: "include",
+    redirect: "manual",
+  });
+
+  response.headers.forEach((v, k) => {
+    if (k === "set-cookie") {
+      responseHeaders[k] = v
+        .replace("PHPSESSID", "isu_cookie")
+        .replace("HttpOnly", "");
+      // res.setHeader(
+      //   k,
+      //   v.replace("PHPSESSID", "isu_cookie").replace("HttpOnly", ""),
+      // );
+    }
+  });
+
+  const json = response
+    .clone()
+    .json()
+    .catch((err) => {
+      console.error(err);
+      return null;
+    });
+
+  if (json) {
+    return {
+      statusCode: 200,
+      body: JSON.stringify(json),
+    };
+  }
+  
+  const responseText = await response
+    .arrayBuffer()
+    .then((buf) => decoder.decode(buf))
+    .catch((err) => {
+      console.error(err);
+      return "";
+    });
+
   return {
     statusCode: 200,
-    body: JSON.stringify({
-      requestUrl: requestUrl,
-      query: event.queryStringParameters,
-    }),
+    headers: responseHeaders,
+    body: responseText,
   };
 };

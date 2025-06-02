@@ -11,7 +11,6 @@ export default function JournalPage() {
   const { data, isLoading } = useJournal(parseInt(params.index || "0"));
 
   const [selected, setSelected] = useState(0);
-  console.log(isLoading)
   return (
     <>
       <HeaderWithLabel pageName="Тестовий журнал" />

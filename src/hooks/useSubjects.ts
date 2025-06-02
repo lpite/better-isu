@@ -1,12 +1,17 @@
 import { getSubjectsPage } from "@/data/getSubjectsPage";
-import { useAppStore } from "@/stores/useAppStore";
-import { laggy } from "@/utils/laggySwr";
 import useSWR from "swr";
+import { useSession } from "./useSession";
 
 export function useSubjects() {
-  const { session } = useAppStore();
-  return useSWR("subjects", () => getSubjectsPage(session?.token || ""), {
-    revalidateOnFocus: false,
-    use: [laggy],
-  });
+  const { session, status } = useSession();
+
+  const canFetchSubjects = status === "authorised" && session?.token;
+
+  return useSWR(
+    canFetchSubjects ? "subjects" : null,
+    () => getSubjectsPage(session?.token || ""),
+    {
+      revalidateOnFocus: false,
+    },
+  );
 }

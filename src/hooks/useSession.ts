@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 
 export function useSession() {
   const { session, user } = useAppStore();
-  const [status, setStatus] = useState<"loading" | "unauthorised" | "authorised">("loading");
+  const [status, setStatus] = useState<
+    "loading" | "unauthorised" | "authorised"
+  >("loading");
   useEffect(() => {
     const now = new Date();
     if (!session || !user) {
@@ -43,7 +45,7 @@ export function useSession() {
       }
     }
   }, [session]);
-  return { status, session }
+  return { status, session };
 }
 
 async function updateSession(login: string, password: string) {

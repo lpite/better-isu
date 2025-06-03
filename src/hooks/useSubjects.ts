@@ -11,7 +11,8 @@ export function useSubjects() {
     canFetchSubjects ? "subjects" : null,
     () => getSubjectsPage(session?.token || ""),
     {
-      revalidateOnFocus: false,
+      errorRetryCount: 10,
+      errorRetryInterval: 500,
     },
   );
 }

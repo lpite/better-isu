@@ -17,12 +17,18 @@ export function useJournal(journalIndex: number) {
     !isLoadingProfile &&
     !isLoadingSubjects;
 
-  return useSWR(canFetchJournal ? `journal/${journalIndex}` : null, () =>
-    getJournal({
-      token: session?.token,
-      recordNumber: profile?.recordNumber,
-      key: (subjects && subjects[journalIndex].link) || "",
-      journalName: (subjects && subjects[journalIndex].name) || "",
-    }),
+  return useSWR(
+    canFetchJournal ? `journal/${journalIndex}` : null,
+    () =>
+      getJournal({
+        token: session?.token,
+        recordNumber: profile?.recordNumber,
+        key: (subjects && subjects[journalIndex].link) || "",
+        journalName: (subjects && subjects[journalIndex].name) || "",
+      }),
+    {
+      errorRetryCount: 10,
+      errorRetryInterval: 500,
+    },
   );
 }

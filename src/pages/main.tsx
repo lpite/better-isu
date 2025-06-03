@@ -7,7 +7,6 @@ import ScheduleCarousel from "@/components/schedule-carousel";
 import JournalsList from "@/components/journals-list";
 import ProtectedRoute from "@/components/protected-route";
 
-import { useAppStore } from "@/stores/useAppStore";
 import { useProfile } from "@/hooks/useProfile";
 import { useSchedule } from "@/hooks/useSchedule";
 import { useIndividualPlan } from "@/hooks/useIndividualPlan";
@@ -17,7 +16,6 @@ import { useSubjects } from "@/hooks/useSubjects";
 
 export default function MainPage() {
   const [page, setPage] = useState<"schedule" | "journals">("schedule");
-  const { session } = useAppStore();
   const {
     data: schedule,
     isLoading: isLoadingSchedule,

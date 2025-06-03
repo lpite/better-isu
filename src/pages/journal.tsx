@@ -1,5 +1,4 @@
 import HeaderWithLabel from "@/components/header-with-label";
-import { useGetJournalGrades } from "../../orval/default/default";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Spinner from "@/components/spinner";

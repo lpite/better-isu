@@ -1,5 +1,4 @@
 import { getJournal } from "@/data/getJournal";
-import { useAppStore } from "@/stores/useAppStore";
 import useSWR from "swr";
 import { useProfile } from "./useProfile";
 import { useSubjects } from "./useSubjects";

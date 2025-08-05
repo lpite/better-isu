@@ -306,7 +306,6 @@ module.exports = async (req, res) => {
         v.replace("PHPSESSID", "isu_cookie").replace("HttpOnly", ""),
       );
     }
-    //c.header(k, v.replace("PHPSESSID", "isu_cookie").replace("HttpOnly", ""));
   });
   const json = await (
     await response

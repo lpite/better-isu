@@ -91,12 +91,15 @@ export default function ScheduleCarousel({
   }
 
   return (
-    <Carousel setApi={setApi} className="overflow-auto mb-14">
-      <CarouselContent>
+    <Carousel setApi={setApi} className="flex-1 min-h-0 mb-14 select-none">
+      <CarouselContent className="h-full">
         {schedule &&
           schedule?.map(({ date, month, type, list, weekDay }) => (
-            <CarouselItem key={date + month + weekDay}>
-              <div className="flex items-center justify-between pt-3.5 pb-2.5 text-blue-900 dark:text-blue-300">
+            <CarouselItem
+              className="h-full flex  pt-12 relative"
+              key={date + month + weekDay}
+            >
+              <div className="absolute top-0 start-6 end-0 flex items-center justify-between pt-3.5 pb-2.5 text-blue-900 dark:text-blue-300">
                 <span>
                   {date} {month} {weekDay} ({type})
                 </span>
@@ -109,14 +112,22 @@ export default function ScheduleCarousel({
                   </button>
                 </div>
               </div>
-              {list
-                ?.filter(({ name }) => isEnabled(name))
-                .map((item) => <ScheduleItem {...item} date={date} />)}
-              {!list?.filter(({ name }) => isEnabled(name)).length ? (
-                <div className="h-full flex items-center justify-center text-xl">
-                  Вихідний :)
-                </div>
-              ) : null}
+              <div className="min-h-0 overflow-y-auto w-full">
+                {list
+                  ?.filter(({ name }) => isEnabled(name))
+                  .map((item) => (
+                    <ScheduleItem
+                      key={date + item.number + item.name + item.auditory}
+                      {...item}
+                      date={date}
+                    />
+                  ))}
+                {!list?.filter(({ name }) => isEnabled(name)).length ? (
+                  <div className="h-full flex items-center justify-center text-xl">
+                    Вихідний :)
+                  </div>
+                ) : null}
+              </div>
             </CarouselItem>
           ))}
       </CarouselContent>

@@ -21,5 +21,12 @@ export default async function loginPageParser(response: Response) {
     };
   }
 
+  if(text.includes("Логін (ім'я входу):")){
+    return {
+      error: "Неправильний пароль або логін",
+      success: false,
+    };
+  }
+
   return { error: null, success: true };
 }

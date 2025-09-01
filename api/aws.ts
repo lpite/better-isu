@@ -254,7 +254,7 @@ export const handler = async (event, context) => {
       console.error("no faculty");
 
       return {
-        status: 500,
+        statusCode: 500,
         headers: { "Access-Control-Allow-Origin": "*" },
         body: JSON.stringify([]),
       };
@@ -283,7 +283,7 @@ export const handler = async (event, context) => {
     method: httpMethod,
     body:
       httpMethod !== "GET" && httpMethod !== "HEAD"
-        ? event?.body || ""
+        ? Object.entries(JSON.parse(event?.body)).map(([k,v])=>`${k}=${v}`).join("&") || ""
         : undefined,
     headers: {
       Cookie: auth ? "PHPSESSID=" + auth : "",

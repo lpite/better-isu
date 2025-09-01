@@ -23,12 +23,7 @@ export default function LoginPage() {
       `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/logon.php`,
       {
         method: "POST",
-        body: JSON.stringify({
-          login: credentials.login,
-          passwd: credentials.password,
-          btnSubmit: "%D3%E2%B3%E9%F2%E8",
-        }),
-        // body: `login=${credentials.login}&passwd=${credentials.password}&btnSubmit=%D3%E2%B3%E9%F2%E8`,
+        body: `login=${credentials.login}&passwd=${credentials.password}&btnSubmit=%D3%E2%B3%E9%F2%E8`,
         headers: {
           "Content-Type": "application/json",
         },

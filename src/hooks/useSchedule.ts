@@ -18,7 +18,12 @@ export function useSchedule() {
   // }
 
   const canFetchSchedule =
-    status !== "loading" && status !== "unauthorised" && !isLoadingProfile;
+    status !== "loading" &&
+    status !== "unauthorised" &&
+    !isLoadingProfile &&
+    profile?.group &&
+    profile?.group &&
+    profile?.faculty;
 
   return useSWR(
     canFetchSchedule

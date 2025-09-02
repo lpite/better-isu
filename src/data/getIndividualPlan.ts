@@ -31,16 +31,21 @@ export default async function getIndividualPlan(
     {
       headers: {
         Authorization: token,
-        "Content-Type": "application/x-www-form-urlencoded",
       },
       method: "POST",
       body: `mode=SubTable&key=${firstPageKey.replaceAll("^", "%5E")}&ref=&sort=&FieldChoice=&TabNo=1&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=200&RecsDeleted=&RecsCount=1&KeyStr=&TabStr=0&PgNoStr=&PgSzStr=&FilterStr=&FieldChoiceStr=&SortStr=&ModeStr=&FieldStr=&ChildStr=&ParamStr=`,
     },
   ).then((r) => r.text());
+
   const individualPlan = parse(individualPlanReponse);
   const tableRows = individualPlan
     .querySelectorAll("#MainTab")[1]
     .querySelectorAll("tr");
+
+  if (!tableRows.length) {
+    console.error("cant find table rows");
+    return [];
+  }
 
   type Plan = {
     studyYear: string;
@@ -106,8 +111,6 @@ export default async function getIndividualPlan(
       arr.push(obj);
     }
   }
-  // return arr;
-  console.log(arr, course, semester);
 
   const currentSemensterPlan = arr.find((el) => {
     const _course = el.studyYear[0];

@@ -1,3 +1,4 @@
+import { API_URL } from "@/config";
 import { laggy } from "@/utils/laggySwr";
 import useSWR from "swr";
 
@@ -12,7 +13,7 @@ export function useGroup({ groupName, course, facultyName }: UseGroup) {
     groupName && course && facultyName ? "group" : null,
     () =>
       fetch(
-        `/api/group?groupName=${groupName}&course=${course}&facultyName=${facultyName}`,
+        `${API_URL}/api/group?groupName=${groupName}&course=${course}&facultyName=${facultyName}`,
       ).then((r) => r.json()),
     {
       revalidateOnFocus: false,

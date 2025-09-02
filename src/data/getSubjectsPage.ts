@@ -34,11 +34,9 @@ export async function getSubjectsPage(token: string = "") {
         body: `mode=SubTable&key=${firstPageKey}&ref=&sort=&FieldChoice=&TabNo=2&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=200&RecsDeleted=&RecsCount=1&KeyStr=&TabStr=0&PgNoStr=&PgSzStr=&FilterStr=&FieldChoiceStr=&SortStr=&ModeStr=&FieldStr=&ChildStr=&ParamStr=`,
         headers: {
           Authorization: token,
-          // "Content-Type": "application/x-www-form-urlencoded",
         },
       },
     ).then((res) => res.text());
-    // .then((res) => decoder.decode(res));
 
     if (!secondPage) {
       console.error("no eduplans page 2");
@@ -52,62 +50,15 @@ export async function getSubjectsPage(token: string = "") {
     let paramStr =
       secondPageHtml.querySelector("[name=ParamStr]")?.getAttribute("value") ||
       "";
-    let tableKey = "";
-
-    // Масив всіх елементів в табличці
-    // довжина стрічки 6 елементів
-    const tableElements = Array.from(
-      secondPageHtml
-        ?.querySelectorAll("#MainTab")[1]
-        ?.querySelectorAll("#TabLeftBorderLink,#TabCell,#TabCell2"),
-    );
-
-    if (!tableElements.length) {
-      console.error("no tableElements");
-
-      return [];
-    }
-    const currentSemester =
-      secondPageHtml?.querySelectorAll("[color=blue]")[0]?.textContent;
 
     let tabNo = 6;
-    let elementInRow = 0;
-    let currentRow: Record<string, string> = {};
-    tableElements.forEach((el) => {
-      if (elementInRow === 6) {
-        const date = new Date();
-        let currentYearString = `${date.getFullYear()}-${date.getFullYear() + 1}`;
+    const tableKey = secondPageHtml.querySelectorAll("[color=blue]")[0].parentNode.parentNode.querySelectorAll("td")[4].children[0].getAttribute("href")?.split("'")[1]
+    
+    if (!tableKey) {
+      console.error("no tableKey found on 2 subjects page");
+      return [];
+    }
 
-        if (currentSemester === "2") {
-          currentYearString = `${date.getFullYear() - 1}-${date.getFullYear()}`;
-        }
-        if (
-          currentSemester === currentRow.semseter &&
-          currentYearString === currentRow.years
-        ) {
-          // tabNo = (i + 1) / 5 + 1;
-          tableKey = currentRow.journalLink;
-        }
-
-        elementInRow = 0;
-      }
-
-      const isJournalLink = elementInRow === 3;
-      const isYears = elementInRow === 4;
-      const isSemester = elementInRow === 5;
-
-      if (isSemester) {
-        currentRow.semseter = el.textContent;
-      }
-      if (isJournalLink) {
-        currentRow.journalLink = el.getAttribute("href")?.split("'")[1] || "";
-      }
-
-      if (isYears) {
-        currentRow.years = el.textContent.trim() || currentRow.years;
-      }
-      elementInRow++;
-    });
     const letters = [
       "Й",
       "Ц",
@@ -186,11 +137,13 @@ export async function getSubjectsPage(token: string = "") {
         paramStr = paramStr.replaceAll(character, encodedLetters[indexInArray]);
       }
     }
+
     let thirdPageBody = `mode=SubTable&key=${tableKey}&ref=&sort=&FieldChoice=&TabNo=${tabNo}&RecsAdded=&FilterMode=&FieldChoiceMode=&PageNo=1&PageSize=20&RecsDeleted=0&RecsCount=4&KeyStr=${keyStr}&TabStr=0%7C%7E%7C2&PgNoStr=1%7C%7E%7C&PgSzStr=200%7C%7E%7C&FilterStr=%7C%7E%7C&FieldChoiceStr=%7C%7E%7C&SortStr=%7C%7E%7C&ModeStr=%7C%7E%7CSubTable&FieldStr=&ChildStr=&ParamStr=${paramStr}`;
     thirdPageBody = thirdPageBody.replaceAll("^", "%5E");
     thirdPageBody = thirdPageBody.replaceAll("|", "%7C");
     //thirdPageBody = thirdPageBody.replaceAll("@", "%40");
     thirdPageBody = thirdPageBody.replaceAll("~", "%7E");
+
     const thirdPage = await fetch(
       `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/eduplans.php`,
       {
@@ -198,7 +151,6 @@ export async function getSubjectsPage(token: string = "") {
         body: thirdPageBody,
         headers: {
           Authorization: token,
-          // "Content-Type": "application/x-www-form-urlencoded",
         },
       },
     ).then((res) => res.text());

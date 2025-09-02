@@ -22,7 +22,6 @@ export default function ProtectedRoute() {
   // });
 
   useEffect(() => {
-    console.log(session);
     if (!session) {
       router("/login");
     }

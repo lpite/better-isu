@@ -3,7 +3,6 @@ import { useAppStore } from "@/stores/useAppStore";
 import useSWR from "swr";
 import { useProfile } from "./useProfile";
 import { useGroup } from "./useGroup";
-import { laggy } from "@/utils/laggySwr";
 
 export function useIndividualPlan() {
   const { session } = useAppStore();
@@ -14,8 +13,12 @@ export function useIndividualPlan() {
     course: profile?.course,
     facultyName: profile?.faculty,
   });
+
+  const canFetch =
+    session?.token && profile?.course && group?.currSem?.toString();
+
   return useSWR(
-    session?.token && profile?.course ? "individualPlan" : null,
+    canFetch ? "individual-plan" : null,
     () =>
       getIndividualPlan(
         session?.token || "",
@@ -24,8 +27,7 @@ export function useIndividualPlan() {
       ),
     {
       revalidateOnFocus: false,
-      revalidateIfStale: false,
-      use: [laggy],
+      // revalidateIfStale: false,
     },
   );
 }

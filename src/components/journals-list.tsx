@@ -12,7 +12,6 @@ export default function JournalsList({
   isLoading,
 }: JournalsListProps) {
   const [testJournal, _] = useState(true);
-  console.log(testJournal);
   return (
     <div className="mt-5 mb-12 overflow-auto grow">
       {isLoading ? (

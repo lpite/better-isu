@@ -1,45 +1,56 @@
 import { API_URL } from "@/config";
 import loginPageParser from "@/data/loginPageParser";
 import { useAppStore } from "@/stores/useAppStore";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const SESSION_TTL = 60 * 60 * 1000; // 1 hour
 
 export function useSession() {
-  const { session, user } = useAppStore();
-  const [status, setStatus] = useState<
-    "loading" | "unauthorised" | "authorised"
-  >("loading");
+  const { session, user, setSessionStatus } = useAppStore();
 
+  const status = session?.status;
   useEffect(() => {
     const refreshing = Boolean(localStorage.getItem("refreshing_session"));
 
     if (!session || !user) {
-      setStatus("unauthorised");
+      setSessionStatus("unauthorised");
       return;
     }
 
     if (Date.now() - session.created_at > SESSION_TTL) {
-      setStatus("loading");
+      setSessionStatus("loading");
       console.log("passed");
       if (!refreshing) {
         localStorage.setItem("refreshing_session", "1");
         updateSession(user?.login, user?.password)
+          .then((newSession) => {
+            if (newSession) {
+              setSessionStatus("authorised");
+
+              useAppStore.setState((state) => ({
+                ...state,
+                session: newSession,
+              }));
+            } else {
+              console.error("cant create newSession")
+              setSessionStatus("unauthorised");
+            }
+          })
           .catch((err) => {
             console.error(err);
-            setStatus("unauthorised");
+            setSessionStatus("unauthorised");
           })
           .finally(() => {
             localStorage.removeItem("refreshing_session");
           });
       }
     } else {
-      setStatus("authorised");
+      setSessionStatus("authorised");
 
       // консол лог дуже важливий його не можна забирати))
       console.log("meow");
     }
-  }, [session]);
+  }, []);
   return { status, session };
 }
 
@@ -53,19 +64,17 @@ async function updateSession(login: string, password: string) {
   );
 
   const result = await loginPageParser(res);
-
-  const cookie = document.cookie
-    .split(";")
-    .find((el) => el.startsWith("isu_cookie"))
+  console.log(res.headers.get("cookie"))
+  const cookie = res.headers.get("cookie")
+    ?.split(";")
+    ?.find((el) => el.startsWith("isu_cookie"))
     ?.replace("isu_cookie=", "");
-
+  console.log(result.success, document.cookie)
   if (result.success && cookie) {
-    useAppStore.setState((state) => ({
-      ...state,
-      session: {
-        token: cookie.toString(),
-        created_at: Date.now(),
-      },
-    }));
+    return {
+      token: cookie.toString(),
+      created_at: Date.now(),
+    };
   }
+  return null;
 }

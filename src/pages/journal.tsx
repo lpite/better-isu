@@ -41,7 +41,7 @@ export default function JournalPage() {
             {data?.grades
               .filter((el) => el.CONTROLNAME === data.controls[selected].NAME)
               .map((el, i) => (
-                <div className="flex py-2 border-t border-gray-200">
+                <div key={el.ROWID + el.COLID} className="flex py-2 border-t border-gray-200">
                   <span className="block grow text-center">{i + 1}</span>
                   <span className="block grow text-center">
                     {el.GRADE || "-"}

@@ -8,7 +8,7 @@ interface Store {
   };
   session?: {
     token: string;
-    created_at: Date;
+    created_at: number;
   };
   // profile?: {
   // 	name: string;
@@ -28,7 +28,7 @@ export const useAppStore = create<Store>()(
     })),
     {
       name: "app-store",
-      version: 1,
+      version: 2,
     },
   ),
 );

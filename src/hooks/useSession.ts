@@ -1,48 +1,43 @@
+import { API_URL } from "@/config";
 import loginPageParser from "@/data/loginPageParser";
 import { useAppStore } from "@/stores/useAppStore";
 import { useEffect, useState } from "react";
+
+const SESSION_TTL = 60 * 60 * 1000; // 1 hour
 
 export function useSession() {
   const { session, user } = useAppStore();
   const [status, setStatus] = useState<
     "loading" | "unauthorised" | "authorised"
   >("loading");
+
   useEffect(() => {
-    const now = new Date();
+    const refreshing = Boolean(localStorage.getItem("refreshing_session"));
+
     if (!session || !user) {
       setStatus("unauthorised");
       return;
     }
-    if (typeof session?.created_at === "string") {
-      // коли береться кеш з локал стораджа то він дату в строку робить
-      // а мені в падло це фіксить
-      const date = new Date(session?.created_at);
-      //@ts-expect-error так треба
-      if (now - date > 3600000) {
-        setStatus("loading");
-        console.log("passed");
-        updateSession(user?.login, user?.password).catch((err) => {
-          console.error(err);
-        });
-      } else {
-        setStatus("authorised");
 
-        // консол лог дуже важливий його не можна забирати))
-        console.log("meow");
+    if (Date.now() - session.created_at > SESSION_TTL) {
+      setStatus("loading");
+      console.log("passed");
+      if (!refreshing) {
+        localStorage.setItem("refreshing_session", "1");
+        updateSession(user?.login, user?.password)
+          .catch((err) => {
+            console.error(err);
+            setStatus("unauthorised");
+          })
+          .finally(() => {
+            localStorage.removeItem("refreshing_session");
+          });
       }
     } else {
-      //@ts-expect-error так треба
-      if (now - session?.created_at > 3600000) {
-        setStatus("loading");
-        console.log("passed");
-        updateSession(user?.login, user?.password).catch((err) => {
-          console.error(err);
-        });
-      } else {
-        setStatus("authorised");
+      setStatus("authorised");
 
-        console.log("meow");
-      }
+      // консол лог дуже важливий його не можна забирати))
+      console.log("meow");
     }
   }, [session]);
   return { status, session };
@@ -50,13 +45,10 @@ export function useSession() {
 
 async function updateSession(login: string, password: string) {
   const res = await fetch(
-    "/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/logon.php",
+    `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/logon.php`,
     {
       method: "POST",
       body: `login=${login}&passwd=${password}&btnSubmit=%D3%E2%B3%E9%F2%E8`,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
     },
   );
 
@@ -72,7 +64,7 @@ async function updateSession(login: string, password: string) {
       ...state,
       session: {
         token: cookie.toString(),
-        created_at: new Date(),
+        created_at: Date.now(),
       },
     }));
   }

@@ -4,16 +4,14 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import {
-  ArrowLongLeftIcon,
-  ArrowLongRightIcon,
-} from "@heroicons/react/24/outline";
+
 import { useEffect, useState } from "react";
 import {
   GetUserSchedule200,
   GetUserSchedule200ScheduleItemListItem,
 } from "../../orval/model";
 import { GetUserIndividualPlanQueryResult } from "../../orval/default/default";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 type ScheduleCarouselProps = {
   isLoadingSchedule: boolean;
@@ -91,7 +89,10 @@ export default function ScheduleCarousel({
   }
 
   return (
-    <Carousel setApi={setApi} className="flex-1 min-h-0 mb-14 select-none">
+    <Carousel
+      setApi={setApi}
+      className="flex-1 min-h-0 mb-14 select-none opacity-0 fade-in-with-delay"
+    >
       <CarouselContent className="h-full">
         {schedule &&
           schedule?.map(({ date, month, type, list, weekDay }) => (
@@ -99,16 +100,16 @@ export default function ScheduleCarousel({
               className="h-full flex  pt-12 relative"
               key={date + month + weekDay}
             >
-              <div className="absolute top-0 start-6 end-0 flex items-center justify-between pt-3.5 pb-2.5 text-blue-900 dark:text-blue-300">
+              <div className="absolute top-0 start-6 end-0 flex items-center justify-between pt-3.5 pb-2.5 text-foreground">
                 <span>
                   {date} {month} {weekDay} ({type})
                 </span>
                 <div className="flex gap-5 ">
                   <button onMouseDown={() => api?.scrollPrev()}>
-                    <ArrowLongLeftIcon width={24} />
+                    <ArrowLeft height={18} width={18} />
                   </button>
                   <button onMouseDown={() => api?.scrollNext()}>
-                    <ArrowLongRightIcon width={24} />
+                    <ArrowRight height={18} width={18} />
                   </button>
                 </div>
               </div>
@@ -150,7 +151,7 @@ function ScheduleItem({
       key={date + number + name}
       className="border border-solid border-slate-300 dark:border-slate-600 p-2 rounded-lg mb-1.5"
     >
-      <div className="flex justify-between text-slate-300">
+      <div className="flex justify-between text-slate-500 dark:text-slate-300">
         <span>{number}</span>
         <span>{auditory}</span>
       </div>

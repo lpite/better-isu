@@ -1,9 +1,9 @@
 import BottomNavigation from "@/components/bottom-navigation";
 import HeaderWithBurger from "@/components/header-with-burger";
-import { AcademicCapIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
 import { useGroup } from "@/hooks/useGroup";
+import { ChevronRight, Users } from "lucide-react";
 
 export default function ProfilePage() {
   const { data: profile } = useProfile();
@@ -29,16 +29,16 @@ export default function ProfilePage() {
 
         <Link
           to="/rating"
-          className="flex justify-between bg-blue-900 dark:bg-blue-600 text-white p-2 mt-5 rounded-lg"
+          className="flex justify-between items-center bg-primary text-white p-2 mt-5 rounded-lg"
         >
-          <div className="flex">
-            <AcademicCapIcon width={24} />
-            <div className="flex flex-col pl-1.5">
+          <div className="flex items-center">
+            <Users height={22} width={22} />
+            <div className="flex flex-col pl-2">
               <span className="text-sm">Рейтинг</span>
               <span className="text-xs">Переглянь свій рейтинг</span>
             </div>
           </div>
-          <ChevronRightIcon width={24} />
+          <ChevronRight />
         </Link>
       </main>
       <BottomNavigation />

@@ -13,7 +13,7 @@ export default function JournalsList({
 }: JournalsListProps) {
   const [testJournal, _] = useState(true);
   return (
-    <div className="mt-5 mb-12 overflow-auto grow">
+    <div className="mt-5 mb-12 overflow-auto grow opacity-0 fade-in-with-delay">
       {isLoading ? (
         <div className="h-8 w-8 mx-2 border border-blue-700 border-t-transparent animate-spin rounded-full inline-block"></div>
       ) : null}

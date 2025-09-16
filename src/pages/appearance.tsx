@@ -1,9 +1,9 @@
 import HeaderWithLabel from "@/components/header-with-label";
 
 import { Switch } from "@/components/ui/switch";
-import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "@/components/theme-provider";
 import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
 
 export default function AppearancePage() {
   const { setTheme, theme } = useTheme();
@@ -48,7 +48,7 @@ export default function AppearancePage() {
             onToggle={() => setTheme("light")}
             activeClass="text-blue-900 bg-blue-50"
           >
-            <SunIcon width={24} />
+            <Sun />
             <span>Світла</span>
           </ColorThemeToggle>
           <ColorThemeToggle
@@ -56,7 +56,7 @@ export default function AppearancePage() {
             onToggle={() => setTheme("dark")}
             activeClass="bg-blue-900 dark:bg-blue-600 text-blue-50"
           >
-            <MoonIcon width={24} />
+            <Moon />
             <span>Темна</span>
           </ColorThemeToggle>
         </div>
@@ -89,7 +89,7 @@ function ColorThemeToggle({
 }: ColorThemeToggleProps) {
   return (
     <label
-      className={`flex items-center justify-center gap-1 rounded-lg h-10 w-full border border-slate-300  ${toggled ? activeClass + " border-transparent" : "dark:border-slate-600"}`}
+      className={`flex items-center justify-center gap-1 rounded-lg h-10 w-full border border-slate-300 ${toggled ? activeClass + " border-transparent" : "dark:border-slate-600"}`}
     >
       <input
         type="radio"

@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Spinner from "@/components/spinner";
 import { useJournal } from "@/hooks/useJournal";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 export default function JournalPage() {
   const params = useParams();
@@ -45,9 +44,6 @@ export default function JournalPage() {
                   <span className="block grow text-center">{i + 1}</span>
                   <span className="block grow text-center">
                     {el.GRADE || "-"}
-                  </span>
-                  <span className="block grow text-center">
-                    <InformationCircleIcon width={24} />
                   </span>
                 </div>
               ))}

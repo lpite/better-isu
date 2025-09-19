@@ -52,8 +52,12 @@ export async function getSubjectsPage(token: string = "") {
       "";
 
     let tabNo = 6;
-    const tableKey = secondPageHtml.querySelectorAll("[color=blue]")[0].parentNode.parentNode.querySelectorAll("td")[4].children[0].getAttribute("href")?.split("'")[1]
-    
+    const tableKey = secondPageHtml
+      .querySelectorAll("[color=blue]")[0]
+      .parentNode.parentNode.querySelectorAll("td")[4]
+      .children[0].getAttribute("href")
+      ?.split("'")[1];
+
     if (!tableKey) {
       console.error("no tableKey found on 2 subjects page");
       return [];

@@ -32,7 +32,7 @@ export function useSession() {
                 session: newSession,
               }));
             } else {
-              console.error("cant create newSession")
+              console.error("cant create newSession");
               setSessionStatus("unauthorised");
             }
           })
@@ -64,12 +64,13 @@ async function updateSession(login: string, password: string) {
   );
 
   const result = await loginPageParser(res);
-  console.log(res.headers.get("cookie"))
-  const cookie = res.headers.get("cookie")
+  console.log(res.headers.get("cookie"));
+  const cookie = res.headers
+    .get("cookie")
     ?.split(";")
     ?.find((el) => el.startsWith("isu_cookie"))
     ?.replace("isu_cookie=", "");
-  console.log(result.success, document.cookie)
+  console.log(result.success, document.cookie);
   if (result.success && cookie) {
     return {
       token: cookie.toString(),

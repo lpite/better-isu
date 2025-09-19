@@ -26,7 +26,11 @@ export default function MainPage() {
   const { data: profile, isLoading: isLoadingProfile } = useProfile();
 
   const _ = useSession();
-  const { data: subjects, isLoading: isLoadingSubjects } = useSubjects();
+  const {
+    data: subjects,
+    isLoading: isLoadingSubjects,
+    error: subjectsError,
+  } = useSubjects();
   return (
     <>
       <ProtectedRoute />
@@ -66,6 +70,7 @@ export default function MainPage() {
           <JournalsList
             journals={subjects || []}
             isLoading={isLoadingSubjects}
+            error={subjectsError}
           />
         ) : null}
       </main>

@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const themes = ["dark", "light", "pink", "system"] as const;
 
-type Theme = typeof themes[number];
+type Theme = (typeof themes)[number];
 
 type ThemeProviderProps = {
   children: React.ReactNode;

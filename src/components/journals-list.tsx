@@ -15,7 +15,9 @@ export default function JournalsList({
   return (
     <div className="mt-5 mb-12 overflow-auto grow opacity-0 fade-in-with-delay">
       {isLoading ? (
-        <div className="h-8 w-8 mx-2 border border-blue-700 border-t-transparent animate-spin rounded-full inline-block"></div>
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="h-8 w-8 mx-2 border border-blue-700 border-t-transparent animate-spin rounded-full inline-block"></div>
+        </div>
       ) : null}
       {journals?.map(({ name }, i) => (
         <Fragment key={name}>

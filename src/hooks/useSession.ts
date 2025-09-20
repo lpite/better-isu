@@ -10,7 +10,7 @@ export function useSession() {
 
   const status = session?.status;
   useEffect(() => {
-    const refreshing = Boolean(localStorage.getItem("refreshing_session"));
+    setSessionStatus("loading");
 
     if (!session || !user) {
       setSessionStatus("unauthorised");
@@ -18,10 +18,9 @@ export function useSession() {
     }
 
     if (Date.now() - session.created_at > SESSION_TTL) {
-      setSessionStatus("loading");
       console.log("passed");
-      if (!refreshing) {
-        localStorage.setItem("refreshing_session", "1");
+      if (status !== "refreshing") {
+        setSessionStatus("refreshing");
         updateSession(user?.login, user?.password)
           .then((newSession) => {
             if (newSession) {
@@ -39,16 +38,10 @@ export function useSession() {
           .catch((err) => {
             console.error(err);
             setSessionStatus("unauthorised");
-          })
-          .finally(() => {
-            localStorage.removeItem("refreshing_session");
           });
       }
     } else {
       setSessionStatus("authorised");
-
-      // консол лог дуже важливий його не можна забирати))
-      console.log("meow");
     }
   }, []);
   return { status, session };
@@ -64,13 +57,13 @@ async function updateSession(login: string, password: string) {
   );
 
   const result = await loginPageParser(res);
-  console.log(res.headers.get("cookie"));
+
   const cookie = res.headers
     .get("cookie")
     ?.split(";")
     ?.find((el) => el.startsWith("isu_cookie"))
     ?.replace("isu_cookie=", "");
-  console.log(result.success, document.cookie);
+
   if (result.success && cookie) {
     return {
       token: cookie.toString(),

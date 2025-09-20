@@ -4,7 +4,7 @@ import { devtools, persist } from "zustand/middleware";
 interface Session {
   token: string;
   created_at: number;
-  status?: "loading" | "unauthorised" | "authorised";
+  status?: "loading" | "unauthorised" | "authorised" | "refreshing";
 }
 
 interface Store {

@@ -88,7 +88,7 @@ export async function getJournal({
   }
 
   const journalControls = (await fetch(
-    `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/jrn/jrncontrols.php`,
+    `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/jrn/remote/simple/jrncontrols.php`,
     {
       method: "POST",
       headers: {
@@ -100,7 +100,7 @@ export async function getJournal({
   ).then((r) => r.json())) as Control[];
 
   const journalGrades = (await fetch(
-    `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/jrn/jrngrades.php`,
+    `${API_URL}/api/proxy?url=https://isu1.khmnu.edu.ua/isu/dbsupport/students/jrn/remote/simple/jrngrades.php`,
     {
       headers: {
         Authorization: token,

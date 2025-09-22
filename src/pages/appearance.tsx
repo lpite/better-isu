@@ -60,6 +60,12 @@ export default function AppearancePage() {
             <span>Темна</span>
           </ColorThemeToggle>
         </div>
+         <label className="flex mt-5 w-full">
+           <div className="flex flex-col grow">
+            <span className="font-medium">Зміна кольору</span>
+          </div>
+          <input type="color" />
+        </label>
         <label className="flex mt-5">
           <div className="flex flex-col">
             <span className="font-medium">Тестовий вигляд журналу</span>

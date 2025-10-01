@@ -5,11 +5,13 @@ import { useSession } from "./useSession";
 export function useSubjects() {
   const { session, status } = useSession();
 
-  const canFetchSubjects = status === "authorised" && session?.token;
+  const isSessionReady = status !== "loading" && status !== "refreshing";
 
   return useSWR(
-    canFetchSubjects ? "subjects" : null,
-    () => getSubjectsPage(session?.token || ""),
+    isSessionReady && status !== "unauthorised"
+      ? ["subjects", session?.token]
+      : null,
+    () => getSubjectsPage(session?.token),
     {
       errorRetryCount: 10,
       errorRetryInterval: 500,

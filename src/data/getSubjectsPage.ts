@@ -1,7 +1,11 @@
 import { API_URL } from "@/config";
 import parse from "node-html-parser";
 
-export async function getSubjectsPage(token: string = "") {
+export async function getSubjectsPage(token?: string | null) {
+  if (!token || !token?.length) {
+    throw new Error("Token is null or empty.");
+  }
+
   try {
     const decoder = new TextDecoder("windows-1251");
 

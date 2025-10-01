@@ -5,9 +5,12 @@ import { useSession } from "./useSession";
 export function useProfile() {
   const { status, session } = useSession();
 
-  return useSWR(
-    status === "loading" || status === "unauthorised" ? null : "profile",
+  const isSessionReady = status !== "loading" && status !== "refreshing";
+
+  const profile = useSWR(
+    isSessionReady && status !== "unauthorised" ? "profile" : null,
     () => getProfilePage(session?.token || ""),
-    {},
   );
+
+  return { ...profile, isLoading: profile.isLoading || !isSessionReady };
 }

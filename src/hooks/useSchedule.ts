@@ -1,21 +1,11 @@
 import useSWR from "swr";
 import { useProfile } from "./useProfile";
-import { laggy } from "@/utils/laggySwr";
 import { API_URL } from "@/config";
 import { useSession } from "./useSession";
 
 export function useSchedule() {
   const { status } = useSession();
   const { data: profile, isLoading: isLoadingProfile } = useProfile();
-
-  // if (status === "loading") {
-  //   return {
-  //     data: undefined,
-  //     error: undefined,
-  //     isLoading: true,
-  //     isValidating: false,
-  //   };
-  // }
 
   const canFetchSchedule =
     status !== "loading" &&
@@ -38,8 +28,6 @@ export function useSchedule() {
           return [];
         }),
     {
-      revalidateIfStale: true,
-      revalidateOnFocus: true,
       revalidateOnMount: true,
       onError: (err) => {
         console.error(err);

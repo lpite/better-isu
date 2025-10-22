@@ -53,6 +53,7 @@ export default function JournalPage() {
                 )}
                 {data?.grades
                   .filter((gradeRow) => gradeRow.MONTHSTR === m)
+                  .sort((a, b) => Number(a.DAYNUM) - Number(b.DAYNUM))
                   .map((gradeRow) => (
                     <div
                       key={gradeRow.ROWID + gradeRow.COLID + m}

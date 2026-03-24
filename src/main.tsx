@@ -3,14 +3,16 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import MainPage from "./pages/main.tsx";
-import ProfilePage from "./pages/profile.tsx";
-import AppearancePage from "./pages/appearance.tsx";
-import AboutPage from "./pages/about.tsx";
-import RatingPage from "./pages/rating.tsx";
-import { ThemeProvider } from "./components/theme-provider.tsx";
-import LoginPage from "./pages/login.tsx";
-import JournalPage from "./pages/journal.tsx";
+import MainPage from "./pages/main";
+import ProfilePage from "./pages/profile";
+import AppearancePage from "./pages/appearance";
+import AboutPage from "./pages/about";
+import RatingPage from "./pages/rating";
+import { ThemeProvider } from "./components/theme-provider";
+import LoginPage from "./pages/login";
+import JournalPage from "./pages/journal";
+import { SWRConfig } from "swr";
+import LoadingIndicators from "./components/loading-indicators";
 
 const router = createBrowserRouter([
   {
@@ -47,10 +49,31 @@ const router = createBrowserRouter([
   },
 ]);
 
+function localStorageProvider() {
+  const cacheVersion = "1.0";
+  const cacheKey = "app-cache_" + cacheVersion;
+  // When initializing, we restore the data from `localStorage` into a map.
+  const map = new Map<any, any>(
+    JSON.parse(localStorage.getItem(cacheKey) || "[]"),
+  );
+
+  // Before unloading the app, we write back all the data into `localStorage`.
+  window.addEventListener("beforeunload", () => {
+    const appCache = JSON.stringify(Array.from(map.entries()));
+    localStorage.setItem(cacheKey, appCache);
+  });
+
+  // We still use the map for write & read for performance.
+  return map;
+}
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <SWRConfig>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <LoadingIndicators />
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </SWRConfig>
   </React.StrictMode>,
 );

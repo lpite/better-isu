@@ -1,12 +1,4 @@
 import {
-  Bars3Icon,
-  ExclamationCircleIcon,
-  InformationCircleIcon,
-  PowerIcon,
-  SunIcon,
-} from "@heroicons/react/24/outline";
-
-import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -15,28 +7,28 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Link, useNavigate } from "react-router-dom";
-import { usePostAuthLogout } from "../../orval/default/default";
-import Spinner from "./spinner";
+import { useAppStore } from "@/stores/useAppStore";
+import { Bug, Info, LogOut, Menu, Sun } from "lucide-react";
 
 export default function HeaderWithBurger() {
-  const { trigger: logoutTrigger, isMutating } = usePostAuthLogout();
   const navigate = useNavigate();
   function logout() {
-    logoutTrigger().then(() => {
-      navigate("/login");
+    useAppStore.setState({
+      user: undefined,
+      session: undefined,
     });
+    navigate("/login");
   }
 
   return (
     <header className="flex items-center justify-end px-4 pt-6 w-full fixed top-0">
-      <Spinner show={isMutating} />
       <Sheet>
         <SheetTrigger>
-          <Bars3Icon width={22} />
+          <Menu />
         </SheetTrigger>
         <SheetContent
           side="bottom"
-          className="rounded-t-3xl min-h-64 pt-2 px-6 dark:bg-slate-300"
+          className="rounded-t-3xl min-h-64 pt-2 px-6 bg-background"
         >
           <div className="flex justify-center">
             <div className="bg-slate-300 h-1 w-40 rounded-3xl"></div>
@@ -44,33 +36,33 @@ export default function HeaderWithBurger() {
 
           <SheetHeader className="w-full">
             <SheetTitle className="sr-only">Меню користувача</SheetTitle>
-            <SheetDescription className="text-slate-900 w-full">
+            <SheetDescription className="text-foreground w-full">
               <Link
                 to="/appearance"
-                className="flex items-center gap-1.5 border-b py-2"
+                className="flex items-center gap-2 border-b py-2"
               >
-                <SunIcon width={24} />
+                <Sun width={24} />
                 Зовнішній вигляд
               </Link>
               <Link
                 to="https://t.me/lpite"
-                className="flex items-center gap-1.5 border-b py-2"
+                className="flex items-center gap-2 border-b py-2"
               >
-                <ExclamationCircleIcon width={24} />
+                <Bug />
                 Повідомити про помилку
               </Link>
               <Link
                 to="/about"
-                className="flex items-center gap-1.5 border-b py-2"
+                className="flex items-center gap-2 border-b py-2"
               >
-                <InformationCircleIcon width={24} />
+                <Info />
                 Про додаток
               </Link>
               <button
-                className="flex items-center w-full gap-1.5 border-b py-2 text-red-600"
+                className="flex items-center w-full gap-2 border-b py-2 text-red-600"
                 onClick={logout}
               >
-                <PowerIcon width={24} />
+                <LogOut />
                 Вийти
               </button>
             </SheetDescription>

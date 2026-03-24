@@ -4,16 +4,14 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import {
-  ArrowLongLeftIcon,
-  ArrowLongRightIcon,
-} from "@heroicons/react/24/outline";
+
 import { useEffect, useState } from "react";
 import {
   GetUserSchedule200,
   GetUserSchedule200ScheduleItemListItem,
 } from "../../orval/model";
 import { GetUserIndividualPlanQueryResult } from "../../orval/default/default";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 type ScheduleCarouselProps = {
   isLoadingSchedule: boolean;
@@ -82,29 +80,57 @@ export default function ScheduleCarousel({
     }
   }, [individualPlan]);
 
+  if (isLoadingSchedule) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="h-8 w-8 mx-2 border border-blue-700 border-t-transparent animate-spin rounded-full inline-block"></div>
+      </div>
+    );
+  }
+
   return (
-    <Carousel setApi={setApi} className="overflow-auto mb-14">
-      <CarouselContent>
-        {schedule?.map(({ date, month, type, list, weekDay }) => (
-          <CarouselItem key={date + month + weekDay}>
-            <div className="flex items-center justify-between pt-3.5 pb-2.5 text-blue-900 dark:text-blue-300">
-              <span>
-                {date} {month} {weekDay} ({type})
-              </span>
-              <div className="flex gap-5 ">
-                <button onMouseDown={() => api?.scrollPrev()}>
-                  <ArrowLongLeftIcon width={24} />
-                </button>
-                <button onMouseDown={() => api?.scrollNext()}>
-                  <ArrowLongRightIcon width={24} />
-                </button>
+    <Carousel
+      setApi={setApi}
+      className="flex-1 min-h-0 mb-14 select-none opacity-0 fade-in-with-delay"
+    >
+      <CarouselContent className="h-full">
+        {schedule &&
+          schedule?.map(({ date, month, type, list, weekDay }) => (
+            <CarouselItem
+              className="h-full flex  pt-12 relative"
+              key={date + month + weekDay}
+            >
+              <div className="absolute top-0 start-6 end-0 flex items-center justify-between pt-3.5 pb-2.5 text-foreground">
+                <span>
+                  {date} {month} {weekDay} ({type})
+                </span>
+                <div className="flex gap-5 ">
+                  <button onMouseDown={() => api?.scrollPrev()}>
+                    <ArrowLeft height={18} width={18} />
+                  </button>
+                  <button onMouseDown={() => api?.scrollNext()}>
+                    <ArrowRight height={18} width={18} />
+                  </button>
+                </div>
               </div>
-            </div>
-            {list
-              ?.filter(({ name }) => isEnabled(name))
-              .map((item) => <ScheduleItem {...item} date={date} />)}
-          </CarouselItem>
-        ))}
+              <div className="min-h-0 overflow-y-auto w-full">
+                {list
+                  ?.filter(({ name }) => isEnabled(name))
+                  .map((item) => (
+                    <ScheduleItem
+                      key={date + item.number + item.name + item.auditory}
+                      {...item}
+                      date={date}
+                    />
+                  ))}
+                {!list?.filter(({ name }) => isEnabled(name)).length ? (
+                  <div className="h-full flex items-center justify-center text-xl">
+                    Вихідний :)
+                  </div>
+                ) : null}
+              </div>
+            </CarouselItem>
+          ))}
       </CarouselContent>
     </Carousel>
   );
@@ -125,7 +151,7 @@ function ScheduleItem({
       key={date + number + name}
       className="border border-solid border-slate-300 dark:border-slate-600 p-2 rounded-lg mb-1.5"
     >
-      <div className="flex justify-between text-slate-300">
+      <div className="flex justify-between text-slate-500 dark:text-slate-300">
         <span>{number}</span>
         <span>{auditory}</span>
       </div>

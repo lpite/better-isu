@@ -1,4 +1,4 @@
-import { ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 type HeaderWithLabelProps = {
@@ -8,9 +8,9 @@ type HeaderWithLabelProps = {
 export default function HeaderWithLabel({ pageName }: HeaderWithLabelProps) {
   const router = useNavigate();
   return (
-    <header className="text-blue-900 dark:text-blue-600 font-medium flex items-center justify-center w-full pt-7">
+    <header className="font-medium flex items-center justify-center w-full pt-7">
       <button className="absolute left-4">
-        <ChevronLeftIcon onMouseDown={() => router(-1)} width={24} />
+        <ChevronLeft onMouseDown={() => router(-1)} />
       </button>
       <span>{pageName}</span>
     </header>

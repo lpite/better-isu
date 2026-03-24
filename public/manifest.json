@@ -21,8 +21,8 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#f8fafc",
-  "background_color": "#020817",
+  "theme_color": "#111827",
+  "background_color": "#111827",
   "start_url": "/",
   "scope": "https://agenda.khmnu.edu.ua/",
   "display": "standalone",

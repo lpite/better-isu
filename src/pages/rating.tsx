@@ -1,13 +1,10 @@
 import HeaderWithLabel from "@/components/header-with-label";
-import {
-  useGetUserProfile,
-  useGetUserRating,
-} from "../../orval/default/default";
+import { useProfile } from "@/hooks/useProfile";
+import { useRating } from "@/hooks/useRating";
 
 export default function RatingPage() {
-  const { data: rating } = useGetUserRating();
-  const { data: profile } = useGetUserProfile();
-
+  const { data: rating } = useRating();
+  const { data: profile } = useProfile();
   return (
     <>
       <HeaderWithLabel pageName="Рейтинг" />

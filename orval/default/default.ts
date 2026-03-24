@@ -17,4 +17,3 @@ export const getUserIndividualPlan = () => {
 export type GetUserIndividualPlanQueryResult = NonNullable<
   Awaited<ReturnType<typeof getUserIndividualPlan>>
 >;
-

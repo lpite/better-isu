@@ -7,5 +7,3 @@
 
 export * from "./getUserSchedule200";
 export * from "./getUserSchedule200ScheduleItemListItem";
-
-

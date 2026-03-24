@@ -60,8 +60,8 @@ export default function AppearancePage() {
             <span>Темна</span>
           </ColorThemeToggle>
         </div>
-         <label className="flex mt-5 w-full">
-           <div className="flex flex-col grow">
+        <label className="flex mt-5 w-full">
+          <div className="flex flex-col grow">
             <span className="font-medium">Зміна кольору</span>
           </div>
           <input type="color" />

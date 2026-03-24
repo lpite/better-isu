@@ -48,17 +48,26 @@ const router = createBrowserRouter([
   },
 ]);
 
+const cacheVersion = "1.3";
+const cacheKey = "app-cache_" + cacheVersion;
+
+function saveCache(cacheMap: Map<any, any>) {
+  const json = JSON.stringify(Array.from(cacheMap.entries()));
+  localStorage.setItem(cacheKey, json);
+}
+
 function localStorageProvider() {
-  const cacheVersion = "1.3";
-  const cacheKey = "app-cache_" + cacheVersion;
   const map = new Map<any, any>(
     JSON.parse(localStorage.getItem(cacheKey) || "[]"),
   );
 
-  window.addEventListener("beforeunload", () => {
-    const appCache = JSON.stringify(Array.from(map.entries()));
-    localStorage.setItem(cacheKey, appCache);
+  window.addEventListener("beforeunload", () => saveCache(map));
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      saveCache(map);
+    }
   });
+  window.addEventListener("pagehide", () => saveCache(map));
 
   return map;
 }

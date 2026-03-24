@@ -29,7 +29,7 @@ export default defineConfig({
         runtimeCaching: [
           {
             urlPattern: /.*/, // everything
-            handler: "StaleWhileRevalidate",
+            handler: "NetworkOnly",
             options: {
               cacheName: "everything-cache",
               expiration: {},

@@ -12,7 +12,6 @@ import { ThemeProvider } from "./components/theme-provider";
 import LoginPage from "./pages/login";
 import JournalPage from "./pages/journal";
 import { SWRConfig } from "swr";
-import LoadingIndicators from "./components/loading-indicators";
 
 const router = createBrowserRouter([
   {
@@ -50,28 +49,24 @@ const router = createBrowserRouter([
 ]);
 
 function localStorageProvider() {
-  const cacheVersion = "1.0";
+  const cacheVersion = "1.3";
   const cacheKey = "app-cache_" + cacheVersion;
-  // When initializing, we restore the data from `localStorage` into a map.
   const map = new Map<any, any>(
     JSON.parse(localStorage.getItem(cacheKey) || "[]"),
   );
 
-  // Before unloading the app, we write back all the data into `localStorage`.
   window.addEventListener("beforeunload", () => {
     const appCache = JSON.stringify(Array.from(map.entries()));
     localStorage.setItem(cacheKey, appCache);
   });
 
-  // We still use the map for write & read for performance.
   return map;
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <SWRConfig>
+    <SWRConfig value={{ provider: localStorageProvider }}>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <LoadingIndicators />
         <RouterProvider router={router} />
       </ThemeProvider>
     </SWRConfig>

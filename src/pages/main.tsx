@@ -61,7 +61,8 @@ export default function MainPage() {
         {page === "schedule" ? (
           <ScheduleCarousel
             schedule={schedule || []}
-            isLoadingSchedule={isLoadingSchedule || isValidatingSchedule}
+            isLoadingSchedule={isLoadingSchedule}
+            isValidatingSchedule={isValidatingSchedule}
             individualPlan={individualPlan}
             isLoadingIndividualPlan={isLoadingIndividualPlan}
           />

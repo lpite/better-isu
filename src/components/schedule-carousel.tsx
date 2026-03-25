@@ -49,7 +49,7 @@ export default function ScheduleCarousel({
     api.reInit();
 
     api.scrollTo(currentWeekDay, true);
-  }, [api, isLoadingSchedule]);
+  }, [api, isLoadingSchedule, isValidatingSchedule]);
 
   function isEnabled(subjName: string) {
     if (!enabledSubjects.length) {

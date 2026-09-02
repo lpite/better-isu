@@ -130,21 +130,20 @@ function generateDaysList(weekType, schedule) {
   ];
 
   // Список замін для пʼятниці
-  // const listForFriday = [
-  //   { date: "06.09", type: "up", day: "Пн" },
-  //   { date: "13.09", type: "up", day: "Вт" },
-  //   { date: "20.09", type: "up", day: "Ср" },
-  //   { date: "27.09", type: "up", day: "Чт" },
-  //   { date: "04.10", type: "bottom", day: "Пн" },
-  //   { date: "11.10", type: "bottom", day: "Вт" },
-  //   { date: "18.10", type: "bottom", day: "Ср" },
-  //   { date: "25.10", type: "bottom", day: "Чт" },
-  //   { date: "01.11", type: "up", day: "Пн" },
-  //   { date: "08.11", type: "up", day: "Вт" },
-  //   { date: "15.11", type: "up", day: "Ср" },
-  //   { date: "22.11", type: "up", day: "Чт" },
-  //   { date: "29.11", type: "bottom", day: "Пн" },
-  // ];
+  const listForFriday = [
+    { date: "04.09", type: "up", day: "Пн" },
+    { date: "11.09", type: "up", day: "Вт" },
+    { date: "28.09", type: "up", day: "Ср" },
+    { date: "25.09", type: "up", day: "Чт" },
+    { date: "02.10", type: "bottom", day: "Пн" },
+    { date: "09.10", type: "bottom", day: "Вт" },
+    { date: "16.10", type: "bottom", day: "Ср" },
+    { date: "23.10", type: "bottom", day: "Чт" },
+    { date: "30.10", type: "up", day: "Пн" },
+    { date: "06.11", type: "up", day: "Вт" },
+    { date: "13.11", type: "up", day: "Ср" },
+    { date: "20.11", type: "up", day: "Чт" },
+  ];
 
   const date = new Date();
   const currentWeekDay = correctWeekDays[date.getDay()];
@@ -172,26 +171,26 @@ function generateDaysList(weekType, schedule) {
       type: types[wt],
       list: schedule
         ?.filter((el) => {
-          // if (currentDate.getDay() === 5) {
-          //   // заміна пʼятниці
-          //   const scheduleForFriday = listForFriday.find((el) => {
-          //     const [d, m] = el.date.split(".");
-          //     if (
-          //       currentDate.getMonth() + 1 === parseInt(m) &&
-          //       currentDate.getDate() === parseInt(d)
-          //     ) {
-          //       return true;
-          //     }
-          //     return false;
-          //   });
-          //   if (
-          //     el.day === scheduleForFriday?.day &&
-          //     (el.type === scheduleForFriday?.type || el.type === "full")
-          //   ) {
-          //     return true;
-          //   }
-          //   return false;
-          // }
+          if (currentDate.getDay() === 5) {
+            // заміна пʼятниці
+            const scheduleForFriday = listForFriday.find((el) => {
+              const [d, m] = el.date.split(".");
+              if (
+                currentDate.getMonth() + 1 === parseInt(m) &&
+                currentDate.getDate() === parseInt(d)
+              ) {
+                return true;
+              }
+              return false;
+            });
+            if (
+              el.day === scheduleForFriday?.day &&
+              (el.type === scheduleForFriday?.type || el.type === "full")
+            ) {
+              return true;
+            }
+            return false;
+          }
 
           if (
             el.day === listOfDays[correctWeekDays[currentDate.getDay()]] &&

@@ -17,7 +17,10 @@ async function getFacultets() {
   return facultets;
 }
 
-async function getGroups(facultyId, course) {
+async function getGroups(
+  facultyId: { toString: () => string | Blob },
+  course: string | Blob,
+) {
   const formDataWithKey = new FormData();
   formDataWithKey.append("schedAppKey", process.env.ISU_API_KEY || "");
 
@@ -35,7 +38,12 @@ async function getGroups(facultyId, course) {
   return groups;
 }
 
-async function getScheduleByApi(groupId, currSem, faculty_id, course) {
+async function getScheduleByApi(
+  groupId: { toString: () => string | Blob },
+  currSem: number,
+  faculty_id: any,
+  course: any,
+) {
   const formDataWithKey = new FormData();
   formDataWithKey.append("schedAppKey", process.env.ISU_API_KEY || "");
 
@@ -67,22 +75,40 @@ async function getScheduleByApi(groupId, currSem, faculty_id, course) {
   const pairTypes = ["full", "up", "bottom"];
   const studyTypes = ["", "лекц.", "пр.", "лаб."];
 
-  return schedule.map((el) => {
-    return {
-      day: el.dayName,
-      number: el.pairNum,
-      type: pairTypes[el.weekId],
-      name: `${studyTypes[el.studyTypeId]} ${el.subjectName}`,
-      auditory: el.audName,
-      subjectName: el.subjectName,
-      teacherShortName: el.teacherShortName,
-      teacherFullName: el.teacherFullName,
-      // Вказує на те чи є цей предмет вибірковим.
-      isSelectable: el.isSubGroup === "Y" ? true : false,
-      dateFrom: el.dateFrom,
-      dateTo: el.dateTo,
-    };
-  });
+  return schedule.map(
+    (el: {
+      dayName: any;
+      pairNum: any;
+      weekId: string | number;
+      studyTypeId: string | number;
+      subjectName: any;
+      audName: any;
+      teacherShortName: any;
+      teacherFullName: any;
+      isSubGroup: string;
+      dateFrom: any;
+      dateTo: any;
+    }) => {
+      return {
+        day: el.dayName,
+        number: el.pairNum,
+        //@ts-expect-error meow
+
+        type: pairTypes[el.weekId],
+        //@ts-expect-error meow
+
+        name: `${studyTypes[el.studyTypeId]} ${el.subjectName}`,
+        auditory: el.audName,
+        subjectName: el.subjectName,
+        teacherShortName: el.teacherShortName,
+        teacherFullName: el.teacherFullName,
+        // Вказує на те чи є цей предмет вибірковим.
+        isSelectable: el.isSubGroup === "Y" ? true : false,
+        dateFrom: el.dateFrom,
+        dateTo: el.dateTo,
+      };
+    },
+  );
 }
 
 async function getTypeOfWeek() {
@@ -98,7 +124,7 @@ async function getTypeOfWeek() {
   }
 }
 
-function generateDaysList(weekType, schedule) {
+function generateDaysList(weekType: string, schedule: any[]) {
   if (!weekType) {
     return [];
   }
@@ -170,52 +196,72 @@ function generateDaysList(weekType, schedule) {
       weekDay: listOfDays[correctWeekDays[currentDate.getDay()]],
       type: types[wt],
       list: schedule
-        ?.filter((el) => {
-          if (currentDate.getDay() === 5) {
-            // заміна пʼятниці
-            const scheduleForFriday = listForFriday.find((el) => {
-              const [d, m] = el.date.split(".");
+        ?.filter(
+          (el: { day: string | undefined; type: string | undefined }) => {
+            if (currentDate.getDay() === 5) {
+              // заміна пʼятниці
+              const scheduleForFriday = listForFriday.find((el) => {
+                const [d, m] = el.date.split(".");
+                if (
+                  currentDate.getMonth() + 1 === parseInt(m) &&
+                  currentDate.getDate() === parseInt(d)
+                ) {
+                  return true;
+                }
+                return false;
+              });
               if (
-                currentDate.getMonth() + 1 === parseInt(m) &&
-                currentDate.getDate() === parseInt(d)
+                el.day === scheduleForFriday?.day &&
+                (el.type === scheduleForFriday?.type || el.type === "full")
               ) {
                 return true;
               }
               return false;
-            });
+            }
+
             if (
-              el.day === scheduleForFriday?.day &&
-              (el.type === scheduleForFriday?.type || el.type === "full")
+              el.day === listOfDays[correctWeekDays[currentDate.getDay()]] &&
+              (el.type === wt || el.type === "full")
             ) {
               return true;
             }
             return false;
-          }
-
-          if (
-            el.day === listOfDays[correctWeekDays[currentDate.getDay()]] &&
-            (el.type === wt || el.type === "full")
-          ) {
-            return true;
-          }
-          return false;
-        })
-        .map((el) => {
-          return {
-            number: `# ${el.number} ${scheduleTimes[el.number]}`,
-            name: el.name,
-            auditory: el.auditory,
-            teacherShortName: el.teacherShortName,
-            teacherFullName: el.teacherFullName,
-          };
-        }),
+          },
+        )
+        .map(
+          (el: {
+            number: string | number;
+            name: any;
+            auditory: any;
+            teacherShortName: any;
+            teacherFullName: any;
+          }) => {
+            return {
+              //@ts-expect-error meow
+              number: `# ${el.number} ${scheduleTimes[el.number]}`,
+              name: el.name,
+              auditory: el.auditory,
+              teacherShortName: el.teacherShortName,
+              teacherFullName: el.teacherFullName,
+            };
+          },
+        ),
     });
   }
 
   return list;
 }
 
-export const handler = async (event, context) => {
+export const handler = async (
+  event: {
+    [x: string]: any;
+    queryStringParameters: {};
+    headers: { [x: string]: any };
+    requestContext: { http: { method: any } };
+    body: any;
+  },
+  context: any,
+) => {
   const { url, facultyName, course, groupName } =
     event?.queryStringParameters || {};
   const requestUrl = event["rawPath"];
@@ -223,7 +269,9 @@ export const handler = async (event, context) => {
   if (requestUrl.includes("/group")) {
     const facultets = await getFacultets();
 
-    const faculty = facultets.find((el) => el.facultyName === facultyName);
+    const faculty = facultets.find(
+      (el: { facultyName: any }) => el.facultyName === facultyName,
+    );
     if (!faculty) {
       console.error("no faculty");
 
@@ -233,7 +281,9 @@ export const handler = async (event, context) => {
       };
     }
     const groups = await getGroups(faculty.facultyId, course);
-    const group = groups.find((el) => el.groupName === groupName);
+    const group = groups.find(
+      (el: { groupName: any }) => el.groupName === groupName,
+    );
     group.currSem = group.currSem;
     return {
       statusCode: 200,
@@ -248,7 +298,9 @@ export const handler = async (event, context) => {
   if (requestUrl.includes("/schedule")) {
     const facultets = await getFacultets();
 
-    const faculty = facultets.find((el) => el.facultyName === facultyName);
+    const faculty = facultets.find(
+      (el: { facultyName: any }) => el.facultyName === facultyName,
+    );
     if (!faculty) {
       console.error("no faculty");
 
@@ -259,7 +311,9 @@ export const handler = async (event, context) => {
       };
     }
     const groups = await getGroups(faculty.facultyId, course);
-    const group = groups.find((el) => el.groupName === groupName);
+    const group = groups.find(
+      (el: { groupName: any }) => el.groupName === groupName,
+    );
 
     const schedule = await getScheduleByApi(
       group?.groupId,
@@ -294,13 +348,17 @@ export const handler = async (event, context) => {
 
   response.headers.forEach((v, k) => {
     if (k === "set-cookie") {
+      //@ts-expect-error meow
       responseHeaders["cookie"] = v
         .replace("PHPSESSID", "isu_cookie")
         .replace("HttpOnly", "");
     }
   });
+  //@ts-expect-error meow
   responseHeaders["Access-Control-Allow-Origin"] = "*";
+  //@ts-expect-error meow
   responseHeaders["Access-Control-Expose-Headers"] = "*";
+  //@ts-expect-error meow
   responseHeaders["Access-Control-Allow-Headers"] =
     "Origin, Content-Type, Accept, Authorization";
 

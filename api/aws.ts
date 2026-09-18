@@ -159,7 +159,7 @@ function generateDaysList(weekType: string, schedule: any[]) {
   const listForFriday = [
     { date: "04.09", type: "up", day: "Пн" },
     { date: "11.09", type: "up", day: "Вт" },
-    { date: "28.09", type: "up", day: "Ср" },
+    { date: "18.09", type: "up", day: "Ср" },
     { date: "25.09", type: "up", day: "Чт" },
     { date: "02.10", type: "bottom", day: "Пн" },
     { date: "09.10", type: "bottom", day: "Вт" },

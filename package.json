@@ -7,7 +7,7 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "build-api": "bunx esbuild ./api/aws.ts --bundle --platform=node --format=esm --target=node20 --minify --outfile=./aws.js"
+    "build-api": "bunx esbuild ./api/aws.ts --bundle --platform=node --format=esm --target=node20 --minify --outfile=./api/aws.js"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",

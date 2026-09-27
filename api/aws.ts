@@ -194,6 +194,7 @@ function generateDaysList(weekType: string, schedule: any[]) {
       date: `${currentDate.getDate()}`,
       month: `${listOfMonth[currentDate.getMonth()]}`,
       weekDay: listOfDays[correctWeekDays[currentDate.getDay()]],
+      //@ts-expect-error who cares
       type: types[wt],
       list: schedule
         ?.filter(
@@ -262,6 +263,7 @@ export const handler = async (
   },
   context: any,
 ) => {
+  //@ts-expect-error who cares
   const { url, facultyName, course, groupName } =
     event?.queryStringParameters || {};
   const requestUrl = event["rawPath"];

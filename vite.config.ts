@@ -28,11 +28,13 @@ export default defineConfig({
       workbox: {
         runtimeCaching: [
           {
-            urlPattern: /.*/, // everything
-            handler: "NetworkOnly",
+            urlPattern: ({ request }) =>
+              ["script", "style", "image", "font", "worker"].includes(
+                request.destination,
+              ),
+            handler: "CacheFirst",
             options: {
-              cacheName: "everything-cache",
-              expiration: {},
+              cacheName: "static-assets",
               cacheableResponse: {
                 statuses: [0, 200],
               },

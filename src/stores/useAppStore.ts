@@ -21,7 +21,7 @@ export const useAppStore = create<Store>()(
   persist(
     devtools((set) => ({
       user: undefined,
-      session: undefined,
+      session: null,
       setSessionStatus: (status) =>
         set((s) => ({
           ...s,

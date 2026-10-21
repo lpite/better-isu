@@ -3,11 +3,12 @@ import { useProfile } from "./useProfile";
 import { API_URL } from "@/config";
 import { useSession } from "./useSession";
 
-export function useSchedule() {
+export function useSchedule({ enabled = true }: { enabled?: boolean } = {}) {
   const { status } = useSession();
   const { data: profile, isLoading: isLoadingProfile } = useProfile();
 
   const canFetchSchedule =
+    enabled &&
     status !== "loading" &&
     status !== "unauthorised" &&
     !isLoadingProfile &&

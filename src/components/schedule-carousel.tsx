@@ -6,18 +6,18 @@ import {
 } from "@/components/ui/carousel";
 
 import { useEffect, useState } from "react";
-import {
-  GetUserSchedule200,
-  GetUserSchedule200ScheduleItemListItem,
-} from "../../orval/model";
+import { GetUserSchedule200ScheduleItemListItem } from "../../orval/model";
 import { GetUserIndividualPlanQueryResult } from "../../orval/default/default";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { AlertNotification } from "./alert-notifications";
+import { ScheduleDayListItem } from "@/utils/schedulePageToDays";
+
+export type ScheduleDay = ScheduleDayListItem;
 
 type ScheduleCarouselProps = {
   isLoadingSchedule: boolean;
   isValidatingSchedule: boolean;
-  schedule?: GetUserSchedule200["schedule"];
+  schedule?: ScheduleDay[];
   individualPlan?: GetUserIndividualPlanQueryResult;
   isLoadingIndividualPlan: boolean;
 };

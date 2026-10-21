@@ -334,15 +334,18 @@ export const handler = async (
   const auth = event.headers["authorization"];
   const httpMethod = event.requestContext.http.method;
   const responseHeaders = {};
+  const isBodyRequest = httpMethod !== "GET" && httpMethod !== "HEAD";
+  // API Gateway кодує тіло запиту в base64, якщо це не так — беремо як є
+  const rawBody = event?.isBase64Encoded
+    ? Buffer.from(event?.body || "", "base64").toString("utf-8")
+    : event?.body || "";
   const response = await fetch(url, {
     method: httpMethod,
-    body:
-      httpMethod !== "GET" && httpMethod !== "HEAD"
-        ? event?.body || ""
-        : undefined,
+    body: isBodyRequest ? rawBody : undefined,
     headers: {
       Cookie: auth ? "PHPSESSID=" + auth : "",
-      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Type":
+        event?.headers?.["content-type"] || "application/x-www-form-urlencoded",
     },
     credentials: "include",
     redirect: "manual",

@@ -7,25 +7,46 @@ import ProtectedRoute from "@/components/protected-route";
 
 import { useProfile } from "@/hooks/useProfile";
 import { useSchedule } from "@/hooks/useSchedule";
+import { useStudentSchedule } from "@/hooks/useStudentSchedule";
 import { useIndividualPlan } from "@/hooks/useIndividualPlan";
 
 import { useSession } from "@/hooks/useSession";
 import { useSubjects } from "@/hooks/useSubjects";
 import { CalendarDays, NotebookText } from "lucide-react";
+import { ScheduleDay } from "@/components/schedule-carousel";
 
 export default function MainPage() {
   const [page, setPage] = useState<"schedule" | "journals">("schedule");
+  const { status: sessionStatus } = useSession();
+
+  // Розклад з реальної сторінки ІСУ (з замінами та точним часом пар).
   const {
-    data: schedule,
-    isLoading: isLoadingSchedule,
-    isValidating: isValidatingSchedule,
-  } = useSchedule();
+    data: studentSchedule,
+    error: studentScheduleError,
+    isLoading: isLoadingStudentSchedule,
+    isValidating: isValidatingStudentSchedule,
+  } = useStudentSchedule();
+
+  // Розклад групи з публічного API ІСУ — резервний варіант,
+  // якщо сторінка студента недоступна.
+  const {
+    data: groupSchedule,
+    isLoading: isLoadingGroupSchedule,
+    isValidating: isValidatingGroupSchedule,
+  } = useSchedule({ enabled: Boolean(studentScheduleError) });
+
+  const schedule: ScheduleDay[] = studentSchedule ?? groupSchedule ?? [];
+  const isLoadingSchedule =
+    sessionStatus === "loading" ||
+    isLoadingStudentSchedule ||
+    (Boolean(studentScheduleError) && isLoadingGroupSchedule);
+  const isValidatingSchedule =
+    isValidatingStudentSchedule || isValidatingGroupSchedule;
 
   const { data: individualPlan, isLoading: isLoadingIndividualPlan } =
     useIndividualPlan();
   const { data: profile, isLoading: isLoadingProfile } = useProfile();
 
-  const _ = useSession();
   const {
     data: subjects,
     isLoading: isLoadingSubjects,
@@ -60,7 +81,7 @@ export default function MainPage() {
         </div>
         {page === "schedule" ? (
           <ScheduleCarousel
-            schedule={schedule || []}
+            schedule={schedule}
             isLoadingSchedule={isLoadingSchedule}
             isValidatingSchedule={isValidatingSchedule}
             individualPlan={individualPlan}

@@ -1,29 +1,9 @@
 import {
-  ScheduleDay,
+  ScheduleDay as SchedulePageDay,
   SchedulePage,
   ScheduleSubstitution,
 } from "@/data/scheduleParser";
-
-export type ScheduleDayItem = {
-  number: string;
-  name: string;
-  subjectName: string;
-  auditory: string;
-  teacherShortName: string;
-  teacherFullName: string;
-  dateFrom: string;
-  dateTo: string;
-};
-
-export type ScheduleDayListItem = {
-  date: string;
-  month: string;
-  weekDay: string;
-  type: string;
-  /** Опис заміни дня, якщо день замінений. */
-  replacement: string | null;
-  list: ScheduleDayItem[];
-};
+import { ScheduleDay, ScheduleItem } from "@/types/schedule";
 
 const MONTHS = [
   "Січня",
@@ -67,7 +47,10 @@ function normalizeDate(date: string): string {
  * Якщо день замінений (наприклад пʼятниця заміняється на понеділок),
  * беремо розклад дня-заміни з підказки в таблиці замін.
  */
-function applyReplacement(day: ScheduleDay, source: ScheduleDay): ScheduleDay {
+function applyReplacement(
+  day: SchedulePageDay,
+  source: SchedulePageDay,
+): SchedulePageDay {
   const lessonsByNumber = new Map(
     source.pairs.map((pair) => [pair.number, pair.lessons]),
   );
@@ -156,7 +139,7 @@ function resolveReplacements(pages: SchedulePage[]): SchedulePage[] {
  */
 export default function schedulePagesToDays(
   pages: SchedulePage[],
-): ScheduleDayListItem[] {
+): ScheduleDay[] {
   return resolveReplacements(pages).flatMap((page) =>
     page.days.map((day) => {
       const { day: date, month } = splitDate(day.date);
@@ -167,7 +150,7 @@ export default function schedulePagesToDays(
         weekDay: day.shortName,
         type: page.weekTypeName,
         replacement: day.replacement?.description ?? null,
-        list: day.pairs.flatMap((pair) =>
+        list: day.pairs.flatMap((pair): ScheduleItem[] =>
           pair.lessons.map((lesson) => ({
             number: `# ${pair.number} ${pair.start} - ${pair.end}`,
             name: lesson.name,

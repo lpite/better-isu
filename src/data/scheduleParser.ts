@@ -1,6 +1,7 @@
 import { HTMLElement, TextNode, parse } from "node-html-parser";
+import { WeekType } from "@/types/schedule";
 
-export type WeekType = "up" | "bottom";
+export type { WeekType };
 
 export type ScheduleLesson = {
   /** Повна назва заняття, разом з типом у дужках. */

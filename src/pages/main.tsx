@@ -13,7 +13,7 @@ import { useIndividualPlan } from "@/hooks/useIndividualPlan";
 import { useSession } from "@/hooks/useSession";
 import { useSubjects } from "@/hooks/useSubjects";
 import { CalendarDays, NotebookText } from "lucide-react";
-import { ScheduleDay } from "@/components/schedule-carousel";
+import { ScheduleDay } from "@/types/schedule";
 
 export default function MainPage() {
   const [page, setPage] = useState<"schedule" | "journals">("schedule");

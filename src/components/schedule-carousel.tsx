@@ -6,19 +6,16 @@ import {
 } from "@/components/ui/carousel";
 
 import { useEffect, useState } from "react";
-import { GetUserSchedule200ScheduleItemListItem } from "../../orval/model";
-import { GetUserIndividualPlanQueryResult } from "../../orval/default/default";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { AlertNotification } from "./alert-notifications";
-import { ScheduleDayListItem } from "@/utils/schedulePageToDays";
-
-export type ScheduleDay = ScheduleDayListItem;
+import { IndividualPlan } from "@/types/individualPlan";
+import type { ScheduleDay, ScheduleItem } from "@/types/schedule";
 
 type ScheduleCarouselProps = {
   isLoadingSchedule: boolean;
   isValidatingSchedule: boolean;
   schedule?: ScheduleDay[];
-  individualPlan?: GetUserIndividualPlanQueryResult;
+  individualPlan?: IndividualPlan;
   isLoadingIndividualPlan: boolean;
 };
 
@@ -152,7 +149,7 @@ function ScheduleItem({
   teacherShortName,
   teacherFullName,
   date,
-}: GetUserSchedule200ScheduleItemListItem & { date: string }) {
+}: ScheduleItem & { date: string }) {
   const [showFullName, setShowFullName] = useState(false);
 
   return (

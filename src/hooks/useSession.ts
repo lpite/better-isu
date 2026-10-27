@@ -24,11 +24,12 @@ export function useSession() {
         updateSession(user?.login, user?.password)
           .then((newSession) => {
             if (newSession) {
-              setSessionStatus("authorised");
-
               useAppStore.setState((state) => ({
                 ...state,
-                session: newSession,
+                session: {
+                  ...newSession,
+                  status: "authorised",
+                },
               }));
             } else {
               console.error("cant create newSession");

@@ -36,10 +36,14 @@ export default function MainPage() {
   } = useSchedule({ enabled: Boolean(studentScheduleError) });
 
   const schedule: ScheduleDay[] = studentSchedule ?? groupSchedule ?? [];
+  const hasScheduleData =
+    studentSchedule !== undefined || groupSchedule !== undefined;
   const isLoadingSchedule =
-    sessionStatus === "loading" ||
-    isLoadingStudentSchedule ||
-    (Boolean(studentScheduleError) && isLoadingGroupSchedule);
+    !hasScheduleData &&
+    (sessionStatus === "loading" ||
+      sessionStatus === "refreshing" ||
+      isLoadingStudentSchedule ||
+      (Boolean(studentScheduleError) && isLoadingGroupSchedule));
   const isValidatingSchedule =
     isValidatingStudentSchedule || isValidatingGroupSchedule;
 

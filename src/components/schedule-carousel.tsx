@@ -11,6 +11,21 @@ import { AlertNotification } from "./alert-notifications";
 import { IndividualPlan } from "@/types/individualPlan";
 import type { ScheduleDay, ScheduleItem } from "@/types/schedule";
 
+const MONTHS = [
+  "Січня",
+  "Лютого",
+  "Березня",
+  "Квітня",
+  "Травня",
+  "Червня",
+  "Липня",
+  "Серпня",
+  "Вересня",
+  "Жовтня",
+  "Листопада",
+  "Грудня",
+];
+
 type ScheduleCarouselProps = {
   isLoadingSchedule: boolean;
   isValidatingSchedule: boolean;
@@ -31,22 +46,19 @@ export default function ScheduleCarousel({
     if (!api) {
       return;
     }
-    if (!api) {
-      return;
-    }
-    // if (isLoadingSchedule && isLoadingPlan) {
-    //   return;
-    // }
+
+    const today = new Date();
+    const currentMonth = MONTHS[today.getMonth()];
     const currentWeekDay =
       schedule?.findIndex(
-        (el) => el.date === new Date().getDate().toString(),
-      ) || 0;
+        (el) =>
+          Number(el.date) === today.getDate() &&
+          el.month.toLocaleLowerCase() === currentMonth.toLocaleLowerCase(),
+      ) ?? -1;
 
-    // якого біса треба о це. гарне питання.
     api.reInit();
-
-    api.scrollTo(currentWeekDay, true);
-  }, [api, isLoadingSchedule, isValidatingSchedule]);
+    api.scrollTo(Math.max(currentWeekDay, 0), true);
+  }, [api, schedule]);
 
   function isEnabled(subjName: string) {
     if (!enabledSubjects.length) {

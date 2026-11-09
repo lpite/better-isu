@@ -1,6 +1,8 @@
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import { getStudentSchedule } from "@/data/getStudentSchedule";
 import schedulePagesToDays from "@/utils/schedulePageToDays";
+import { useAppStore } from "@/stores/useAppStore";
+import { ScheduleDay } from "@/types/schedule";
 import { useSession } from "./useSession";
 
 export function formatIsuDate(date: Date) {
@@ -26,13 +28,19 @@ function addDays(date: Date, days: number) {
  */
 export function useStudentSchedule() {
   const { status, session } = useSession();
+  const user = useAppStore((state) => state.user);
+  const { cache } = useSWRConfig();
   const token = session?.token;
   const canFetch = status === "authorised" && Boolean(token);
+  const scheduleKey = user?.login ? `studentSchedule-${user.login}` : null;
+  const cachedSchedule = scheduleKey
+    ? (cache.get(scheduleKey)?.data as ScheduleDay[] | undefined)
+    : undefined;
 
   return useSWR(
-    // created_at унікальний для кожної сесії, щоб розклад іншого
-    // користувача не показувався з кешу після входу
-    canFetch ? `studentSchedule-${session?.created_at}` : null,
+    // Ключ прив'язаний до користувача, а не сесії, щоб локальна копія
+    // розкладу була доступною і після оновлення токена.
+    canFetch ? scheduleKey : null,
     async () => {
       const current = await getStudentSchedule(token as string);
       const nextWeekDate =
@@ -50,6 +58,9 @@ export function useStudentSchedule() {
       }
     },
     {
+      // Показуємо локальну копію навіть під час відновлення сесії.
+      // Після успішного запиту SWR замінить її актуальними даними.
+      fallbackData: cachedSchedule,
       revalidateOnMount: true,
       onError: (err) => {
         console.error(err);
